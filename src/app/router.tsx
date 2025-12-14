@@ -1,20 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { ProtectedRoute, LoginPage, RegisterPage } from '@/features/auth'
+import { StudentDashboardPage } from '@/features/student'
 import { MainLayout } from '@/shared/components/layout'
-
-// Lazy load pages for code splitting
-// import { lazy } from 'react'
-// const StudentDashboardPage = lazy(() => import('@/features/student/pages/StudentDashboardPage'))
-
-// Placeholder components until we create the actual pages
-function DashboardPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-      <p className="mt-2 text-gray-600">Bienvenido a AcaInfo</p>
-    </div>
-  )
-}
 
 function EnrollmentsPage() {
   return (
@@ -97,7 +84,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DashboardPage />,
+        element: <StudentDashboardPage />,
       },
       {
         path: 'enrollments',
