@@ -1,15 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { ProtectedRoute, LoginPage, RegisterPage } from '@/features/auth'
 import { StudentDashboardPage } from '@/features/student'
+import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
 import { MainLayout } from '@/shared/components/layout'
-
-function EnrollmentsPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Mis Inscripciones</h1>
-    </div>
-  )
-}
 
 function SessionsPage() {
   return (
@@ -89,6 +82,10 @@ export const router = createBrowserRouter([
       {
         path: 'enrollments',
         element: <EnrollmentsPage />,
+      },
+      {
+        path: 'enrollments/:id',
+        element: <EnrollmentDetailPage />,
       },
       {
         path: 'sessions',
