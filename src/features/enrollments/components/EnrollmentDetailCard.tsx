@@ -27,9 +27,9 @@ export function EnrollmentDetailCard({
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {enrollment.subject.name}
+              {enrollment.subjectName}
             </h1>
-            <p className="mt-1 text-gray-500">{enrollment.subject.code}</p>
+            <p className="mt-1 text-gray-500">{enrollment.subjectCode}</p>
           </div>
           <EnrollmentStatusBadge
             status={enrollment.status}
@@ -43,30 +43,21 @@ export function EnrollmentDetailCard({
           <div>
             <dt className="text-sm font-medium text-gray-500">Tipo de grupo</dt>
             <dd className="mt-1 text-gray-900">
-              {groupTypeLabels[enrollment.group.type] || enrollment.group.type}
+              {groupTypeLabels[enrollment.groupType] || enrollment.groupType}
             </dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Profesor</dt>
-            <dd className="mt-1 text-gray-900">{enrollment.group.teacherName}</dd>
+            <dd className="mt-1 text-gray-900">{enrollment.teacherName}</dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Fecha de inscripción</dt>
             <dd className="mt-1 text-gray-900">{formatDate(enrollment.enrolledAt)}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Capacidad del grupo</dt>
-            <dd className="mt-1 text-gray-900">
-              {enrollment.group.currentEnrollmentCount}
-              {enrollment.group.capacity && ` / ${enrollment.group.capacity}`}
-            </dd>
+            <dt className="text-sm font-medium text-gray-500">Estudiante</dt>
+            <dd className="mt-1 text-gray-900">{enrollment.studentName}</dd>
           </div>
-          {enrollment.subject.description && (
-            <div className="sm:col-span-2">
-              <dt className="text-sm font-medium text-gray-500">Descripción</dt>
-              <dd className="mt-1 text-gray-900">{enrollment.subject.description}</dd>
-            </div>
-          )}
         </dl>
 
         {enrollment.canBeWithdrawn && onWithdraw && (

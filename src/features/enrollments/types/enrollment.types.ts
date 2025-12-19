@@ -9,33 +9,26 @@ export interface Enrollment {
   enrolledAt: string
   promotedAt: string | null
   withdrawnAt: string | null
+  createdAt: string
+  updatedAt: string
   isActive: boolean
   isOnWaitingList: boolean
   isWithdrawn: boolean
+  isCompleted: boolean
+  wasPromotedFromWaitingList: boolean
   canBeWithdrawn: boolean
+  // Enriched data from backend
+  studentName: string
+  subjectName: string
+  subjectCode: string
+  groupType: GroupType
+  teacherName: string
 }
 
 export type EnrollmentStatus = 'ACTIVE' | 'WAITING_LIST' | 'WITHDRAWN' | 'COMPLETED'
 
-export interface EnrollmentDetail extends Enrollment {
-  group: GroupInfo
-  subject: SubjectInfo
-}
-
-export interface GroupInfo {
-  id: number
-  type: GroupType
-  teacherName: string
-  capacity: number | null
-  currentEnrollmentCount: number
-}
-
-export interface SubjectInfo {
-  id: number
-  code: string
-  name: string
-  description: string | null
-}
+// EnrollmentDetail is now the same as Enrollment since backend returns enriched data
+export type EnrollmentDetail = Enrollment
 
 export interface EnrollRequest {
   studentId: number
