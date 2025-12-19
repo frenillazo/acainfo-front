@@ -3,6 +3,7 @@ import { ProtectedRoute, LoginPage, RegisterPage } from '@/features/auth'
 import { StudentDashboardPage } from '@/features/student'
 import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
 import { PaymentsPage } from '@/features/payments'
+import { SubjectsPage } from '@/features/subjects'
 import { MainLayout } from '@/shared/components/layout'
 
 function SessionsPage() {
@@ -17,14 +18,6 @@ function MaterialsPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900">Materiales</h1>
-    </div>
-  )
-}
-
-function SubjectsPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Asignaturas</h1>
     </div>
   )
 }
