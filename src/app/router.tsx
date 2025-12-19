@@ -2,20 +2,13 @@ import { createBrowserRouter } from 'react-router-dom'
 import { ProtectedRoute, LoginPage, RegisterPage } from '@/features/auth'
 import { StudentDashboardPage } from '@/features/student'
 import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
+import { PaymentsPage } from '@/features/payments'
 import { MainLayout } from '@/shared/components/layout'
 
 function SessionsPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900">Sesiones</h1>
-    </div>
-  )
-}
-
-function PaymentsPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Pagos</h1>
     </div>
   )
 }
