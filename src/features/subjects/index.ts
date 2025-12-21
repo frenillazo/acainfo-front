@@ -1,4 +1,20 @@
 export { SubjectsPage } from './pages/SubjectsPage'
+export { SubjectDetailPage } from './pages/SubjectDetailPage'
 export { SubjectCard } from './components/SubjectCard'
-export { useSubjects, useSubject, useSubjectByCode } from './hooks/useSubjects'
-export type { Subject, Degree, SubjectStatus, SubjectFilters } from './types/subject.types'
+export { GroupCard } from './components/GroupCard'
+export {
+  useSubjects,
+  useSubject,
+  useSubjectByCode,
+  useGroups,
+  useGroupsBySubject,
+  useGroup,
+} from './hooks/useSubjects'
+export type {
+  Subject,
+  Degree,
+  SubjectStatus,
+  SubjectFilters,
+  Group,
+  GroupFilters,
+} from './types/subject.types'

@@ -3,7 +3,7 @@ import { ProtectedRoute, LoginPage, RegisterPage } from '@/features/auth'
 import { StudentDashboardPage } from '@/features/student'
 import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
 import { PaymentsPage } from '@/features/payments'
-import { SubjectsPage } from '@/features/subjects'
+import { SubjectsPage, SubjectDetailPage } from '@/features/subjects'
 import { MainLayout } from '@/shared/components/layout'
 
 function SessionsPage() {
@@ -88,6 +88,10 @@ export const router = createBrowserRouter([
       {
         path: 'subjects',
         element: <SubjectsPage />,
+      },
+      {
+        path: 'subjects/:id',
+        element: <SubjectDetailPage />,
       },
     ],
   },
