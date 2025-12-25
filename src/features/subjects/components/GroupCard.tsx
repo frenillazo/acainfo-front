@@ -1,0 +1,122 @@
+import type { Group } from '../types/subject.types'
+import { cn } from '@/shared/utils/cn'
+
+interface GroupCardProps {
+  group: Group
+  onEnroll?: (group: Group) => void
+  isEnrolling?: boolean
+}
+
+const groupTypeLabels: Record<string, string> = {
+  REGULAR_Q1: 'Regular Q1',
+  REGULAR_Q2: 'Regular Q2',
+  INTENSIVE_Q1: 'Intensivo Q1',
+  INTENSIVE_Q2: 'Intensivo Q2',
+}
+
+export function GroupCard({ group, onEnroll, isEnrolling }: GroupCardProps) {
+  const isFull = group.availableSeats !== null && group.availableSeats <= 0
+
+  return (
+    <div
+      className={cn(
+        'rounded-lg border bg-white p-4 shadow-sm',
+        !group.isOpen && 'opacity-60',
+        isFull && 'border-orange-200 bg-orange-50'
+      )}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <span
+            className={cn(
+              'inline-block rounded-full px-2.5 py-0.5 text-xs font-medium',
+              group.isIntensive
+                ? 'bg-orange-100 text-orange-700'
+                : 'bg-blue-100 text-blue-700'
+            )}
+          >
+            {groupTypeLabels[group.type] || group.type}
+          </span>
+        </div>
+        <span
+          className={cn(
+            'rounded-full px-2 py-1 text-xs font-medium',
+            group.isOpen
+              ? 'bg-green-100 text-green-700'
+              : 'bg-gray-100 text-gray-600'
+          )}
+        >
+          {group.isOpen ? 'Abierto' : 'Cerrado'}
+        </span>
+      </div>
+
+      <div className="mt-3 space-y-2">
+        <div className="flex items-center gap-2 text-sm">
+          <svg
+            className="h-4 w-4 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+            />
+          </svg>
+          <span className="text-gray-700">{group.teacherName}</span>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm">
+          <svg
+            className="h-4 w-4 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
+            />
+          </svg>
+          <span className={cn('text-gray-700', isFull && 'text-orange-600 font-medium')}>
+            {group.currentEnrollmentCount}
+            {group.capacity && ` / ${group.capacity}`} inscritos
+            {isFull && ' (Completo)'}
+          </span>
+        </div>
+
+        {group.availableSeats !== null && group.availableSeats > 0 && (
+          <p className="text-sm text-green-600">
+            {group.availableSeats} plaza{group.availableSeats !== 1 ? 's' : ''} disponible
+            {group.availableSeats !== 1 ? 's' : ''}
+          </p>
+        )}
+      </div>
+
+      {onEnroll && group.canEnroll && (
+        <button
+          onClick={() => onEnroll(group)}
+          disabled={isEnrolling || isFull}
+          className={cn(
+            'mt-4 w-full rounded-md px-4 py-2 text-sm font-medium transition-colors',
+            isFull
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50'
+          )}
+        >
+          {isEnrolling ? 'Inscribiendo...' : isFull ? 'Sin plazas' : 'Inscribirse'}
+        </button>
+      )}
+
+      {!group.isOpen && (
+        <p className="mt-4 text-center text-sm text-gray-500">
+          Inscripciones cerradas
+        </p>
+      )}
+    </div>
+  )
+}
