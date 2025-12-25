@@ -1,12 +1,13 @@
-// Pagination
+// Pagination - matches backend: page, size (not pageNumber, pageSize)
 export interface PageResponse<T> {
   content: T[]
-  pageNumber: number
-  totalPages: number
-  totalElements: number
+  page: number
   size: number
+  totalElements: number
+  totalPages: number
   first: boolean
   last: boolean
+  empty?: boolean
 }
 
 export interface PaginationParams {

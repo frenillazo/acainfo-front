@@ -25,22 +25,24 @@ export const useAuth = () => {
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: authApi.login,
-    onSuccess: async (data) => {
-      setAuth(data)
-      const user = await authApi.getMe()
-      setUser(user)
+    onSuccess: (data) => {
+      // User is included in the auth response from backend
+      setAuth(data, data.user)
       queryClient.invalidateQueries({ queryKey: ['auth'] })
-      navigate('/')
+
+      // Navigate based on role - roles is a string array: ["ADMIN", "STUDENT"]
+      const isAdminOnly =
+        data.user.roles.includes('ADMIN') && !data.user.roles.includes('STUDENT')
+      navigate(isAdminOnly ? '/admin' : '/')
     },
   })
 
   // Register mutation
   const registerMutation = useMutation({
     mutationFn: authApi.register,
-    onSuccess: async (data) => {
-      setAuth(data)
-      const user = await authApi.getMe()
-      setUser(user)
+    onSuccess: (data) => {
+      // User is included in the auth response from backend
+      setAuth(data, data.user)
       queryClient.invalidateQueries({ queryKey: ['auth'] })
       navigate('/')
     },

@@ -50,7 +50,8 @@ export const useAuthStore = create<AuthStore>()(
 
       hasRole: (role) => {
         const user = get().user
-        return user?.roles.some((r) => r.type === role) ?? false
+        // Backend returns roles as string array: ["ADMIN", "STUDENT"]
+        return user?.roles.includes(role as User['roles'][number]) ?? false
       },
     }),
     {

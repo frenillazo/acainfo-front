@@ -1,3 +1,5 @@
+import { Navigate } from 'react-router-dom'
+import { useAuth } from '@/features/auth'
 import { useStudentOverview } from '../hooks/useStudentOverview'
 import { WelcomeCard } from '../components/WelcomeCard'
 import { EnrollmentCard } from '../components/EnrollmentCard'
@@ -5,9 +7,24 @@ import { UpcomingSessionCard } from '../components/UpcomingSessionCard'
 import { PaymentSummaryCard } from '../components/PaymentSummaryCard'
 
 export function StudentDashboardPage() {
-  const { data: overview, isLoading, error } = useStudentOverview()
+  const { hasRole, user, isLoading: isLoadingAuth } = useAuth()
 
-  if (isLoading) {
+  // Wait for auth to load before checking roles
+  const isAdminOnly = user
+    ? hasRole('ADMIN') && !hasRole('STUDENT')
+    : false
+
+  // Only fetch student data if user is loaded and is a student
+  const { data: overview, isLoading, error } = useStudentOverview({
+    enabled: !!user && !isAdminOnly,
+  })
+
+  // Redirect admin users to admin dashboard (only after auth is loaded)
+  if (!isLoadingAuth && user && isAdminOnly) {
+    return <Navigate to="/admin" replace />
+  }
+
+  if (isLoadingAuth || isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />

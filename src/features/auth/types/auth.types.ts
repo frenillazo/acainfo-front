@@ -17,6 +17,7 @@ export interface AuthResponse {
   refreshToken: string
   tokenType: 'Bearer'
   expiresIn: number
+  user: User
 }
 
 // User types
@@ -25,19 +26,16 @@ export interface User {
   email: string
   firstName: string
   lastName: string
+  fullName: string
   status: UserStatus
-  roles: Role[]
+  roles: RoleType[] // Backend returns roles as string array: ["ADMIN", "STUDENT"]
   createdAt: string
   updatedAt: string
 }
 
-export interface Role {
-  id: number
-  type: RoleType
-}
-
 export type RoleType = 'ADMIN' | 'TEACHER' | 'STUDENT'
-export type UserStatus = 'ACTIVE' | 'BLOCKED' | 'PENDING_ACTIVATION'
+// Must match backend: ACTIVE, INACTIVE, BLOCKED, PENDING_ACTIVATION
+export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'BLOCKED' | 'PENDING_ACTIVATION'
 
 // Auth state
 export interface AuthState {
