@@ -13,9 +13,26 @@ import type {
   GroupPageResponse,
   CreateGroupRequest,
   UpdateGroupRequest,
+  Subject,
+  SubjectFilters,
+  SubjectPageResponse,
+  CreateSubjectRequest,
+  UpdateSubjectRequest,
+  Schedule,
+  ScheduleFilters,
+  SchedulePageResponse,
+  CreateScheduleRequest,
+  UpdateScheduleRequest,
+  EnrichedSchedulePageResponse,
+  Session,
+  SessionFilters,
+  SessionPageResponse,
+  CreateSessionRequest,
+  UpdateSessionRequest,
+  GenerateSessionsRequest,
+  PostponeSessionRequest,
 } from '../types/admin.types'
 import type { PageResponse } from '@/shared/types/api.types'
-import type { Subject } from '@/features/subjects/types/subject.types'
 import type { Enrollment } from '@/features/enrollments/types/enrollment.types'
 import type { Payment } from '@/features/payments/types/payment.types'
 
@@ -65,11 +82,40 @@ export const adminApi = {
     return response.data
   },
 
-  // Subjects (for stats)
-  getSubjects: async (params: { page?: number; size?: number } = {}): Promise<PageResponse<Subject>> => {
-    const response = await apiClient.get<PageResponse<Subject>>('/subjects', {
-      params: { page: params.page ?? 0, size: params.size ?? 1 },
+  // Subjects
+  getSubjects: async (filters: SubjectFilters = {}): Promise<SubjectPageResponse> => {
+    const response = await apiClient.get<SubjectPageResponse>('/subjects', {
+      params: filters,
     })
+    return response.data
+  },
+
+  getSubjectById: async (id: number): Promise<Subject> => {
+    const response = await apiClient.get<Subject>(`/subjects/${id}`)
+    return response.data
+  },
+
+  getSubjectByCode: async (code: string): Promise<Subject> => {
+    const response = await apiClient.get<Subject>(`/subjects/code/${code}`)
+    return response.data
+  },
+
+  createSubject: async (data: CreateSubjectRequest): Promise<Subject> => {
+    const response = await apiClient.post<Subject>('/subjects', data)
+    return response.data
+  },
+
+  updateSubject: async (id: number, data: UpdateSubjectRequest): Promise<Subject> => {
+    const response = await apiClient.put<Subject>(`/subjects/${id}`, data)
+    return response.data
+  },
+
+  deleteSubject: async (id: number): Promise<void> => {
+    await apiClient.delete(`/subjects/${id}`)
+  },
+
+  archiveSubject: async (id: number): Promise<Subject> => {
+    const response = await apiClient.put<Subject>(`/subjects/${id}/archive`)
     return response.data
   },
 
@@ -118,6 +164,114 @@ export const adminApi = {
     const response = await apiClient.get<PageResponse<Payment>>('/payments', {
       params: { page: params.page ?? 0, size: params.size ?? 1, ...params },
     })
+    return response.data
+  },
+
+  // Schedules
+  getSchedules: async (filters: ScheduleFilters = {}): Promise<SchedulePageResponse> => {
+    const response = await apiClient.get<SchedulePageResponse>('/schedules', {
+      params: filters,
+    })
+    return response.data
+  },
+
+  getScheduleById: async (id: number): Promise<Schedule> => {
+    const response = await apiClient.get<Schedule>(`/schedules/${id}`)
+    return response.data
+  },
+
+  getSchedulesByGroup: async (groupId: number): Promise<Schedule[]> => {
+    const response = await apiClient.get<Schedule[]>(`/schedules/group/${groupId}`)
+    return response.data
+  },
+
+  createSchedule: async (data: CreateScheduleRequest): Promise<Schedule> => {
+    const response = await apiClient.post<Schedule>('/schedules', data)
+    return response.data
+  },
+
+  updateSchedule: async (id: number, data: UpdateScheduleRequest): Promise<Schedule> => {
+    const response = await apiClient.put<Schedule>(`/schedules/${id}`, data)
+    return response.data
+  },
+
+  deleteSchedule: async (id: number): Promise<void> => {
+    await apiClient.delete(`/schedules/${id}`)
+  },
+
+  getEnrichedSchedules: async (filters: ScheduleFilters = {}): Promise<EnrichedSchedulePageResponse> => {
+    const response = await apiClient.get<EnrichedSchedulePageResponse>('/schedules/enriched', {
+      params: { size: 100, ...filters },
+    })
+    return response.data
+  },
+
+  // Sessions
+  getSessions: async (filters: SessionFilters = {}): Promise<SessionPageResponse> => {
+    const response = await apiClient.get<SessionPageResponse>('/sessions', {
+      params: filters,
+    })
+    return response.data
+  },
+
+  getSessionById: async (id: number): Promise<Session> => {
+    const response = await apiClient.get<Session>(`/sessions/${id}`)
+    return response.data
+  },
+
+  getSessionsByGroup: async (groupId: number): Promise<Session[]> => {
+    const response = await apiClient.get<Session[]>(`/sessions/group/${groupId}`)
+    return response.data
+  },
+
+  getSessionsBySubject: async (subjectId: number): Promise<Session[]> => {
+    const response = await apiClient.get<Session[]>(`/sessions/subject/${subjectId}`)
+    return response.data
+  },
+
+  createSession: async (data: CreateSessionRequest): Promise<Session> => {
+    const response = await apiClient.post<Session>('/sessions', data)
+    return response.data
+  },
+
+  updateSession: async (id: number, data: UpdateSessionRequest): Promise<Session> => {
+    const response = await apiClient.put<Session>(`/sessions/${id}`, data)
+    return response.data
+  },
+
+  deleteSession: async (id: number): Promise<void> => {
+    await apiClient.delete(`/sessions/${id}`)
+  },
+
+  // Session generation
+  generateSessions: async (data: GenerateSessionsRequest): Promise<Session[]> => {
+    const response = await apiClient.post<Session[]>('/sessions/generate', data)
+    return response.data
+  },
+
+  previewGenerateSessions: async (data: GenerateSessionsRequest): Promise<Session[]> => {
+    const response = await apiClient.post<Session[]>('/sessions/generate/preview', data)
+    return response.data
+  },
+
+  // Session lifecycle
+  startSession: async (id: number): Promise<Session> => {
+    const response = await apiClient.post<Session>(`/sessions/${id}/start`)
+    return response.data
+  },
+
+  completeSession: async (id: number): Promise<Session> => {
+    const response = await apiClient.post<Session>(`/sessions/${id}/complete`)
+    return response.data
+  },
+
+  cancelSession: async (id: number): Promise<Session> => {
+    const response = await apiClient.post<Session>(`/sessions/${id}/cancel`)
+    return response.data
+  },
+
+  postponeSession: async (id: number, data: PostponeSessionRequest): Promise<Session> => {
+    const response = await apiClient.post<Session>(`/sessions/${id}/postpone`, data)
     return response.data
   },
 }

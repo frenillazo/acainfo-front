@@ -1,36 +1,36 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
-  useAdminGroup,
-  useCancelGroup,
-  useDeleteGroup,
-} from '../hooks/useAdminGroups'
-import { GroupStatusBadge } from '../components/GroupStatusBadge'
-import { GroupTypeBadge } from '../components/GroupTypeBadge'
+  useAdminSubject,
+  useArchiveSubject,
+  useDeleteSubject,
+} from '../hooks/useAdminSubjects'
+import { SubjectStatusBadge } from '../components/SubjectStatusBadge'
+import { DegreeBadge } from '../components/DegreeBadge'
 
-export function AdminGroupDetailPage() {
+export function AdminSubjectDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const groupId = id ? parseInt(id, 10) : 0
+  const subjectId = id ? parseInt(id, 10) : 0
 
-  const { data: group, isLoading, error } = useAdminGroup(groupId)
-  const cancelMutation = useCancelGroup()
-  const deleteMutation = useDeleteGroup()
+  const { data: subject, isLoading, error } = useAdminSubject(subjectId)
+  const archiveMutation = useArchiveSubject()
+  const deleteMutation = useDeleteSubject()
 
-  const handleCancel = () => {
-    if (window.confirm('¿Estás seguro de que quieres cancelar este grupo?')) {
-      cancelMutation.mutate(groupId)
+  const handleArchive = () => {
+    if (window.confirm('¿Estás seguro de que quieres archivar esta asignatura?')) {
+      archiveMutation.mutate(subjectId)
     }
   }
 
   const handleDelete = () => {
     if (
       window.confirm(
-        '¿Estás seguro de que quieres eliminar este grupo? Esta acción no se puede deshacer.'
+        '¿Estás seguro de que quieres eliminar esta asignatura? Esta acción no se puede deshacer.'
       )
     ) {
-      deleteMutation.mutate(groupId, {
+      deleteMutation.mutate(subjectId, {
         onSuccess: () => {
-          navigate('/admin/groups')
+          navigate('/admin/subjects')
         },
       })
     }
@@ -44,17 +44,17 @@ export function AdminGroupDetailPage() {
     )
   }
 
-  if (error || !group) {
+  if (error || !subject) {
     return (
       <div className="space-y-4">
         <Link
-          to="/admin/groups"
+          to="/admin/subjects"
           className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
         >
-          ← Volver a grupos
+          ← Volver a asignaturas
         </Link>
         <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar el grupo. Por favor, intenta de nuevo.
+          Error al cargar la asignatura. Por favor, intenta de nuevo.
         </div>
       </div>
     )
@@ -64,10 +64,10 @@ export function AdminGroupDetailPage() {
     <div className="space-y-6">
       {/* Breadcrumb */}
       <Link
-        to="/admin/groups"
+        to="/admin/subjects"
         className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
       >
-        ← Volver a grupos
+        ← Volver a asignaturas
       </Link>
 
       {/* Header */}
@@ -76,36 +76,29 @@ export function AdminGroupDetailPage() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-900">
-                {group.subjectName}
+                {subject.name}
               </h1>
-              <GroupTypeBadge type={group.type} />
-              <GroupStatusBadge status={group.status} />
+              <SubjectStatusBadge status={subject.status} />
             </div>
-            <p className="mt-1 text-gray-500">{group.subjectCode}</p>
+            <p className="mt-1 font-mono text-gray-500">{subject.code}</p>
           </div>
           <div className="flex items-center gap-3">
             <Link
-              to={`/admin/groups/${group.id}/schedules`}
-              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Horarios
-            </Link>
-            <Link
-              to={`/admin/groups/${group.id}/edit`}
+              to={`/admin/subjects/${subject.id}/edit`}
               className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
             >
               Editar
             </Link>
-            {group.status !== 'CANCELLED' && (
+            {subject.status !== 'ARCHIVED' && (
               <button
-                onClick={handleCancel}
-                disabled={cancelMutation.isPending}
+                onClick={handleArchive}
+                disabled={archiveMutation.isPending}
                 className="rounded-md bg-yellow-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-yellow-700 disabled:opacity-50"
               >
-                {cancelMutation.isPending ? 'Cancelando...' : 'Cancelar grupo'}
+                {archiveMutation.isPending ? 'Archivando...' : 'Archivar'}
               </button>
             )}
-            {group.currentEnrollmentCount === 0 && (
+            {subject.currentGroupCount === 0 && (
               <button
                 onClick={handleDelete}
                 disabled={deleteMutation.isPending}
@@ -120,112 +113,92 @@ export function AdminGroupDetailPage() {
 
       {/* Details */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Group Info */}
+        {/* Subject Info */}
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
-            Información del Grupo
+            Información de la Asignatura
           </h2>
           <dl className="space-y-4">
             <div>
               <dt className="text-sm font-medium text-gray-500">ID</dt>
-              <dd className="mt-1 text-sm text-gray-900">{group.id}</dd>
+              <dd className="mt-1 text-sm text-gray-900">{subject.id}</dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">Tipo</dt>
+              <dt className="text-sm font-medium text-gray-500">Código</dt>
+              <dd className="mt-1 font-mono text-sm text-gray-900">
+                {subject.code}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Nombre</dt>
+              <dd className="mt-1 text-sm text-gray-900">{subject.name}</dd>
+            </div>
+            <div>
+              <dt className="text-sm font-medium text-gray-500">
+                Nombre completo
+              </dt>
+              <dd className="mt-1 text-sm text-gray-900">
+                {subject.displayName}
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        {/* Degree & Status */}
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">
+            Grado y Estado
+          </h2>
+          <dl className="space-y-4">
+            <div>
+              <dt className="text-sm font-medium text-gray-500">Grado</dt>
               <dd className="mt-1">
-                <GroupTypeBadge type={group.type} />
+                <DegreeBadge degree={subject.degree} />
               </dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Estado</dt>
               <dd className="mt-1">
-                <GroupStatusBadge status={group.status} />
+                <SubjectStatusBadge status={subject.status} />
               </dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">
-                Precio por hora
+                ¿Puede crear grupos?
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {group.pricePerHour.toFixed(2)} €/hora
+                {subject.canCreateGroup ? (
+                  <span className="text-green-600">Sí</span>
+                ) : (
+                  <span className="text-red-600">No</span>
+                )}
               </dd>
             </div>
           </dl>
         </div>
 
-        {/* Subject & Teacher Info */}
+        {/* Groups Info */}
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">
-            Asignatura y Profesor
-          </h2>
-          <dl className="space-y-4">
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Asignatura</dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                {group.subjectName} ({group.subjectCode})
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">ID Asignatura</dt>
-              <dd className="mt-1 text-sm text-gray-900">{group.subjectId}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">Profesor</dt>
-              <dd className="mt-1 text-sm text-gray-900">{group.teacherName}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">ID Profesor</dt>
-              <dd className="mt-1 text-sm text-gray-900">{group.teacherId}</dd>
-            </div>
-            <div className="pt-2">
-              <Link
-                to={`/admin/teachers/${group.teacherId}`}
-                className="text-sm text-blue-600 hover:text-blue-800"
-              >
-                Ver perfil del profesor →
-              </Link>
-            </div>
-          </dl>
-        </div>
-
-        {/* Capacity Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Capacidad</h2>
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Grupos</h2>
           <dl className="space-y-4">
             <div>
               <dt className="text-sm font-medium text-gray-500">
-                Inscripciones actuales
+                Número de grupos
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {group.currentEnrollmentCount}
+                {subject.currentGroupCount}
               </dd>
             </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">
-                Capacidad máxima
-              </dt>
-              <dd className="mt-1 text-sm text-gray-900">{group.maxCapacity}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">
-                Plazas disponibles
-              </dt>
-              <dd
-                className={`mt-1 text-sm font-medium ${
-                  group.availableSeats === 0 ? 'text-red-600' : 'text-green-600'
-                }`}
-              >
-                {group.availableSeats}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-gray-500">
-                ¿Puede inscribirse?
-              </dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                {group.canEnroll ? 'Sí' : 'No'}
-              </dd>
-            </div>
+            {subject.currentGroupCount > 0 && (
+              <div className="pt-2">
+                <Link
+                  to={`/admin/groups?subjectId=${subject.id}`}
+                  className="text-sm text-blue-600 hover:text-blue-800"
+                >
+                  Ver grupos de esta asignatura →
+                </Link>
+              </div>
+            )}
           </dl>
         </div>
 
@@ -238,7 +211,7 @@ export function AdminGroupDetailPage() {
                 Fecha de creación
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(group.createdAt).toLocaleDateString('es-ES', {
+                {new Date(subject.createdAt).toLocaleDateString('es-ES', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
@@ -252,7 +225,7 @@ export function AdminGroupDetailPage() {
                 Última actualización
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(group.updatedAt).toLocaleDateString('es-ES', {
+                {new Date(subject.updatedAt).toLocaleDateString('es-ES', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',

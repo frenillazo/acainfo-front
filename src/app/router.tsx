@@ -20,6 +20,15 @@ import {
   AdminGroupDetailPage,
   AdminGroupCreatePage,
   AdminGroupEditPage,
+  AdminSubjectsPage,
+  AdminSubjectDetailPage,
+  AdminSubjectCreatePage,
+  AdminSubjectEditPage,
+  AdminGroupSchedulesPage,
+  AdminSchedulesPage,
+  AdminSessionsPage,
+  AdminSessionDetailPage,
+  AdminSessionGeneratePage,
 } from '@/features/admin'
 import { MainLayout } from '@/shared/components/layout'
 
@@ -183,6 +192,42 @@ export const router = createBrowserRouter([
       {
         path: 'groups/:id/edit',
         element: <AdminGroupEditPage />,
+      },
+      {
+        path: 'groups/:groupId/schedules',
+        element: <AdminGroupSchedulesPage />,
+      },
+      {
+        path: 'schedules',
+        element: <AdminSchedulesPage />,
+      },
+      {
+        path: 'sessions',
+        element: <AdminSessionsPage />,
+      },
+      {
+        path: 'sessions/generate',
+        element: <AdminSessionGeneratePage />,
+      },
+      {
+        path: 'sessions/:id',
+        element: <AdminSessionDetailPage />,
+      },
+      {
+        path: 'subjects',
+        element: <AdminSubjectsPage />,
+      },
+      {
+        path: 'subjects/new',
+        element: <AdminSubjectCreatePage />,
+      },
+      {
+        path: 'subjects/:id',
+        element: <AdminSubjectDetailPage />,
+      },
+      {
+        path: 'subjects/:id/edit',
+        element: <AdminSubjectEditPage />,
       },
       {
         path: 'payments',
