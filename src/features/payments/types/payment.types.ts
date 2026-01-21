@@ -1,4 +1,5 @@
-export type PaymentStatus = 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELLED'
+// Note: OVERDUE is not a status but a calculated state (isOverdue field)
+export type PaymentStatus = 'PENDING' | 'PAID' | 'CANCELLED'
 export type PaymentType = 'INITIAL' | 'MONTHLY' | 'INTENSIVE_FULL'
 
 export interface Payment {
@@ -38,4 +39,31 @@ export interface PaymentFilters {
   size?: number
   sortBy?: string
   sortDirection?: 'ASC' | 'DESC'
+}
+
+// Request DTOs for admin operations
+export interface GeneratePaymentRequest {
+  enrollmentId: number
+  type: PaymentType
+  billingMonth: number
+  billingYear: number
+}
+
+export interface GenerateMonthlyPaymentsRequest {
+  billingMonth: number
+  billingYear: number
+}
+
+export interface MarkPaymentPaidRequest {
+  stripePaymentIntentId?: string | null
+}
+
+export interface CancelPaymentRequest {
+  reason?: string | null
+}
+
+export interface AccessStatusResponse {
+  canAccessResources: boolean
+  hasOverduePayments: boolean
+  isUpToDate: boolean
 }

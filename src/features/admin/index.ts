@@ -23,6 +23,9 @@ export { AdminSchedulesPage } from './schedules/pages/AdminSchedulesPage'
 export { AdminSessionsPage } from './sessions/pages/AdminSessionsPage'
 export { AdminSessionDetailPage } from './sessions/pages/AdminSessionDetailPage'
 export { AdminSessionGeneratePage } from './sessions/pages/AdminSessionGeneratePage'
+export { AdminPaymentsPage } from './payments/pages/AdminPaymentsPage'
+export { AdminPaymentDetailPage } from './payments/pages/AdminPaymentDetailPage'
+export { AdminPaymentGeneratePage } from './payments/pages/AdminPaymentGeneratePage'
 
 // Components
 export { StatCard } from './components/StatCard'

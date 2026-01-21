@@ -34,7 +34,14 @@ import type {
 } from '../types/admin.types'
 import type { PageResponse } from '@/shared/types/api.types'
 import type { Enrollment } from '@/features/enrollments/types/enrollment.types'
-import type { Payment } from '@/features/payments/types/payment.types'
+import type {
+  Payment,
+  PaymentFilters,
+  GeneratePaymentRequest,
+  GenerateMonthlyPaymentsRequest,
+  CancelPaymentRequest,
+  MarkPaymentPaidRequest,
+} from '@/features/payments/types/payment.types'
 
 export const adminApi = {
   // Users
@@ -272,6 +279,64 @@ export const adminApi = {
 
   postponeSession: async (id: number, data: PostponeSessionRequest): Promise<Session> => {
     const response = await apiClient.post<Session>(`/sessions/${id}/postpone`, data)
+    return response.data
+  },
+
+  // Admin Payments
+  getPaymentsWithFilters: async (filters: PaymentFilters = {}): Promise<PageResponse<Payment>> => {
+    const response = await apiClient.get<PageResponse<Payment>>('/payments', {
+      params: filters,
+    })
+    return response.data
+  },
+
+  getPaymentById: async (id: number): Promise<Payment> => {
+    const response = await apiClient.get<Payment>(`/payments/${id}`)
+    return response.data
+  },
+
+  getPaymentsByStudentId: async (studentId: number): Promise<Payment[]> => {
+    const response = await apiClient.get<Payment[]>(`/payments/student/${studentId}`)
+    return response.data
+  },
+
+  getPaymentsByEnrollmentId: async (enrollmentId: number): Promise<Payment[]> => {
+    const response = await apiClient.get<Payment[]>(`/payments/enrollment/${enrollmentId}`)
+    return response.data
+  },
+
+  getPendingPaymentsByStudentId: async (studentId: number): Promise<Payment[]> => {
+    const response = await apiClient.get<Payment[]>(`/payments/student/${studentId}/pending`)
+    return response.data
+  },
+
+  getOverduePaymentsByStudentId: async (studentId: number): Promise<Payment[]> => {
+    const response = await apiClient.get<Payment[]>(`/payments/student/${studentId}/overdue`)
+    return response.data
+  },
+
+  getAllOverduePayments: async (): Promise<Payment[]> => {
+    const response = await apiClient.get<Payment[]>('/admin/payments/overdue')
+    return response.data
+  },
+
+  generatePayment: async (data: GeneratePaymentRequest): Promise<Payment> => {
+    const response = await apiClient.post<Payment>('/admin/payments/generate', data)
+    return response.data
+  },
+
+  generateMonthlyPayments: async (data: GenerateMonthlyPaymentsRequest): Promise<Payment[]> => {
+    const response = await apiClient.post<Payment[]>('/admin/payments/generate-monthly', data)
+    return response.data
+  },
+
+  markPaymentAsPaid: async (id: number, data?: MarkPaymentPaidRequest): Promise<Payment> => {
+    const response = await apiClient.post<Payment>(`/payments/${id}/pay`, data ?? {})
+    return response.data
+  },
+
+  cancelPayment: async (id: number, data?: CancelPaymentRequest): Promise<Payment> => {
+    const response = await apiClient.post<Payment>(`/admin/payments/${id}/cancel`, data ?? {})
     return response.data
   },
 }

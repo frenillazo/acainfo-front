@@ -4,6 +4,7 @@ import { StudentDashboardPage } from '@/features/student'
 import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
 import { PaymentsPage } from '@/features/payments'
 import { SubjectsPage, SubjectDetailPage } from '@/features/subjects'
+import { SessionsPage } from '@/features/sessions'
 import {
   AdminDashboardPage,
   AdminUsersPage,
@@ -29,31 +30,16 @@ import {
   AdminSessionsPage,
   AdminSessionDetailPage,
   AdminSessionGeneratePage,
+  AdminPaymentsPage,
+  AdminPaymentDetailPage,
+  AdminPaymentGeneratePage,
 } from '@/features/admin'
 import { MainLayout } from '@/shared/components/layout'
-
-function SessionsPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Sesiones</h1>
-    </div>
-  )
-}
 
 function MaterialsPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900">Materiales</h1>
-    </div>
-  )
-}
-
-// Admin placeholder pages
-function AdminPaymentsPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Gestion de Pagos</h1>
-      <p className="mt-2 text-gray-600">Proximamente...</p>
     </div>
   )
 }
@@ -232,6 +218,14 @@ export const router = createBrowserRouter([
       {
         path: 'payments',
         element: <AdminPaymentsPage />,
+      },
+      {
+        path: 'payments/generate',
+        element: <AdminPaymentGeneratePage />,
+      },
+      {
+        path: 'payments/:id',
+        element: <AdminPaymentDetailPage />,
       },
     ],
   },
