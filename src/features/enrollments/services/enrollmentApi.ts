@@ -34,6 +34,12 @@ export const enrollmentApi = {
     return response.data
   },
 
+  // GET /enrollments/group/{groupId}
+  getByGroupId: async (groupId: number): Promise<Enrollment[]> => {
+    const response = await apiClient.get<Enrollment[]>(`/enrollments/group/${groupId}`)
+    return response.data
+  },
+
   // POST /enrollments
   enroll: async (data: EnrollRequest): Promise<Enrollment> => {
     const response = await apiClient.post<Enrollment>('/enrollments', data)

@@ -11,6 +11,16 @@ export interface RegisterRequest {
   lastName: string
 }
 
+export interface UpdateProfileRequest {
+  firstName: string
+  lastName: string
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+}
+
 // Response types
 export interface AuthResponse {
   accessToken: string

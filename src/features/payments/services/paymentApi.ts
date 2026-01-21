@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/services/apiClient'
 import type { PageResponse } from '@/shared/types/api.types'
-import type { Payment, PaymentFilters } from '../types/payment.types'
+import type { Payment, PaymentFilters, AccessStatusResponse } from '../types/payment.types'
 
 export const paymentApi = {
   // GET /payments/{id}
@@ -38,6 +38,12 @@ export const paymentApi = {
   // GET /payments/enrollment/{enrollmentId}
   getByEnrollmentId: async (enrollmentId: number): Promise<Payment[]> => {
     const response = await apiClient.get<Payment[]>(`/payments/enrollment/${enrollmentId}`)
+    return response.data
+  },
+
+  // GET /payments/student/{studentId}/access
+  checkAccessStatus: async (studentId: number): Promise<AccessStatusResponse> => {
+    const response = await apiClient.get<AccessStatusResponse>(`/payments/student/${studentId}/access`)
     return response.data
   },
 

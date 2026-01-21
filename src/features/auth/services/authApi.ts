@@ -4,6 +4,8 @@ import type {
   RegisterRequest,
   AuthResponse,
   User,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
 } from '../types/auth.types'
 
 export const authApi = {
@@ -35,5 +37,14 @@ export const authApi = {
   getMe: async (): Promise<User> => {
     const response = await apiClient.get<User>('/users/profile')
     return response.data
+  },
+
+  updateProfile: async (data: UpdateProfileRequest): Promise<User> => {
+    const response = await apiClient.put<User>('/users/profile', data)
+    return response.data
+  },
+
+  changePassword: async (data: ChangePasswordRequest): Promise<void> => {
+    await apiClient.put('/users/profile/password', data)
   },
 }
