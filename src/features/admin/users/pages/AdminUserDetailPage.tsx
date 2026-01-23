@@ -1,13 +1,27 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAdminUser } from '../hooks/useAdminUsers'
 import { UserStatusBadge } from '../components/UserStatusBadge'
 import { RoleBadge } from '../components/RoleBadge'
+import { RoleManagementPanel } from '@/features/auth/components/RoleManagementPanel'
+import type { User } from '@/features/auth'
 
 export function AdminUserDetailPage() {
   const { id } = useParams<{ id: string }>()
   const userId = id ? parseInt(id, 10) : 0
 
-  const { data: user, isLoading, error } = useAdminUser(userId)
+  const { data: userData, isLoading, error, refetch } = useAdminUser(userId)
+  const [user, setUser] = useState<User | null>(userData || null)
+
+  // Update local state when data changes
+  if (userData && user?.id !== userData.id) {
+    setUser(userData)
+  }
+
+  const handleUserUpdated = (updatedUser: User) => {
+    setUser(updatedUser)
+    refetch()
+  }
 
   if (isLoading) {
     return (
@@ -141,6 +155,9 @@ export function AdminUserDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Role Management Panel (ADMIN ONLY) */}
+      <RoleManagementPanel user={user} onUserUpdated={handleUserUpdated} />
     </div>
   )
 }

@@ -4,6 +4,7 @@ export { RegisterForm } from './components/RegisterForm'
 export { ProtectedRoute } from './components/ProtectedRoute'
 export { ProfileEditForm } from './components/ProfileEditForm'
 export { ChangePasswordForm } from './components/ChangePasswordForm'
+export { RoleManagementPanel } from './components/RoleManagementPanel'
 
 // Pages
 export { LoginPage } from './pages/LoginPage'
@@ -19,6 +20,7 @@ export { useAuthStore } from './store/authStore'
 
 // Services
 export { authApi } from './services/authApi'
+export { adminApi } from './services/adminApi'
 
 // Types
 export type {

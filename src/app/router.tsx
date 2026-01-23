@@ -1,10 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom'
-import { ProtectedRoute, LoginPage, RegisterPage } from '@/features/auth'
+import { ProtectedRoute, LoginPage, RegisterPage, ProfilePage } from '@/features/auth'
 import { StudentDashboardPage } from '@/features/student'
 import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
 import { PaymentsPage } from '@/features/payments'
 import { SubjectsPage, SubjectDetailPage } from '@/features/subjects'
 import { SessionsPage } from '@/features/sessions'
+import { MaterialsPage } from '@/features/materials'
 import {
   AdminDashboardPage,
   AdminUsersPage,
@@ -35,14 +36,6 @@ import {
   AdminPaymentGeneratePage,
 } from '@/features/admin'
 import { MainLayout } from '@/shared/components/layout'
-
-function MaterialsPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900">Materiales</h1>
-    </div>
-  )
-}
 
 function NotFoundPage() {
   return (
@@ -106,6 +99,10 @@ export const router = createBrowserRouter([
       {
         path: 'subjects/:id',
         element: <SubjectDetailPage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
       },
     ],
   },
@@ -226,6 +223,14 @@ export const router = createBrowserRouter([
       {
         path: 'payments/:id',
         element: <AdminPaymentDetailPage />,
+      },
+      {
+        path: 'materials',
+        element: <MaterialsPage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
       },
     ],
   },

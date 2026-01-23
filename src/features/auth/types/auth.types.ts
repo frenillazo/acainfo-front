@@ -21,6 +21,18 @@ export interface ChangePasswordRequest {
   newPassword: string
 }
 
+export interface AssignRoleRequest {
+  roleType: RoleType
+}
+
+export interface RevokeRoleRequest {
+  roleType: RoleType
+}
+
+export interface UpdateUserStatusRequest {
+  status: UserStatus
+}
+
 // Response types
 export interface AuthResponse {
   accessToken: string
