@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import {
   useAdminSubject,
   useArchiveSubject,
@@ -6,6 +7,11 @@ import {
 } from '../hooks/useAdminSubjects'
 import { SubjectStatusBadge } from '../components/SubjectStatusBadge'
 import { DegreeBadge } from '../components/DegreeBadge'
+import { useMaterials } from '@/features/materials/hooks/useMaterials'
+import { MaterialCard } from '@/features/materials/components/MaterialCard'
+import { MaterialUploadForm } from '@/features/materials/components/MaterialUploadForm'
+import { MaterialsGroupedByCategory } from '@/features/materials/components/MaterialsGroupedByCategory'
+import type { UploadMaterialRequest } from '@/features/materials/types/material.types'
 
 export function AdminSubjectDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -15,6 +21,27 @@ export function AdminSubjectDetailPage() {
   const { data: subject, isLoading, error } = useAdminSubject(subjectId)
   const archiveMutation = useArchiveSubject()
   const deleteMutation = useDeleteSubject()
+
+  // Materials management
+  const [showUploadForm, setShowUploadForm] = useState(false)
+  const [viewMode, setViewMode] = useState<'list' | 'grouped'>('grouped')
+  const {
+    materials,
+    isLoading: isLoadingMaterials,
+    isUploading,
+    download,
+    isDownloading,
+    deleteMaterial,
+    upload,
+    getBySubjectId,
+  } = useMaterials()
+
+  // Load materials when subject is loaded
+  useEffect(() => {
+    if (subjectId) {
+      getBySubjectId(subjectId)
+    }
+  }, [subjectId])
 
   const handleArchive = () => {
     if (window.confirm('¿Estás seguro de que quieres archivar esta asignatura?')) {
@@ -33,6 +60,25 @@ export function AdminSubjectDetailPage() {
           navigate('/admin/subjects')
         },
       })
+    }
+  }
+
+  const handleUploadMaterial = async (metadata: UploadMaterialRequest, file: File) => {
+    const result = await upload(metadata, file)
+    if (result) {
+      setShowUploadForm(false)
+      // Reload materials
+      getBySubjectId(subjectId)
+    }
+  }
+
+  const handleDeleteMaterial = async (materialId: number) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este material?')) {
+      const success = await deleteMaterial(materialId)
+      if (success) {
+        // Reload materials
+        getBySubjectId(subjectId)
+      }
     }
   }
 
@@ -237,6 +283,110 @@ export function AdminSubjectDetailPage() {
           </dl>
         </div>
       </div>
+
+      {/* Materials Management Section */}
+      <section>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Gestión de Materiales
+          </h2>
+          <div className="flex items-center gap-3">
+            {isLoadingMaterials && (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
+            )}
+
+            {/* View Mode Toggle */}
+            {materials.length > 0 && (
+              <div className="flex items-center gap-1 rounded-md border border-gray-300 p-1">
+                <button
+                  onClick={() => setViewMode('grouped')}
+                  className={`rounded px-3 py-1 text-sm font-medium transition ${
+                    viewMode === 'grouped'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  Por Categorías
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`rounded px-3 py-1 text-sm font-medium transition ${
+                    viewMode === 'list'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  Lista
+                </button>
+              </div>
+            )}
+
+            {!showUploadForm && (
+              <button
+                onClick={() => setShowUploadForm(true)}
+                className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                Subir Material
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Upload Form */}
+        {showUploadForm && (
+          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-base font-semibold text-gray-900">
+              Subir Nuevo Material
+            </h3>
+            <MaterialUploadForm
+              subjectId={subjectId}
+              onSubmit={handleUploadMaterial}
+              onCancel={() => setShowUploadForm(false)}
+              isLoading={isUploading}
+            />
+          </div>
+        )}
+
+        {/* Materials List or Grouped View */}
+        {materials.length > 0 ? (
+          viewMode === 'grouped' ? (
+            <MaterialsGroupedByCategory
+              materials={materials}
+              onDownload={download}
+              onDelete={handleDeleteMaterial}
+              canDelete={true}
+              isDownloading={isDownloading}
+            />
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {materials.map((material) => (
+                <MaterialCard
+                  key={material.id}
+                  material={material}
+                  onDownload={download}
+                  onDelete={handleDeleteMaterial}
+                  canDelete={true}
+                  isDownloading={isDownloading}
+                />
+              ))}
+            </div>
+          )
+        ) : (
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
+            <p className="text-gray-500">
+              No hay materiales para esta asignatura.
+            </p>
+            {!showUploadForm && (
+              <button
+                onClick={() => setShowUploadForm(true)}
+                className="mt-4 text-sm text-blue-600 hover:text-blue-800"
+              >
+                Subir el primer material →
+              </button>
+            )}
+          </div>
+        )}
+      </section>
     </div>
   )
 }

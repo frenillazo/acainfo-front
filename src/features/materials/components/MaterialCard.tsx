@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Material } from '../types/material.types'
-import { getFileIcon } from '../types/material.types'
+import { getFileIcon, CATEGORY_ICONS } from '../types/material.types'
 import { cn } from '@/shared/utils/cn'
 
 interface MaterialCardProps {
@@ -48,6 +48,9 @@ export function MaterialCard({
           )}
 
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-blue-700">
+              {CATEGORY_ICONS[material.category]} {material.categoryDisplayName}
+            </span>
             <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5">
               .{material.fileExtension}
             </span>

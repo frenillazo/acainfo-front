@@ -1,3 +1,33 @@
+// Material categories enum
+export enum MaterialCategory {
+  TEORIA = 'TEORIA',
+  EJERCICIOS = 'EJERCICIOS',
+  EXAMENES = 'EXAMENES',
+  PROYECTOS = 'PROYECTOS',
+  LABORATORIOS = 'LABORATORIOS',
+  OTROS = 'OTROS',
+}
+
+// Category labels for UI
+export const CATEGORY_LABELS: Record<MaterialCategory, string> = {
+  [MaterialCategory.TEORIA]: 'Teoría',
+  [MaterialCategory.EJERCICIOS]: 'Ejercicios',
+  [MaterialCategory.EXAMENES]: 'Exámenes',
+  [MaterialCategory.PROYECTOS]: 'Proyectos',
+  [MaterialCategory.LABORATORIOS]: 'Laboratorios',
+  [MaterialCategory.OTROS]: 'Otros',
+}
+
+// Category icons
+export const CATEGORY_ICONS: Record<MaterialCategory, string> = {
+  [MaterialCategory.TEORIA]: '📚',
+  [MaterialCategory.EJERCICIOS]: '✏️',
+  [MaterialCategory.EXAMENES]: '📝',
+  [MaterialCategory.PROYECTOS]: '🚀',
+  [MaterialCategory.LABORATORIOS]: '🔬',
+  [MaterialCategory.OTROS]: '📁',
+}
+
 // Material entity with enriched data from backend
 export interface Material {
   id: number
@@ -5,6 +35,8 @@ export interface Material {
   uploadedById: number
   name: string
   description: string | null
+  category: MaterialCategory
+  categoryDisplayName: string
   originalFilename: string
   fileExtension: string
   mimeType: string
@@ -37,6 +69,7 @@ export interface UploadMaterialRequest {
   subjectId: number
   name: string
   description?: string | null
+  category?: MaterialCategory
 }
 
 // Response DTOs

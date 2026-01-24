@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import type { UploadMaterialRequest } from '../types/material.types'
+import { MaterialCategory } from '../types/material.types'
+import { CategorySelector } from './CategorySelector'
 
 interface MaterialUploadFormProps {
   subjectId?: number
@@ -20,6 +22,7 @@ export function MaterialUploadForm({
     subjectId: subjectId || 0,
     name: '',
     description: '',
+    category: MaterialCategory.OTROS,
   })
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [validationErrors, setValidationErrors] = useState<{
@@ -269,6 +272,15 @@ export function MaterialUploadForm({
           <p className="mt-1 text-sm text-red-600">{validationErrors.name}</p>
         )}
       </div>
+
+      {/* Category Selection */}
+      <CategorySelector
+        value={formData.category || MaterialCategory.OTROS}
+        onChange={(category) =>
+          setFormData((prev) => ({ ...prev, category }))
+        }
+        disabled={isLoading}
+      />
 
       {/* Description (Optional) */}
       <div>

@@ -225,10 +225,6 @@ export const router = createBrowserRouter([
         element: <AdminPaymentDetailPage />,
       },
       {
-        path: 'materials',
-        element: <MaterialsPage />,
-      },
-      {
         path: 'profile',
         element: <ProfilePage />,
       },

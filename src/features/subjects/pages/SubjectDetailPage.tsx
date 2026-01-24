@@ -5,6 +5,9 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { GroupCard } from '../components/GroupCard'
 import type { Group } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
+import { useMaterials } from '@/features/materials/hooks/useMaterials'
+import { MaterialCard } from '@/features/materials/components/MaterialCard'
+import { useEffect } from 'react'
 
 const degreeLabels: Record<string, string> = {
   INGENIERIA_INFORMATICA: 'Ingeniería Informática',
@@ -21,7 +24,23 @@ export function SubjectDetailPage() {
   const { data: groupsData, isLoading: isLoadingGroups } = useGroupsBySubject(subjectId, 'OPEN')
   const enrollMutation = useEnroll()
 
+  // Materials
+  const {
+    materials,
+    isLoading: isLoadingMaterials,
+    download,
+    isDownloading,
+    getBySubjectId,
+  } = useMaterials()
+
   const groups = groupsData?.content ?? []
+
+  // Load materials when subject is loaded
+  useEffect(() => {
+    if (subjectId) {
+      getBySubjectId(subjectId)
+    }
+  }, [subjectId])
 
   const handleEnroll = async (group: Group) => {
     if (!user?.id) return
@@ -151,6 +170,35 @@ export function SubjectDetailPage() {
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
             <p className="text-gray-500">
               No hay grupos disponibles para esta asignatura en este momento.
+            </p>
+          </div>
+        )}
+      </section>
+
+      {/* Materials Section */}
+      <section>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Materiales de la Asignatura</h2>
+          {isLoadingMaterials && (
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
+          )}
+        </div>
+
+        {materials.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {materials.map((material) => (
+              <MaterialCard
+                key={material.id}
+                material={material}
+                onDownload={download}
+                isDownloading={isDownloading}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
+            <p className="text-gray-500">
+              No hay materiales disponibles para esta asignatura.
             </p>
           </div>
         )}
