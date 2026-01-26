@@ -1,0 +1,56 @@
+import type { GroupType } from '@/shared/types/api.types'
+
+export type GroupRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED'
+
+export interface GroupRequest {
+  id: number
+  subjectId: number
+  requesterId: number
+  requestedGroupType: GroupType
+  status: GroupRequestStatus
+  supporterIds: number[]
+  justification: string | null
+  expiresAt: string
+  createdGroupId: number | null
+  adminResponse: string | null
+  processedByAdminId: number | null
+  processedAt: string | null
+  createdAt: string
+  updatedAt: string
+  // Computed properties from backend
+  supporterCount: number
+  hasMinimumSupporters: boolean
+  supportersNeeded: number
+  isPending: boolean
+  isApproved: boolean
+  isRejected: boolean
+  isExpired: boolean
+  isProcessed: boolean
+}
+
+export interface CreateGroupRequestRequest {
+  subjectId: number
+  requesterId: number
+  requestedGroupType: GroupType
+  justification?: string
+}
+
+export interface AddSupporterRequest {
+  studentId: number
+}
+
+export interface ProcessGroupRequestRequest {
+  adminId: number
+  adminResponse?: string
+}
+
+export interface GroupRequestFilters {
+  subjectId?: number
+  requesterId?: number
+  requestedGroupType?: GroupType
+  status?: GroupRequestStatus
+  page?: number
+  size?: number
+  sortBy?: string
+  sortDirection?: 'ASC' | 'DESC'
+}

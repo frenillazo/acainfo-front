@@ -7,6 +7,13 @@ import { SubjectsPage, SubjectDetailPage } from '@/features/subjects'
 import { SessionsPage } from '@/features/sessions'
 import { MaterialsPage } from '@/features/materials'
 import {
+  GroupRequestsPage,
+  GroupRequestDetailPage,
+  GroupRequestCreatePage,
+  AdminGroupRequestsPage,
+  AdminGroupRequestDetailPage,
+} from '@/features/group-requests'
+import {
   AdminDashboardPage,
   AdminUsersPage,
   AdminUserDetailPage,
@@ -103,6 +110,18 @@ export const router = createBrowserRouter([
       {
         path: 'profile',
         element: <ProfilePage />,
+      },
+      {
+        path: 'group-requests',
+        element: <GroupRequestsPage />,
+      },
+      {
+        path: 'group-requests/new',
+        element: <GroupRequestCreatePage />,
+      },
+      {
+        path: 'group-requests/:id',
+        element: <GroupRequestDetailPage />,
       },
     ],
   },
@@ -223,6 +242,14 @@ export const router = createBrowserRouter([
       {
         path: 'payments/:id',
         element: <AdminPaymentDetailPage />,
+      },
+      {
+        path: 'group-requests',
+        element: <AdminGroupRequestsPage />,
+      },
+      {
+        path: 'group-requests/:id',
+        element: <AdminGroupRequestDetailPage />,
       },
       {
         path: 'profile',
