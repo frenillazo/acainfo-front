@@ -7,7 +7,11 @@ interface PaymentStatusBadgeProps {
   daysOverdue?: number | null
 }
 
-const statusConfig: Record<PaymentStatus, { label: string; className: string }> = {
+// OVERDUE is not a status but a calculated state (isOverdue field)
+// We use a separate type for display purposes
+type DisplayStatus = PaymentStatus | 'OVERDUE'
+
+const statusConfig: Record<DisplayStatus, { label: string; className: string }> = {
   PENDING: {
     label: 'Pendiente',
     className: 'bg-yellow-100 text-yellow-700',
@@ -27,9 +31,7 @@ const statusConfig: Record<PaymentStatus, { label: string; className: string }> 
 }
 
 export function PaymentStatusBadge({ status, isOverdue, daysOverdue }: PaymentStatusBadgeProps) {
-  const config = statusConfig[status]
-
-  const displayStatus = isOverdue && status === 'PENDING' ? 'OVERDUE' : status
+  const displayStatus: DisplayStatus = isOverdue && status === 'PENDING' ? 'OVERDUE' : status
   const displayConfig = statusConfig[displayStatus]
 
   return (

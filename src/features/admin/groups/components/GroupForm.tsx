@@ -8,10 +8,10 @@ import { adminApi } from '../../services/adminApi'
 import type { Group, GroupType, GroupStatus } from '../../types/admin.types'
 
 const createGroupSchema = z.object({
-  subjectId: z.number({ required_error: 'Selecciona una asignatura' }).min(1),
-  teacherId: z.number({ required_error: 'Selecciona un profesor' }).min(1),
-  type: z.enum(['REGULAR_Q1', 'INTENSIVE_Q1', 'REGULAR_Q2', 'INTENSIVE_Q2'], {
-    required_error: 'Selecciona un tipo',
+  subjectId: z.number({ message: 'Selecciona una asignatura' }).min(1),
+  teacherId: z.number({ message: 'Selecciona un profesor' }).min(1),
+  type: z.enum(['REGULAR_Q1', 'INTENSIVE_Q1', 'REGULAR_Q2', 'INTENSIVE_Q2'] as const, {
+    message: 'Selecciona un tipo',
   }),
   capacity: z.number().min(1).optional(),
   pricePerHour: z.number().min(0.01).optional(),
@@ -65,7 +65,7 @@ export function GroupForm({
     watch,
     formState: { errors },
   } = useForm<CreateGroupFormData>({
-    resolver: zodResolver(isEditing ? updateGroupSchema : createGroupSchema),
+    resolver: zodResolver(createGroupSchema) as any,
     defaultValues: group
       ? {
           capacity: group.capacity ?? undefined,

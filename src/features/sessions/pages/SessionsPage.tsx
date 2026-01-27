@@ -10,7 +10,7 @@ export function SessionsPage() {
   const studentId = user?.id
 
   const { data: enrollments } = useEnrollments(studentId ?? 0)
-  const [filters, setFilters] = useState<SessionFilters>({
+  const [filters] = useState<SessionFilters>({
     page: 0,
     size: 50,
     sortBy: 'date',
@@ -26,6 +26,7 @@ export function SessionsPage() {
   }, [enrollments])
 
   // Filter sessions by student's enrolled groups
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const mySessions = useMemo(() => {
     if (!data?.content || !activeEnrollments.length) return []
 

@@ -93,7 +93,7 @@ export const FILE_CATEGORIES = {
 export function getFileCategory(extension: string): string {
   const ext = extension.toLowerCase()
   for (const [category, extensions] of Object.entries(FILE_CATEGORIES)) {
-    if (extensions.includes(ext as any)) {
+    if ((extensions as readonly string[]).includes(ext)) {
       return category
     }
   }

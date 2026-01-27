@@ -144,7 +144,7 @@ export function AdminEnrollmentChangeGroupPage() {
                       </div>
                       <div className="text-gray-500">
                         Profesor: {group.teacherName} | Capacidad:{' '}
-                        {group.currentEnrollments}/{group.maxCapacity}
+                        {group.currentEnrollmentCount}/{group.maxCapacity}
                       </div>
                     </div>
                     {selectedGroupId === group.id && (

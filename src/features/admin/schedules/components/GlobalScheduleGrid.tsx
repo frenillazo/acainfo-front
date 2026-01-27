@@ -79,7 +79,11 @@ export function GlobalScheduleGrid({ schedules, selectedClassroom }: GlobalSched
 
   // Group schedules by day and classroom
   const schedulesByDayAndClassroom = DAYS.reduce((acc, day) => {
-    acc[day.key] = {}
+    acc[day.key] = {
+      AULA_PORTAL1: [],
+      AULA_PORTAL2: [],
+      AULA_VIRTUAL: [],
+    }
     CLASSROOMS.forEach(classroom => {
       acc[day.key][classroom.key] = filteredSchedules.filter(
         s => s.dayOfWeek === day.key && s.classroom === classroom.key

@@ -259,12 +259,12 @@ export function MaterialsPage() {
                   <p className="text-sm text-gray-700">
                     Showing{' '}
                     <span className="font-medium">
-                      {pageData.pageNumber * pageData.pageSize + 1}
+                      {pageData.page * pageData.size + 1}
                     </span>{' '}
                     to{' '}
                     <span className="font-medium">
                       {Math.min(
-                        (pageData.pageNumber + 1) * pageData.pageSize,
+                        (pageData.page + 1) * pageData.size,
                         pageData.totalElements
                       )}
                     </span>{' '}

@@ -7,8 +7,8 @@ import { cn } from '@/shared/utils/cn'
 import { adminApi } from '../../services/adminApi'
 
 const enrollmentSchema = z.object({
-  studentId: z.number({ required_error: 'Selecciona un estudiante' }).min(1, 'Selecciona un estudiante'),
-  groupId: z.number({ required_error: 'Selecciona un grupo' }).min(1, 'Selecciona un grupo'),
+  studentId: z.number({ message: 'Selecciona un estudiante' }).min(1, 'Selecciona un estudiante'),
+  groupId: z.number({ message: 'Selecciona un grupo' }).min(1, 'Selecciona un grupo'),
 })
 
 type EnrollmentFormData = z.infer<typeof enrollmentSchema>
@@ -152,7 +152,7 @@ export function EnrollmentForm({
                       {group.subjectName} - {group.type}
                     </div>
                     <div className="text-gray-500">
-                      Profesor: {group.teacherName} | Capacidad: {group.currentEnrollments}/{group.maxCapacity}
+                      Profesor: {group.teacherName} | Capacidad: {group.currentEnrollmentCount}/{group.maxCapacity}
                     </div>
                   </div>
                   {selectedGroupId === group.id && (

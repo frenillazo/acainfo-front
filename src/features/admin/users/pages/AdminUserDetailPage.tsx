@@ -11,11 +11,11 @@ export function AdminUserDetailPage() {
   const userId = id ? parseInt(id, 10) : 0
 
   const { data: userData, isLoading, error, refetch } = useAdminUser(userId)
-  const [user, setUser] = useState<User | null>(userData || null)
+  const [user, setUser] = useState<User | null>((userData as User) || null)
 
   // Update local state when data changes
   if (userData && user?.id !== userData.id) {
-    setUser(userData)
+    setUser(userData as User)
   }
 
   const handleUserUpdated = (updatedUser: User) => {

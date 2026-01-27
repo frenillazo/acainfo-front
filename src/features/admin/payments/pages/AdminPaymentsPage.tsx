@@ -245,7 +245,7 @@ export function AdminPaymentsPage() {
       ) : data ? (
         <>
           <PaymentTable
-            key={`page-${data.pageNumber}`}
+            key={`page-${data.page}`}
             payments={data.content}
             onMarkAsPaid={handleMarkAsPaid}
             onCancel={handleCancel}
@@ -257,18 +257,18 @@ export function AdminPaymentsPage() {
           {data.totalPages > 1 && (
             <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
               <div className="text-sm text-gray-500">
-                Página {data.pageNumber + 1} de {data.totalPages}
+                Página {data.page + 1} de {data.totalPages}
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => handlePageChange(data.pageNumber - 1)}
+                  onClick={() => handlePageChange(data.page - 1)}
                   disabled={data.first}
                   className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Anterior
                 </button>
                 <button
-                  onClick={() => handlePageChange(data.pageNumber + 1)}
+                  onClick={() => handlePageChange(data.page + 1)}
                   disabled={data.last}
                   className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >

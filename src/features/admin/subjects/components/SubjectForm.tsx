@@ -16,8 +16,8 @@ const createSubjectSchema = z.object({
     .string()
     .min(1, 'El nombre es requerido')
     .max(100, 'El nombre no puede exceder 100 caracteres'),
-  degree: z.enum(['INGENIERIA_INFORMATICA', 'INGENIERIA_INDUSTRIAL'], {
-    required_error: 'Selecciona un grado',
+  degree: z.enum(['INGENIERIA_INFORMATICA', 'INGENIERIA_INDUSTRIAL'] as const, {
+    message: 'Selecciona un grado',
   }),
 })
 
@@ -66,7 +66,7 @@ export function SubjectForm({
     handleSubmit,
     formState: { errors },
   } = useForm<CreateSubjectFormData>({
-    resolver: zodResolver(isEditing ? updateSubjectSchema : createSubjectSchema),
+    resolver: zodResolver(isEditing ? updateSubjectSchema : createSubjectSchema) as any,
     defaultValues: subject
       ? {
           name: subject.name,

@@ -30,7 +30,6 @@ export type {
   ChangePasswordRequest,
   AuthResponse,
   User,
-  Role,
   RoleType,
   UserStatus,
   AuthState,

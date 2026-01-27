@@ -41,7 +41,7 @@ export function TeacherForm({
     handleSubmit,
     formState: { errors },
   } = useForm<CreateTeacherFormData>({
-    resolver: zodResolver(isEditing ? updateTeacherSchema : createTeacherSchema),
+    resolver: zodResolver(isEditing ? updateTeacherSchema : createTeacherSchema) as any,
     defaultValues: teacher
       ? {
           firstName: teacher.firstName,
