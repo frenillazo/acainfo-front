@@ -10,13 +10,7 @@ import type { GroupRequestFilters } from '../types/groupRequest.types'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { formatDate } from '@/shared/utils/formatters'
 import { Users, Plus, Minus } from 'lucide-react'
-
-const groupTypeLabels: Record<string, string> = {
-  REGULAR_Q1: 'Regular Q1',
-  REGULAR_Q2: 'Regular Q2',
-  INTENSIVE_Q1: 'Intensivo Q1',
-  INTENSIVE_Q2: 'Intensivo Q2',
-}
+import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
 
 export function GroupRequestsPage() {
   const { user } = useAuthStore()
@@ -144,7 +138,7 @@ export function GroupRequestsPage() {
                           to={`/group-requests/${request.id}`}
                           className="text-base font-medium text-gray-900 hover:text-blue-600"
                         >
-                          {groupTypeLabels[request.requestedGroupType] || request.requestedGroupType}
+                          {GROUP_TYPE_LABELS[request.requestedGroupType] || request.requestedGroupType}
                         </Link>
                         <GroupRequestStatusBadge
                           status={request.status}

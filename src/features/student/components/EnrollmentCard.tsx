@@ -2,16 +2,10 @@ import { Link } from 'react-router-dom'
 import type { EnrollmentSummary } from '../types/student.types'
 import { cn } from '@/shared/utils/cn'
 import { formatDate } from '@/shared/utils/formatters'
+import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
 
 interface EnrollmentCardProps {
   enrollment: EnrollmentSummary
-}
-
-const groupTypeLabels: Record<string, string> = {
-  REGULAR_Q1: 'Regular Q1',
-  REGULAR_Q2: 'Regular Q2',
-  INTENSIVE_Q1: 'Intensivo Q1',
-  INTENSIVE_Q2: 'Intensivo Q2',
 }
 
 export function EnrollmentCard({ enrollment }: EnrollmentCardProps) {
@@ -29,7 +23,7 @@ export function EnrollmentCard({ enrollment }: EnrollmentCardProps) {
           <p className="text-sm text-gray-500">{enrollment.subjectCode}</p>
         </div>
         <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
-          {groupTypeLabels[enrollment.groupType] || enrollment.groupType}
+          {GROUP_TYPE_LABELS[enrollment.groupType as keyof typeof GROUP_TYPE_LABELS] || enrollment.groupType}
         </span>
       </div>
       <div className="mt-3 space-y-1 text-sm text-gray-600">

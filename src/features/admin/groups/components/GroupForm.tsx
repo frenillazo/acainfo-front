@@ -282,10 +282,10 @@ export function GroupForm({
           )}
         >
           <option value="">Selecciona un tipo</option>
-          <option value="REGULAR_Q1">Regular Q1 (máx. 24)</option>
-          <option value="INTENSIVE_Q1">Intensivo Q1 (máx. 50)</option>
-          <option value="REGULAR_Q2">Regular Q2 (máx. 24)</option>
-          <option value="INTENSIVE_Q2">Intensivo Q2 (máx. 50)</option>
+          <option value="REGULAR_Q1">Cuatrimestre 1 (máx. 24)</option>
+          <option value="REGULAR_Q2">Cuatrimestre 2 (máx. 24)</option>
+          <option value="INTENSIVE_Q1">Intensivo Enero (máx. 50)</option>
+          <option value="INTENSIVE_Q2">Intensivo Junio (máx. 50)</option>
         </select>
         {errors.type && (
           <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>

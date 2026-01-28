@@ -1,6 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '@/features/auth'
-import { config } from '@/shared/config/env'
 import { cn } from '@/shared/utils/cn'
 
 interface SidebarProps {
@@ -208,10 +207,16 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           open ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="flex h-16 items-center justify-between border-b border-gray-200 px-6">
-          <span className="text-xl font-bold text-gray-900">
-            {config.appName}
-          </span>
+        <div className="flex h-20 items-center justify-between border-b border-gray-200 px-3">
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="AcaInfo" className="h-14 w-14 object-contain" />
+            <span
+              className="text-2xl font-semibold tracking-wide text-gray-800"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              AcaInfo
+            </span>
+          </div>
           <button
             type="button"
             onClick={onClose}

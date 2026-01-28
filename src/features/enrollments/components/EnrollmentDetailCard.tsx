@@ -2,18 +2,12 @@ import type { EnrollmentDetail } from '../types/enrollment.types'
 import { EnrollmentStatusBadge } from './EnrollmentStatusBadge'
 import { formatDate } from '@/shared/utils/formatters'
 import { cn } from '@/shared/utils/cn'
+import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
 
 interface EnrollmentDetailCardProps {
   enrollment: EnrollmentDetail
   onWithdraw?: () => void
   isWithdrawing?: boolean
-}
-
-const groupTypeLabels: Record<string, string> = {
-  REGULAR_Q1: 'Regular Q1',
-  REGULAR_Q2: 'Regular Q2',
-  INTENSIVE_Q1: 'Intensivo Q1',
-  INTENSIVE_Q2: 'Intensivo Q2',
 }
 
 export function EnrollmentDetailCard({
@@ -43,7 +37,7 @@ export function EnrollmentDetailCard({
           <div>
             <dt className="text-sm font-medium text-gray-500">Tipo de grupo</dt>
             <dd className="mt-1 text-gray-900">
-              {groupTypeLabels[enrollment.groupType] || enrollment.groupType}
+              {GROUP_TYPE_LABELS[enrollment.groupType as keyof typeof GROUP_TYPE_LABELS] || enrollment.groupType}
             </dd>
           </div>
           <div>

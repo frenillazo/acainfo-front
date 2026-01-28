@@ -5,13 +5,6 @@ import { Link } from 'react-router-dom'
 import { cn } from '@/shared/utils/cn'
 import { formatDate } from '@/shared/utils/formatters'
 
-const groupTypeLabels: Record<string, string> = {
-  REGULAR_Q1: 'Regular Q1',
-  REGULAR_Q2: 'Regular Q2',
-  INTENSIVE_Q1: 'Intensivo Q1',
-  INTENSIVE_Q2: 'Intensivo Q2',
-}
-
 export function EnrollmentsPage() {
   const { user } = useAuthStore()
   const { data: enrollments, isLoading, error } = useEnrollments(user?.id ?? 0)

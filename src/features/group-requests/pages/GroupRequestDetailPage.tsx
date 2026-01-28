@@ -8,13 +8,7 @@ import { GroupRequestStatusBadge } from '../components/GroupRequestStatusBadge'
 import { formatDateTime } from '@/shared/utils/formatters'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { Users, Plus, Minus } from 'lucide-react'
-
-const groupTypeLabels: Record<string, string> = {
-  REGULAR_Q1: 'Regular Q1',
-  REGULAR_Q2: 'Regular Q2',
-  INTENSIVE_Q1: 'Intensivo Q1',
-  INTENSIVE_Q2: 'Intensivo Q2',
-}
+import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
 
 export function GroupRequestDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -96,7 +90,7 @@ export function GroupRequestDetailPage() {
               )}
             </div>
             <p className="mt-1 text-gray-500">
-              Grupo {groupTypeLabels[groupRequest.requestedGroupType]} para materia #{groupRequest.subjectId}
+              Grupo {GROUP_TYPE_LABELS[groupRequest.requestedGroupType]} para materia #{groupRequest.subjectId}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -149,7 +143,7 @@ export function GroupRequestDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Tipo de grupo solicitado</dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {groupTypeLabels[groupRequest.requestedGroupType] || groupRequest.requestedGroupType}
+                {GROUP_TYPE_LABELS[groupRequest.requestedGroupType] || groupRequest.requestedGroupType}
               </dd>
             </div>
             <div>

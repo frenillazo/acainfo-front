@@ -3,6 +3,7 @@ import type { GroupRequest } from '../types/groupRequest.types'
 import { GroupRequestStatusBadge } from './GroupRequestStatusBadge'
 import { formatDate } from '@/shared/utils/formatters'
 import { Users, Eye, CheckCircle, XCircle } from 'lucide-react'
+import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
 
 interface GroupRequestTableProps {
   groupRequests: GroupRequest[]
@@ -10,13 +11,6 @@ interface GroupRequestTableProps {
   onReject?: (id: number) => void
   isProcessing?: boolean
   basePath?: string
-}
-
-const groupTypeLabels: Record<string, string> = {
-  REGULAR_Q1: 'Regular Q1',
-  REGULAR_Q2: 'Regular Q2',
-  INTENSIVE_Q1: 'Intensivo Q1',
-  INTENSIVE_Q2: 'Intensivo Q2',
 }
 
 export function GroupRequestTable({
@@ -75,7 +69,7 @@ export function GroupRequestTable({
                 #{request.subjectId}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                {groupTypeLabels[request.requestedGroupType] || request.requestedGroupType}
+                {GROUP_TYPE_LABELS[request.requestedGroupType] || request.requestedGroupType}
               </td>
               <td className="whitespace-nowrap px-6 py-4">
                 <div className="flex items-center gap-1 text-sm">

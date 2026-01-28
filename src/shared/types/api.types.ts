@@ -30,6 +30,14 @@ export interface ApiError {
 export type Degree = 'GRADO' | 'MASTER'
 export type GroupType = 'REGULAR_Q1' | 'REGULAR_Q2' | 'INTENSIVE_Q1' | 'INTENSIVE_Q2'
 export type GroupStatus = 'OPEN' | 'CLOSED' | 'CANCELLED'
+
+// Labels for display
+export const GROUP_TYPE_LABELS: Record<GroupType, string> = {
+  REGULAR_Q1: 'Cuatrimestre 1',
+  REGULAR_Q2: 'Cuatrimestre 2',
+  INTENSIVE_Q1: 'Intensivo Enero',
+  INTENSIVE_Q2: 'Intensivo Junio',
+}
 export type SessionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'POSTPONED'
 export type SessionType = 'REGULAR' | 'EXTRA' | 'SCHEDULING'
 export type SessionMode = 'IN_PERSON' | 'ONLINE' | 'DUAL'

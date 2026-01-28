@@ -1,17 +1,11 @@
 import type { Group } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
+import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
 
 interface GroupCardProps {
   group: Group
   onEnroll?: (group: Group) => void
   isEnrolling?: boolean
-}
-
-const groupTypeLabels: Record<string, string> = {
-  REGULAR_Q1: 'Regular Q1',
-  REGULAR_Q2: 'Regular Q2',
-  INTENSIVE_Q1: 'Intensivo Q1',
-  INTENSIVE_Q2: 'Intensivo Q2',
 }
 
 export function GroupCard({ group, onEnroll, isEnrolling }: GroupCardProps) {
@@ -35,7 +29,7 @@ export function GroupCard({ group, onEnroll, isEnrolling }: GroupCardProps) {
                 : 'bg-blue-100 text-blue-700'
             )}
           >
-            {groupTypeLabels[group.type] || group.type}
+            {GROUP_TYPE_LABELS[group.type] || group.type}
           </span>
         </div>
         <span

@@ -2,15 +2,12 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useCreateGroupRequest } from '../hooks/useGroupRequests'
 import { useSubjects, useSubject } from '@/features/subjects/hooks/useSubjects'
-import type { GroupType } from '@/shared/types/api.types'
+import { GROUP_TYPE_LABELS, type GroupType } from '@/shared/types/api.types'
 import { useAuthStore } from '@/features/auth/store/authStore'
 
-const groupTypeOptions: { value: GroupType; label: string }[] = [
-  { value: 'REGULAR_Q1', label: 'Regular Q1' },
-  { value: 'REGULAR_Q2', label: 'Regular Q2' },
-  { value: 'INTENSIVE_Q1', label: 'Intensivo Q1' },
-  { value: 'INTENSIVE_Q2', label: 'Intensivo Q2' },
-]
+const groupTypeOptions = (Object.entries(GROUP_TYPE_LABELS) as [GroupType, string][]).map(
+  ([value, label]) => ({ value, label })
+)
 
 export function GroupRequestCreatePage() {
   const navigate = useNavigate()

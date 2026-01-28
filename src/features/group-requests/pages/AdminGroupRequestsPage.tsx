@@ -129,10 +129,10 @@ export function AdminGroupRequestsPage() {
               onChange={(e) => handleGroupTypeChange(e.target.value as GroupType | '')}
             >
               <option value="">Todos</option>
-              <option value="REGULAR_Q1">Regular Q1</option>
-              <option value="REGULAR_Q2">Regular Q2</option>
-              <option value="INTENSIVE_Q1">Intensivo Q1</option>
-              <option value="INTENSIVE_Q2">Intensivo Q2</option>
+              <option value="REGULAR_Q1">Cuatrimestre 1</option>
+              <option value="REGULAR_Q2">Cuatrimestre 2</option>
+              <option value="INTENSIVE_Q1">Intensivo Enero</option>
+              <option value="INTENSIVE_Q2">Intensivo Junio</option>
             </select>
           </div>
 

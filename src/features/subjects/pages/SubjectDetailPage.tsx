@@ -9,6 +9,7 @@ import { useMaterials } from '@/features/materials/hooks/useMaterials'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { useEffect } from 'react'
 import { useGroupRequests, useAddSupporter } from '@/features/group-requests/hooks/useGroupRequests'
+import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
 
 const degreeLabels: Record<string, string> = {
   INGENIERIA_INFORMATICA: 'Ingeniería Informática',
@@ -78,13 +79,7 @@ export function SubjectDetailPage() {
     }
   }
 
-  const groupTypeLabels: Record<string, string> = {
-    REGULAR_Q1: 'Regular Q1',
-    REGULAR_Q2: 'Regular Q2',
-    INTENSIVE_Q1: 'Intensivo Q1',
-    INTENSIVE_Q2: 'Intensivo Q2',
-  }
-
+  
   if (isLoadingSubject) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -240,7 +235,7 @@ export function SubjectDetailPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                          {groupTypeLabels[request.requestedGroupType] || request.requestedGroupType}
+                          {GROUP_TYPE_LABELS[request.requestedGroupType] || request.requestedGroupType}
                         </span>
                         {isRequester && (
                           <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
