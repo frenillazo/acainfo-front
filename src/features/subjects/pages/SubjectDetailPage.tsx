@@ -144,9 +144,20 @@ export function SubjectDetailPage() {
       <section>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Grupos Disponibles</h2>
-          {isLoadingGroups && (
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
-          )}
+          <div className="flex items-center gap-3">
+            {isLoadingGroups && (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
+            )}
+            <Link
+              to={`/group-requests/create?subjectId=${subjectId}`}
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              Solicitar grupo
+            </Link>
+          </div>
         </div>
 
         {enrollMutation.isError && (
