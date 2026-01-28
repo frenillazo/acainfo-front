@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { useCreateGroupRequest } from '../hooks/useGroupRequests'
+import { useSubjects, useSubject } from '@/features/subjects/hooks/useSubjects'
 import type { GroupType } from '@/shared/types/api.types'
 import { useAuthStore } from '@/features/auth/store/authStore'
 
@@ -13,14 +14,31 @@ const groupTypeOptions: { value: GroupType; label: string }[] = [
 
 export function GroupRequestCreatePage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const preselectedSubjectId = searchParams.get('subjectId')
+
   const { user } = useAuthStore()
   const createMutation = useCreateGroupRequest()
 
+  // Cargar asignaturas para el selector
+  const { data: subjectsData, isLoading: isLoadingSubjects } = useSubjects({ status: 'ACTIVE' })
+  const subjects = subjectsData?.content ?? []
+
+  // Cargar datos de la asignatura preseleccionada
+  const { data: preselectedSubject } = useSubject(preselectedSubjectId ? Number(preselectedSubjectId) : 0)
+
   const [formData, setFormData] = useState({
-    subjectId: '',
+    subjectId: preselectedSubjectId || '',
     requestedGroupType: '' as GroupType | '',
     justification: '',
   })
+
+  // Actualizar subjectId cuando se carga de la URL
+  useEffect(() => {
+    if (preselectedSubjectId) {
+      setFormData(prev => ({ ...prev, subjectId: preselectedSubjectId }))
+    }
+  }, [preselectedSubjectId])
 
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -28,9 +46,7 @@ export function GroupRequestCreatePage() {
     const newErrors: Record<string, string> = {}
 
     if (!formData.subjectId) {
-      newErrors.subjectId = 'El ID de la materia es requerido'
-    } else if (isNaN(parseInt(formData.subjectId, 10))) {
-      newErrors.subjectId = 'El ID debe ser un numero valido'
+      newErrors.subjectId = 'La asignatura es requerida'
     }
 
     if (!formData.requestedGroupType) {
@@ -55,7 +71,7 @@ export function GroupRequestCreatePage() {
       },
       {
         onSuccess: () => {
-          navigate('/group-requests')
+          navigate(preselectedSubjectId ? `/subjects/${preselectedSubjectId}` : '/subjects')
         },
       }
     )
@@ -65,10 +81,10 @@ export function GroupRequestCreatePage() {
     <div className="space-y-6">
       {/* Breadcrumb */}
       <Link
-        to="/group-requests"
+        to={preselectedSubjectId ? `/subjects/${preselectedSubjectId}` : '/subjects'}
         className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
       >
-        ← Volver a solicitudes
+        ← {preselectedSubjectId ? 'Volver a la asignatura' : 'Volver a asignaturas'}
       </Link>
 
       {/* Header */}
@@ -86,34 +102,43 @@ export function GroupRequestCreatePage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div className="space-y-6">
-            {/* Subject ID */}
+            {/* Subject */}
             <div>
               <label
                 htmlFor="subjectId"
                 className="block text-sm font-medium text-gray-700"
               >
-                ID de la Materia *
+                Asignatura *
               </label>
-              <input
-                type="number"
-                id="subjectId"
-                value={formData.subjectId}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, subjectId: e.target.value }))
-                }
-                className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1 ${
-                  errors.subjectId
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-                }`}
-                placeholder="Ingresa el ID de la materia"
-              />
+              {preselectedSubject ? (
+                <div className="mt-1 rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm">
+                  <span className="font-medium">{preselectedSubject.code}</span> - {preselectedSubject.name}
+                </div>
+              ) : (
+                <select
+                  id="subjectId"
+                  value={formData.subjectId}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, subjectId: e.target.value }))
+                  }
+                  disabled={isLoadingSubjects}
+                  className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1 ${
+                    errors.subjectId
+                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                  }`}
+                >
+                  <option value="">Selecciona una asignatura</option>
+                  {subjects.map((subject) => (
+                    <option key={subject.id} value={subject.id}>
+                      {subject.code} - {subject.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               {errors.subjectId && (
                 <p className="mt-1 text-sm text-red-600">{errors.subjectId}</p>
               )}
-              <p className="mt-1 text-xs text-gray-500">
-                Puedes encontrar el ID en la pagina de materias
-              </p>
             </div>
 
             {/* Group Type */}
@@ -205,7 +230,7 @@ export function GroupRequestCreatePage() {
         {/* Submit */}
         <div className="flex justify-end gap-3">
           <Link
-            to="/group-requests"
+            to={preselectedSubjectId ? `/subjects/${preselectedSubjectId}` : '/subjects'}
             className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
             Cancelar
