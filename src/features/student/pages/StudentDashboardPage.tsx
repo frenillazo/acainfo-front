@@ -5,6 +5,7 @@ import { WelcomeCard } from '../components/WelcomeCard'
 import { EnrollmentCard } from '../components/EnrollmentCard'
 import { UpcomingSessionCard } from '../components/UpcomingSessionCard'
 import { PaymentSummaryCard } from '../components/PaymentSummaryCard'
+import { RecentMaterialsCard } from '../components/RecentMaterialsCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 
 export function StudentDashboardPage() {
@@ -101,6 +102,11 @@ export function StudentDashboardPage() {
                 No tienes sesiones próximas
               </div>
             )}
+          </section>
+
+          {/* Recent Materials */}
+          <section>
+            <RecentMaterialsCard />
           </section>
         </div>
 

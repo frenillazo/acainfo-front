@@ -6,7 +6,6 @@ import {
   GraduationCap,
   Calendar,
   CreditCard,
-  FileText,
   BookOpen,
   Settings,
   Users,
@@ -54,11 +53,6 @@ const studentNavigation: NavItem[] = [
     name: 'Pagos',
     href: '/payments',
     icon: <CreditCard className={ICON_CLASS} />,
-  },
-  {
-    name: 'Materiales',
-    href: '/materials',
-    icon: <FileText className={ICON_CLASS} />,
   },
   {
     name: 'Asignaturas',

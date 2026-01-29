@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useEnrollment, useWithdraw } from '../hooks/useEnrollments'
 import { EnrollmentDetailCard } from '../components/EnrollmentDetailCard'
+import { EnrollmentMaterialsSection } from '../components/EnrollmentMaterialsSection'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
@@ -64,6 +65,12 @@ export function EnrollmentDetailPage() {
         enrollment={enrollment}
         onWithdraw={handleWithdraw}
         isWithdrawing={isWithdrawing}
+      />
+
+      {/* Materials Section */}
+      <EnrollmentMaterialsSection
+        subjectId={enrollment.subjectId}
+        subjectName={enrollment.subjectName}
       />
 
       <ConfirmDialog {...dialogProps} isLoading={isWithdrawing} />

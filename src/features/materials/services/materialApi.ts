@@ -82,4 +82,12 @@ export const materialApi = {
     )
     return response.data.canDownload
   },
+
+  // GET /materials/recent - Get recent materials for current student
+  getRecent: async (days: number = 3): Promise<Material[]> => {
+    const response = await apiClient.get<Material[]>('/materials/recent', {
+      params: { days },
+    })
+    return response.data
+  },
 }
