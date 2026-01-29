@@ -9,6 +9,7 @@ import { GroupTypeBadge } from '../components/GroupTypeBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function AdminGroupDetailPage() {
@@ -70,12 +71,13 @@ export function AdminGroupDetailPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <Link
-        to="/admin/groups"
-        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-      >
-        ← Volver a grupos
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin"
+        items={[
+          { label: 'Grupos', href: '/admin/groups' },
+          { label: group.subjectName },
+        ]}
+      />
 
       {/* Header */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

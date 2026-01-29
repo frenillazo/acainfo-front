@@ -14,6 +14,7 @@ import { MaterialsGroupedByCategory } from '@/features/materials/components/Mate
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { UploadMaterialRequest } from '@/features/materials/types/material.types'
 
@@ -122,12 +123,13 @@ export function AdminSubjectDetailPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <Link
-        to="/admin/subjects"
-        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-      >
-        ← Volver a asignaturas
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin"
+        items={[
+          { label: 'Asignaturas', href: '/admin/subjects' },
+          { label: subject.name },
+        ]}
+      />
 
       {/* Header */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

@@ -7,6 +7,7 @@ import {
 import { GroupRequestStatusBadge } from '../components/GroupRequestStatusBadge'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { formatDateTime } from '@/shared/utils/formatters'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { Users, Plus, Minus } from 'lucide-react'
@@ -64,12 +65,12 @@ export function GroupRequestDetailPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <Link
-        to="/group-requests"
-        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-      >
-        ← Volver a solicitudes
-      </Link>
+      <Breadcrumbs
+        items={[
+          { label: 'Solicitudes', href: '/group-requests' },
+          { label: `Solicitud #${groupRequest.id}` },
+        ]}
+      />
 
       {/* Header */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

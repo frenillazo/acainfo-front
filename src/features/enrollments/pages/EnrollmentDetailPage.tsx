@@ -5,6 +5,7 @@ import { EnrollmentMaterialsSection } from '../components/EnrollmentMaterialsSec
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function EnrollmentDetailPage() {
@@ -51,14 +52,12 @@ export function EnrollmentDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <Link
-          to="/enrollments"
-          className="text-sm text-gray-500 hover:text-gray-700"
-        >
-          &larr; Volver a inscripciones
-        </Link>
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: 'Inscripciones', href: '/enrollments' },
+          { label: enrollment.subjectName },
+        ]}
+      />
 
       <EnrollmentDetailCard
         enrollment={enrollment}

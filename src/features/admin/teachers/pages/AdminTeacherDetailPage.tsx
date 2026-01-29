@@ -4,6 +4,7 @@ import { UserStatusBadge } from '../../users/components/UserStatusBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function AdminTeacherDetailPage() {
@@ -52,12 +53,13 @@ export function AdminTeacherDetailPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <Link
-        to="/admin/teachers"
-        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-      >
-        ← Volver a profesores
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin"
+        items={[
+          { label: 'Profesores', href: '/admin/teachers' },
+          { label: teacher.fullName },
+        ]}
+      />
 
       {/* Header */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

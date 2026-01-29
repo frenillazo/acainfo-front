@@ -9,6 +9,7 @@ import { useMaterials } from '@/features/materials/hooks/useMaterials'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useEffect } from 'react'
 import { useGroupRequests, useAddSupporter } from '@/features/group-requests/hooks/useGroupRequests'
 import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
@@ -99,13 +100,12 @@ export function SubjectDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link to="/subjects" className="hover:text-blue-600">
-          Asignaturas
-        </Link>
-        <span>/</span>
-        <span className="text-gray-900">{subject.name}</span>
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: 'Asignaturas', href: '/subjects' },
+          { label: subject.name },
+        ]}
+      />
 
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between">

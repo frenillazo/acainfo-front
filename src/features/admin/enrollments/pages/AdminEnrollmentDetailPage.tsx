@@ -7,6 +7,7 @@ import { EnrollmentStatusBadge } from '@/features/enrollments/components/Enrollm
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function AdminEnrollmentDetailPage() {
@@ -55,12 +56,13 @@ export function AdminEnrollmentDetailPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <Link
-        to="/admin/enrollments"
-        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-      >
-        ← Volver a inscripciones
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin"
+        items={[
+          { label: 'Inscripciones', href: '/admin/enrollments' },
+          { label: `${enrollment.studentName} - ${enrollment.subjectName}` },
+        ]}
+      />
 
       {/* Header */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

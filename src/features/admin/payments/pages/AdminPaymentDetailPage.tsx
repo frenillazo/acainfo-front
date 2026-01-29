@@ -6,6 +6,7 @@ import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { PromptDialog } from '@/shared/components/common/PromptDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { usePromptDialog } from '@/shared/hooks/usePromptDialog'
 import { formatCurrency } from '@/shared/utils/formatCurrency'
@@ -78,12 +79,13 @@ export function AdminPaymentDetailPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <Link
-        to="/admin/payments"
-        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-      >
-        ← Volver a pagos
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin"
+        items={[
+          { label: 'Pagos', href: '/admin/payments' },
+          { label: `Pago #${payment.id}` },
+        ]}
+      />
 
       {/* Header */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

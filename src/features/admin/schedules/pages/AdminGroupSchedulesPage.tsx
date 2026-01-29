@@ -12,6 +12,7 @@ import { GroupTypeBadge } from '../../groups/components/GroupTypeBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { CreateScheduleRequest, UpdateScheduleRequest } from '../../types/admin.types'
 
@@ -68,17 +69,14 @@ export function AdminGroupSchedulesPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm">
-        <Link to="/admin/groups" className="text-blue-600 hover:text-blue-800">
-          Grupos
-        </Link>
-        <span className="text-gray-400">/</span>
-        <Link to={`/admin/groups/${group.id}`} className="text-blue-600 hover:text-blue-800">
-          {group.subjectCode}
-        </Link>
-        <span className="text-gray-400">/</span>
-        <span className="text-gray-600">Horarios</span>
-      </div>
+      <Breadcrumbs
+        homeHref="/admin"
+        items={[
+          { label: 'Grupos', href: '/admin/groups' },
+          { label: group.subjectCode, href: `/admin/groups/${group.id}` },
+          { label: 'Horarios' },
+        ]}
+      />
 
       {/* Header */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">

@@ -6,6 +6,7 @@ import { RoleBadge } from '../components/RoleBadge'
 import { RoleManagementPanel } from '@/features/auth/components/RoleManagementPanel'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import type { User } from '@/features/auth'
 
 export function AdminUserDetailPage() {
@@ -46,12 +47,13 @@ export function AdminUserDetailPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <Link
-        to="/admin/users"
-        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
-      >
-        ← Volver a usuarios
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin"
+        items={[
+          { label: 'Usuarios', href: '/admin/users' },
+          { label: user.fullName },
+        ]}
+      />
 
       {/* Header */}
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
