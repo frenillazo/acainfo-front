@@ -4,6 +4,7 @@ import { useEnrollments } from '@/features/enrollments/hooks/useEnrollments'
 import { useSessions } from '../hooks/useSessions'
 import { SessionCard } from '../components/SessionCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import type { SessionFilters } from '../types/session.types'
 
 export function SessionsPage() {
@@ -57,11 +58,7 @@ export function SessionsPage() {
   }, [mySessions])
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar las sesiones. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar las sesiones" />
   }
 
   if (isLoading) {

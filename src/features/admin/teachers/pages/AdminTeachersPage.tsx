@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminTeachers, useDeleteTeacher } from '../hooks/useAdminTeachers'
 import { TeacherTable } from '../components/TeacherTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { useDebounce } from '@/shared/hooks/useDebounce'
 import type { TeacherFilters, UserStatus } from '../../types/admin.types'
 
 export function AdminTeachersPage() {
@@ -12,13 +14,19 @@ export function AdminTeachersPage() {
     page: 0,
     size: 10,
   })
+  const [searchInput, setSearchInput] = useState('')
+  const debouncedSearch = useDebounce(searchInput, 300)
 
   const { data, isLoading, error } = useAdminTeachers(filters)
   const deleteMutation = useDeleteTeacher()
   const { dialogProps, confirm } = useConfirmDialog()
 
-  const handleSearchChange = (searchTerm: string) => {
-    setFilters((prev) => ({ ...prev, searchTerm, page: 0 }))
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, searchTerm: debouncedSearch || undefined, page: 0 }))
+  }, [debouncedSearch])
+
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value)
   }
 
   const handleStatusChange = (status: UserStatus | '') => {
@@ -48,11 +56,7 @@ export function AdminTeachersPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar profesores. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar profesores" />
   }
 
   return (
@@ -91,7 +95,7 @@ export function AdminTeachersPage() {
               id="search"
               placeholder="Nombre o email..."
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.searchTerm ?? ''}
+              value={searchInput}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
           </div>

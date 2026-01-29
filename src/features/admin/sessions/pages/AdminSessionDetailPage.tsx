@@ -14,6 +14,7 @@ import { SessionModeBadge } from '../components/SessionModeBadge'
 import { ClassroomBadge } from '../../schedules/components/ClassroomBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { PostponeSessionRequest, Classroom, SessionMode } from '../../types/admin.types'
 
@@ -126,9 +127,7 @@ export function AdminSessionDetailPage() {
         >
           ← Volver a sesiones
         </Link>
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar la sesion. Por favor, intenta de nuevo.
-        </div>
+        <ErrorState error={error} title="Error al cargar la sesión" />
       </div>
     )
   }

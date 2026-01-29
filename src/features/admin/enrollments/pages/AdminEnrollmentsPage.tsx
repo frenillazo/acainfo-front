@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   useAdminEnrollments,
@@ -8,7 +8,9 @@ import {
 import { EnrollmentTable } from '../components/EnrollmentTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { useDebounce } from '@/shared/hooks/useDebounce'
 import type { EnrollmentStatus } from '@/features/enrollments/types/enrollment.types'
 
 export function AdminEnrollmentsPage() {
@@ -16,19 +18,19 @@ export function AdminEnrollmentsPage() {
     page: 0,
     size: 10,
   })
+  const [studentEmailInput, setStudentEmailInput] = useState('')
+  const debouncedStudentEmail = useDebounce(studentEmailInput, 300)
 
   const { data, isLoading, error } = useAdminEnrollments(filters)
   const withdrawMutation = useWithdrawEnrollment()
   const { dialogProps, confirm } = useConfirmDialog()
 
-  const handleSearchByStudent = (studentId: string) => {
-    const id = studentId ? parseInt(studentId, 10) : undefined
-    setFilters((prev) => ({ ...prev, studentId: id, page: 0 }))
-  }
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, studentEmail: debouncedStudentEmail || undefined, page: 0 }))
+  }, [debouncedStudentEmail])
 
-  const handleSearchByGroup = (groupId: string) => {
-    const id = groupId ? parseInt(groupId, 10) : undefined
-    setFilters((prev) => ({ ...prev, groupId: id, page: 0 }))
+  const handleSearchByStudentEmail = (value: string) => {
+    setStudentEmailInput(value)
   }
 
   const handleStatusChange = (status: EnrollmentStatus | '') => {
@@ -58,11 +60,7 @@ export function AdminEnrollmentsPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar inscripciones. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar inscripciones" />
   }
 
   return (
@@ -87,40 +85,22 @@ export function AdminEnrollmentsPage() {
 
       {/* Filters */}
       <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Student ID filter */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Student Email filter */}
           <div>
             <label
-              htmlFor="studentId"
+              htmlFor="studentEmail"
               className="block text-sm font-medium text-gray-700"
             >
-              ID Estudiante
+              Email del Estudiante
             </label>
             <input
-              type="number"
-              id="studentId"
-              placeholder="ID del estudiante..."
+              type="text"
+              id="studentEmail"
+              placeholder="Buscar por email..."
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.studentId ?? ''}
-              onChange={(e) => handleSearchByStudent(e.target.value)}
-            />
-          </div>
-
-          {/* Group ID filter */}
-          <div>
-            <label
-              htmlFor="groupId"
-              className="block text-sm font-medium text-gray-700"
-            >
-              ID Grupo
-            </label>
-            <input
-              type="number"
-              id="groupId"
-              placeholder="ID del grupo..."
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.groupId ?? ''}
-              onChange={(e) => handleSearchByGroup(e.target.value)}
+              value={studentEmailInput}
+              onChange={(e) => handleSearchByStudentEmail(e.target.value)}
             />
           </div>
 

@@ -8,6 +8,7 @@ import {
 import { GroupTable } from '../components/GroupTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { GroupFilters, GroupStatus, GroupType } from '../../types/admin.types'
 
@@ -69,11 +70,7 @@ export function AdminGroupsPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar grupos. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar grupos" />
   }
 
   return (

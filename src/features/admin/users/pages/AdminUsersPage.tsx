@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAdminUsers } from '../hooks/useAdminUsers'
 import { UserTable } from '../components/UserTable'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
+import { useDebounce } from '@/shared/hooks/useDebounce'
 import type { UserFilters, UserStatus, RoleType } from '../../types/admin.types'
 
 export function AdminUsersPage() {
@@ -9,11 +11,17 @@ export function AdminUsersPage() {
     page: 0,
     size: 10,
   })
+  const [searchInput, setSearchInput] = useState('')
+  const debouncedSearch = useDebounce(searchInput, 300)
 
   const { data, isLoading, error } = useAdminUsers(filters)
 
-  const handleSearchChange = (searchTerm: string) => {
-    setFilters((prev) => ({ ...prev, searchTerm, page: 0 }))
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, searchTerm: debouncedSearch || undefined, page: 0 }))
+  }, [debouncedSearch])
+
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value)
   }
 
   const handleStatusChange = (status: UserStatus | '') => {
@@ -40,11 +48,7 @@ export function AdminUsersPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar usuarios. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar usuarios" />
   }
 
   return (
@@ -77,7 +81,7 @@ export function AdminUsersPage() {
               id="search"
               placeholder="Nombre o email..."
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.searchTerm ?? ''}
+              value={searchInput}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
           </div>

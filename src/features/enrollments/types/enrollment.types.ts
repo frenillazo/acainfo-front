@@ -19,6 +19,7 @@ export interface Enrollment {
   canBeWithdrawn: boolean
   // Enriched data from backend
   studentName: string
+  studentEmail: string
   subjectId: number
   subjectName: string
   subjectCode: string

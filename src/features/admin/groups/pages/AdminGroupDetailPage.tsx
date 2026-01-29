@@ -8,6 +8,7 @@ import { GroupStatusBadge } from '../components/GroupStatusBadge'
 import { GroupTypeBadge } from '../components/GroupTypeBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function AdminGroupDetailPage() {
@@ -61,9 +62,7 @@ export function AdminGroupDetailPage() {
         >
           ← Volver a grupos
         </Link>
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar el grupo. Por favor, intenta de nuevo.
-        </div>
+        <ErrorState error={error} title="Error al cargar el grupo" />
       </div>
     )
   }

@@ -5,6 +5,7 @@ import { UserStatusBadge } from '../components/UserStatusBadge'
 import { RoleBadge } from '../components/RoleBadge'
 import { RoleManagementPanel } from '@/features/auth/components/RoleManagementPanel'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import type { User } from '@/features/auth'
 
 export function AdminUserDetailPage() {
@@ -37,9 +38,7 @@ export function AdminUserDetailPage() {
         >
           ← Volver a usuarios
         </Link>
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar el usuario. Por favor, intenta de nuevo.
-        </div>
+        <ErrorState error={error} title="Error al cargar el usuario" />
       </div>
     )
   }

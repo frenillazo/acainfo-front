@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { cn } from '@/shared/utils/cn'
 import { formatDate } from '@/shared/utils/formatters'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 
 export function EnrollmentsPage() {
   const { user } = useAuthStore()
@@ -15,11 +16,7 @@ export function EnrollmentsPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar las inscripciones. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar las inscripciones" />
   }
 
   const activeEnrollments = enrollments?.filter((e) => e.status === 'ACTIVE') ?? []

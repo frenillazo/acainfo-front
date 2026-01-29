@@ -2,6 +2,7 @@ import { useAdminDashboardStats } from '../hooks/useAdminDashboard'
 import { StatCard } from '../components/StatCard'
 import { QuickActionCard } from '../components/QuickActionCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 
 export function AdminDashboardPage() {
   const { data: stats, isLoading, error } = useAdminDashboardStats()
@@ -11,11 +12,7 @@ export function AdminDashboardPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar el dashboard. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar el dashboard" />
   }
 
   return (

@@ -11,6 +11,7 @@ import { GroupStatusBadge } from '../../groups/components/GroupStatusBadge'
 import { GroupTypeBadge } from '../../groups/components/GroupTypeBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { CreateScheduleRequest, UpdateScheduleRequest } from '../../types/admin.types'
 
@@ -59,9 +60,7 @@ export function AdminGroupSchedulesPage() {
         >
           ← Volver a grupos
         </Link>
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar el grupo. Por favor, intenta de nuevo.
-        </div>
+        <ErrorState error={groupError} title="Error al cargar el grupo" />
       </div>
     )
   }

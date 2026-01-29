@@ -4,6 +4,7 @@ import type { EnrollRequest, ChangeGroupRequest, EnrollmentStatus } from '@/feat
 
 export interface AdminEnrollmentFilters {
   studentId?: number
+  studentEmail?: string
   groupId?: number
   status?: EnrollmentStatus
   page?: number

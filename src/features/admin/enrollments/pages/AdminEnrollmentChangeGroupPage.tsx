@@ -7,6 +7,7 @@ import {
 } from '../hooks/useAdminEnrollments'
 import { adminApi } from '../../services/adminApi'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { cn } from '@/shared/utils/cn'
 
 export function AdminEnrollmentChangeGroupPage() {
@@ -59,9 +60,7 @@ export function AdminEnrollmentChangeGroupPage() {
         >
           ← Volver a inscripciones
         </Link>
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar la inscripción.
-        </div>
+        <ErrorState error={error} title="Error al cargar la inscripción" />
       </div>
     )
   }

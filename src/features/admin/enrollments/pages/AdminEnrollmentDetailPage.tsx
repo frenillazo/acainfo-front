@@ -6,6 +6,7 @@ import {
 import { EnrollmentStatusBadge } from '@/features/enrollments/components/EnrollmentStatusBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function AdminEnrollmentDetailPage() {
@@ -46,9 +47,7 @@ export function AdminEnrollmentDetailPage() {
         >
           ← Volver a inscripciones
         </Link>
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar la inscripción. Por favor, intenta de nuevo.
-        </div>
+        <ErrorState error={error} title="Error al cargar la inscripción" />
       </div>
     )
   }

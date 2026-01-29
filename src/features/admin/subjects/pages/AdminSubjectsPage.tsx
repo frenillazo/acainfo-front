@@ -8,6 +8,7 @@ import {
 import { SubjectTable } from '../components/SubjectTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { SubjectFilters, SubjectStatus, Degree } from '../../types/admin.types'
 
@@ -78,11 +79,7 @@ export function AdminSubjectsPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar asignaturas. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar asignaturas" />
   }
 
   return (

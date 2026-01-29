@@ -6,6 +6,7 @@ import {
 } from '../hooks/useGroupRequests'
 import { GroupRequestStatusBadge } from '../components/GroupRequestStatusBadge'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { formatDateTime } from '@/shared/utils/formatters'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { Users, Plus, Minus } from 'lucide-react'
@@ -51,9 +52,7 @@ export function GroupRequestDetailPage() {
         >
           ← Volver a solicitudes
         </Link>
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar la solicitud. Por favor, intenta de nuevo.
-        </div>
+        <ErrorState error={error} title="Error al cargar la solicitud" />
       </div>
     )
   }

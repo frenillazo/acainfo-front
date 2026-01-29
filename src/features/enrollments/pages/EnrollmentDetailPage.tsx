@@ -4,6 +4,7 @@ import { EnrollmentDetailCard } from '../components/EnrollmentDetailCard'
 import { EnrollmentMaterialsSection } from '../components/EnrollmentMaterialsSection'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function EnrollmentDetailPage() {
@@ -40,9 +41,7 @@ export function EnrollmentDetailPage() {
   if (error || !enrollment) {
     return (
       <div className="space-y-4">
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar la inscripción. Por favor, intenta de nuevo.
-        </div>
+        <ErrorState error={error} title="Error al cargar la inscripción" />
         <Link to="/enrollments" className="text-blue-600 hover:text-blue-700">
           &larr; Volver a inscripciones
         </Link>

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSubjects } from '../hooks/useSubjects'
 import { SubjectCard } from '../components/SubjectCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import type { Degree, SubjectFilters } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
 
@@ -31,11 +32,7 @@ export function SubjectsPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar las asignaturas. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar las asignaturas" />
   }
 
   const subjects = data?.content ?? []

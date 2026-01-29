@@ -13,6 +13,7 @@ import { MaterialUploadForm } from '@/features/materials/components/MaterialUplo
 import { MaterialsGroupedByCategory } from '@/features/materials/components/MaterialsGroupedByCategory'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { UploadMaterialRequest } from '@/features/materials/types/material.types'
 
@@ -113,9 +114,7 @@ export function AdminSubjectDetailPage() {
         >
           ← Volver a asignaturas
         </Link>
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          Error al cargar la asignatura. Por favor, intenta de nuevo.
-        </div>
+        <ErrorState error={error} title="Error al cargar la asignatura" />
       </div>
     )
   }

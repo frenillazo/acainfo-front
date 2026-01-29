@@ -3,6 +3,7 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { usePayments } from '../hooks/usePayments'
 import { PaymentCard } from '../components/PaymentCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import type { Payment, PaymentStatus } from '../types/payment.types'
 import { cn } from '@/shared/utils/cn'
 
@@ -40,11 +41,7 @@ export function PaymentsPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar los pagos. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar los pagos" />
   }
 
   return (

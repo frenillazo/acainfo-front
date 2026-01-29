@@ -7,6 +7,7 @@ import { UpcomingSessionCard } from '../components/UpcomingSessionCard'
 import { PaymentSummaryCard } from '../components/PaymentSummaryCard'
 import { RecentMaterialsCard } from '../components/RecentMaterialsCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 
 export function StudentDashboardPage() {
   const { hasRole, user, isLoading: isLoadingAuth } = useAuth()
@@ -31,11 +32,7 @@ export function StudentDashboardPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar el dashboard. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar el dashboard" />
   }
 
   if (!overview) {

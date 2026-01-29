@@ -23,12 +23,14 @@ export interface Payment {
   updatedAt: string
   // Enriched data from backend
   studentName: string
+  studentEmail: string
   subjectName: string
   subjectCode: string
 }
 
 export interface PaymentFilters {
   studentId?: number
+  studentEmail?: string
   enrollmentId?: number
   status?: PaymentStatus
   type?: PaymentType

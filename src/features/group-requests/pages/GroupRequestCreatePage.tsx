@@ -4,6 +4,7 @@ import { useCreateGroupRequest } from '../hooks/useGroupRequests'
 import { useSubjects, useSubject } from '@/features/subjects/hooks/useSubjects'
 import { GROUP_TYPE_LABELS, type GroupType } from '@/shared/types/api.types'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 
 const groupTypeOptions = (Object.entries(GROUP_TYPE_LABELS) as [GroupType, string][]).map(
   ([value, label]) => ({ value, label })
@@ -219,9 +220,7 @@ export function GroupRequestCreatePage() {
 
         {/* Error message */}
         {createMutation.isError && (
-          <div className="rounded-lg bg-red-50 p-4 text-red-700">
-            Error al crear la solicitud. Por favor, intenta de nuevo.
-          </div>
+          <ErrorState error={createMutation.error} title="Error al crear la solicitud" />
         )}
 
         {/* Submit */}

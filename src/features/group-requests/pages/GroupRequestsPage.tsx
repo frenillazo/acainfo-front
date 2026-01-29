@@ -7,6 +7,7 @@ import {
 } from '../hooks/useGroupRequests'
 import { GroupRequestStatusBadge } from '../components/GroupRequestStatusBadge'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import type { GroupRequestFilters } from '../types/groupRequest.types'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { formatDate } from '@/shared/utils/formatters'
@@ -56,11 +57,7 @@ export function GroupRequestsPage() {
   const isProcessing = addSupporterMutation.isPending || removeSupporterMutation.isPending
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar solicitudes. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar solicitudes" />
   }
 
   return (

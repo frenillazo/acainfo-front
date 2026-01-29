@@ -7,6 +7,7 @@ import {
 import { GroupRequestTable } from '../components/GroupRequestTable'
 import { PromptDialog } from '@/shared/components/common/PromptDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { usePromptDialog } from '@/shared/hooks/usePromptDialog'
 import type { GroupRequestStatus, GroupRequestFilters } from '../types/groupRequest.types'
 import type { GroupType } from '@/shared/types/api.types'
@@ -95,11 +96,7 @@ export function AdminGroupRequestsPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar solicitudes. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar solicitudes" />
   }
 
   return (

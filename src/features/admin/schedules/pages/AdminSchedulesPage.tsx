@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useEnrichedSchedules } from '../hooks/useAdminSchedules'
 import { GlobalScheduleGrid } from '../components/GlobalScheduleGrid'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import type { Classroom, DayOfWeek, GroupStatus } from '../../types/admin.types'
 
 const CLASSROOMS: { key: Classroom | ''; label: string }[] = [
@@ -127,9 +128,7 @@ export function AdminSchedulesPage() {
         {isLoading ? (
           <LoadingState />
         ) : error ? (
-          <div className="rounded-lg bg-red-50 p-4 text-red-700">
-            Error al cargar los horarios. Por favor, intenta de nuevo.
-          </div>
+          <ErrorState error={error} title="Error al cargar los horarios" />
         ) : schedules.length === 0 ? (
           <div className="flex h-64 items-center justify-center text-gray-500">
             No hay horarios registrados con los filtros seleccionados.

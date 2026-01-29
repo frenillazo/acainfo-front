@@ -8,6 +8,7 @@ import { cn } from '@/shared/utils/cn'
 import { useMaterials } from '@/features/materials/hooks/useMaterials'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useEffect } from 'react'
 import { useGroupRequests, useAddSupporter } from '@/features/group-requests/hooks/useGroupRequests'
 import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
@@ -88,9 +89,7 @@ export function SubjectDetailPage() {
   if (subjectError || !subject) {
     return (
       <div className="space-y-4">
-        <div className="rounded-lg bg-red-50 p-4 text-red-700">
-          No se encontró la asignatura solicitada.
-        </div>
+        <ErrorState error={subjectError} title="Error al cargar la asignatura" />
         <Link to="/subjects" className="text-blue-600 hover:underline">
           Volver a asignaturas
         </Link>

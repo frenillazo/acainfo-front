@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminPayments, useMarkPaymentAsPaid, useCancelPayment } from '../hooks/useAdminPayments'
 import { PaymentTable } from '../components/PaymentTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { PromptDialog } from '@/shared/components/common/PromptDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
+import { ErrorState } from '@/shared/components/common/ErrorState'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { usePromptDialog } from '@/shared/hooks/usePromptDialog'
+import { useDebounce } from '@/shared/hooks/useDebounce'
 import type { PaymentFilters, PaymentStatus, PaymentType } from '@/features/payments/types/payment.types'
 
 export function AdminPaymentsPage() {
@@ -16,6 +18,8 @@ export function AdminPaymentsPage() {
     sortBy: 'dueDate',
     sortDirection: 'ASC',
   })
+  const [studentEmailInput, setStudentEmailInput] = useState('')
+  const debouncedStudentEmail = useDebounce(studentEmailInput, 300)
 
   const { data, isLoading, error } = useAdminPayments(filters)
   const markAsPaidMutation = useMarkPaymentAsPaid()
@@ -23,14 +27,12 @@ export function AdminPaymentsPage() {
   const { dialogProps: confirmDialogProps, confirm } = useConfirmDialog()
   const { dialogProps: promptDialogProps, prompt } = usePromptDialog()
 
-  const handleSearchByStudent = (studentId: string) => {
-    const id = studentId ? parseInt(studentId, 10) : undefined
-    setFilters((prev) => ({ ...prev, studentId: id, page: 0 }))
-  }
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, studentEmail: debouncedStudentEmail || undefined, page: 0 }))
+  }, [debouncedStudentEmail])
 
-  const handleSearchByEnrollment = (enrollmentId: string) => {
-    const id = enrollmentId ? parseInt(enrollmentId, 10) : undefined
-    setFilters((prev) => ({ ...prev, enrollmentId: id, page: 0 }))
+  const handleSearchByStudentEmail = (value: string) => {
+    setStudentEmailInput(value)
   }
 
   const handleStatusChange = (status: PaymentStatus | '') => {
@@ -97,11 +99,7 @@ export function AdminPaymentsPage() {
   }
 
   if (error) {
-    return (
-      <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Error al cargar pagos. Por favor, intenta de nuevo.
-      </div>
-    )
+    return <ErrorState error={error} title="Error al cargar pagos" />
   }
 
   return (
@@ -136,40 +134,22 @@ export function AdminPaymentsPage() {
 
       {/* Filters */}
       <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {/* Student ID filter */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Student Email filter */}
           <div>
             <label
-              htmlFor="studentId"
+              htmlFor="studentEmail"
               className="block text-sm font-medium text-gray-700"
             >
-              ID Estudiante
+              Email del Estudiante
             </label>
             <input
-              type="number"
-              id="studentId"
-              placeholder="ID del estudiante..."
+              type="text"
+              id="studentEmail"
+              placeholder="Buscar por email..."
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.studentId ?? ''}
-              onChange={(e) => handleSearchByStudent(e.target.value)}
-            />
-          </div>
-
-          {/* Enrollment ID filter */}
-          <div>
-            <label
-              htmlFor="enrollmentId"
-              className="block text-sm font-medium text-gray-700"
-            >
-              ID Inscripción
-            </label>
-            <input
-              type="number"
-              id="enrollmentId"
-              placeholder="ID de inscripción..."
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.enrollmentId ?? ''}
-              onChange={(e) => handleSearchByEnrollment(e.target.value)}
+              value={studentEmailInput}
+              onChange={(e) => handleSearchByStudentEmail(e.target.value)}
             />
           </div>
 
