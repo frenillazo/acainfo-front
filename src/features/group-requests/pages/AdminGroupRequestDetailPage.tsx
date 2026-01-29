@@ -226,7 +226,7 @@ export function AdminGroupRequestDetailPage() {
                   to={`/admin/users/${supporterId}`}
                   className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200"
                 >
-                  Estudiante #{supporterId}
+                  {groupRequest.supporterNames?.[supporterId] || `Estudiante`}
                 </Link>
               ))}
             </div>
@@ -261,7 +261,12 @@ export function AdminGroupRequestDetailPage() {
               <div>
                 <dt className="text-sm font-medium text-gray-500">Procesado por</dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  Admin #{groupRequest.processedByAdminId}
+                  <Link
+                    to={`/admin/users/${groupRequest.processedByAdminId}`}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    {groupRequest.processedByAdminName || 'Administrador'}
+                  </Link>
                 </dd>
               </div>
               {groupRequest.adminResponse && (
@@ -288,7 +293,7 @@ export function AdminGroupRequestDetailPage() {
                       to={`/admin/groups/${groupRequest.createdGroupId}`}
                       className="text-blue-600 hover:text-blue-800"
                     >
-                      Ver grupo #{groupRequest.createdGroupId}
+                      Ver grupo creado
                     </Link>
                   </dd>
                 </div>

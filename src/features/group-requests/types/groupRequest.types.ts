@@ -12,11 +12,13 @@ export interface GroupRequest {
   requestedGroupType: GroupType
   status: GroupRequestStatus
   supporterIds: number[]
+  supporterNames?: Record<number, string>
   justification: string | null
   expiresAt: string
   createdGroupId: number | null
   adminResponse: string | null
   processedByAdminId: number | null
+  processedByAdminName?: string
   processedAt: string | null
   createdAt: string
   updatedAt: string
