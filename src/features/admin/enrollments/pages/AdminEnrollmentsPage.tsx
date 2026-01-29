@@ -6,6 +6,9 @@ import {
   type AdminEnrollmentFilters,
 } from '../hooks/useAdminEnrollments'
 import { EnrollmentTable } from '../components/EnrollmentTable'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { EnrollmentStatus } from '@/features/enrollments/types/enrollment.types'
 
 export function AdminEnrollmentsPage() {
@@ -16,6 +19,7 @@ export function AdminEnrollmentsPage() {
 
   const { data, isLoading, error } = useAdminEnrollments(filters)
   const withdrawMutation = useWithdrawEnrollment()
+  const { dialogProps, confirm } = useConfirmDialog()
 
   const handleSearchByStudent = (studentId: string) => {
     const id = studentId ? parseInt(studentId, 10) : undefined
@@ -41,8 +45,14 @@ export function AdminEnrollmentsPage() {
     }
   }
 
-  const handleWithdraw = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres retirar esta inscripción?')) {
+  const handleWithdraw = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Retirar inscripción',
+      message: '¿Estás seguro de que quieres retirar esta inscripción?',
+      confirmLabel: 'Sí, retirar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       withdrawMutation.mutate(id)
     }
   }
@@ -156,9 +166,7 @@ export function AdminEnrollmentsPage() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-        </div>
+        <LoadingState />
       ) : data ? (
         <>
           <EnrollmentTable
@@ -194,6 +202,8 @@ export function AdminEnrollmentsPage() {
           )}
         </>
       ) : null}
+
+      <ConfirmDialog {...dialogProps} isLoading={withdrawMutation.isPending} />
     </div>
   )
 }

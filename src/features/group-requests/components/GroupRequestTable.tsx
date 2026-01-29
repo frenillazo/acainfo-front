@@ -34,9 +34,6 @@ export function GroupRequestTable({
         <thead className="bg-gray-50">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              ID
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               Materia
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -62,11 +59,13 @@ export function GroupRequestTable({
         <tbody className="divide-y divide-gray-200 bg-white">
           {groupRequests.map((request) => (
             <tr key={request.id} className="hover:bg-gray-50">
-              <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                #{request.id}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                #{request.subjectId}
+              <td className="px-6 py-4">
+                <div className="text-sm font-medium text-gray-900">
+                  {request.subjectName || `Materia ${request.subjectId}`}
+                </div>
+                {request.subjectDegree && (
+                  <div className="text-xs text-gray-500">{request.subjectDegree}</div>
+                )}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                 {GROUP_TYPE_LABELS[request.requestedGroupType] || request.requestedGroupType}

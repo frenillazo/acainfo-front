@@ -6,6 +6,9 @@ import {
   useDeleteSubject,
 } from '../hooks/useAdminSubjects'
 import { SubjectTable } from '../components/SubjectTable'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { SubjectFilters, SubjectStatus, Degree } from '../../types/admin.types'
 
 export function AdminSubjectsPage() {
@@ -18,6 +21,7 @@ export function AdminSubjectsPage() {
   const { data, isLoading, error } = useAdminSubjects(filters)
   const archiveMutation = useArchiveSubject()
   const deleteMutation = useDeleteSubject()
+  const { dialogProps, confirm } = useConfirmDialog()
 
   const handleSearch = () => {
     setFilters((prev) => ({
@@ -49,14 +53,26 @@ export function AdminSubjectsPage() {
     }
   }
 
-  const handleArchive = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres archivar esta asignatura?')) {
+  const handleArchive = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Archivar asignatura',
+      message: '¿Estás seguro de que quieres archivar esta asignatura?',
+      confirmLabel: 'Sí, archivar',
+      variant: 'warning',
+    })
+    if (confirmed) {
       archiveMutation.mutate(id)
     }
   }
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta asignatura? Esta acción no se puede deshacer.')) {
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Eliminar asignatura',
+      message: '¿Estás seguro de que quieres eliminar esta asignatura? Esta acción no se puede deshacer.',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       deleteMutation.mutate(id)
     }
   }
@@ -179,9 +195,7 @@ export function AdminSubjectsPage() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-        </div>
+        <LoadingState />
       ) : data ? (
         <>
           <SubjectTable
@@ -219,6 +233,8 @@ export function AdminSubjectsPage() {
           )}
         </>
       ) : null}
+
+      <ConfirmDialog {...dialogProps} isLoading={archiveMutation.isPending || deleteMutation.isPending} />
     </div>
   )
 }

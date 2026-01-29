@@ -23,7 +23,6 @@ export function SubjectCard({ subject }: SubjectCardProps) {
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-medium text-gray-900">{subject.name}</h3>
-          <p className="text-sm text-gray-500">{subject.code}</p>
         </div>
         <span
           className={cn(

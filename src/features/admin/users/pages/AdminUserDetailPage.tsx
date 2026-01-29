@@ -4,6 +4,7 @@ import { useAdminUser } from '../hooks/useAdminUsers'
 import { UserStatusBadge } from '../components/UserStatusBadge'
 import { RoleBadge } from '../components/RoleBadge'
 import { RoleManagementPanel } from '@/features/auth/components/RoleManagementPanel'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 import type { User } from '@/features/auth'
 
 export function AdminUserDetailPage() {
@@ -24,11 +25,7 @@ export function AdminUserDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !user) {

@@ -9,6 +9,9 @@ import {
 import { WeeklyScheduleGrid } from '../components/WeeklyScheduleGrid'
 import { GroupStatusBadge } from '../../groups/components/GroupStatusBadge'
 import { GroupTypeBadge } from '../../groups/components/GroupTypeBadge'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { CreateScheduleRequest, UpdateScheduleRequest } from '../../types/admin.types'
 
 export function AdminGroupSchedulesPage() {
@@ -21,6 +24,7 @@ export function AdminGroupSchedulesPage() {
   const createMutation = useCreateSchedule()
   const updateMutation = useUpdateSchedule()
   const deleteMutation = useDeleteSchedule()
+  const { dialogProps, confirm } = useConfirmDialog()
 
   const handleCreateSchedule = (data: CreateScheduleRequest) => {
     createMutation.mutate(data)
@@ -30,18 +34,20 @@ export function AdminGroupSchedulesPage() {
     updateMutation.mutate({ id, data })
   }
 
-  const handleDeleteSchedule = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este horario?')) {
+  const handleDeleteSchedule = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Eliminar horario',
+      message: '¿Estás seguro de que quieres eliminar este horario?',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       deleteMutation.mutate(id)
     }
   }
 
   if (isLoadingGroup) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (groupError || !group) {
@@ -104,9 +110,7 @@ export function AdminGroupSchedulesPage() {
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Horario semanal</h2>
 
         {isLoadingSchedules ? (
-          <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-          </div>
+          <LoadingState />
         ) : (
           <WeeklyScheduleGrid
             schedules={schedules ?? []}
@@ -143,6 +147,8 @@ export function AdminGroupSchedulesPage() {
           Error al eliminar horario: {(deleteMutation.error as Error).message}
         </div>
       )}
+
+      <ConfirmDialog {...dialogProps} isLoading={deleteMutation.isPending} />
     </div>
   )
 }

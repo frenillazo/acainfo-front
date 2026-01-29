@@ -4,17 +4,14 @@ import { useAuthStore } from '@/features/auth'
 import { Link } from 'react-router-dom'
 import { cn } from '@/shared/utils/cn'
 import { formatDate } from '@/shared/utils/formatters'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 
 export function EnrollmentsPage() {
   const { user } = useAuthStore()
   const { data: enrollments, isLoading, error } = useEnrollments(user?.id ?? 0)
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error) {

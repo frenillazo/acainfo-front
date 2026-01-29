@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSubjects } from '../hooks/useSubjects'
 import { SubjectCard } from '../components/SubjectCard'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 import type { Degree, SubjectFilters } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
 
@@ -26,11 +27,7 @@ export function SubjectsPage() {
   const { data, isLoading, error } = useSubjects(filters)
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error) {
@@ -54,7 +51,7 @@ export function SubjectsPage() {
         <div className="relative flex-1">
           <input
             type="text"
-            placeholder="Buscar por nombre o código..."
+            placeholder="Buscar por nombre..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={cn(

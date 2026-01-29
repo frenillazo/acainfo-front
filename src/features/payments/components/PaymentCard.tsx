@@ -22,7 +22,6 @@ export function PaymentCard({ payment, onPayClick }: PaymentCardProps) {
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-medium text-gray-900">{payment.subjectName}</h3>
-          <p className="text-sm text-gray-500">{payment.subjectCode}</p>
         </div>
         <div className="flex flex-col items-end gap-1">
           <PaymentStatusBadge

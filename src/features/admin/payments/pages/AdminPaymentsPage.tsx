@@ -2,6 +2,11 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminPayments, useMarkPaymentAsPaid, useCancelPayment } from '../hooks/useAdminPayments'
 import { PaymentTable } from '../components/PaymentTable'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { PromptDialog } from '@/shared/components/common/PromptDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { usePromptDialog } from '@/shared/hooks/usePromptDialog'
 import type { PaymentFilters, PaymentStatus, PaymentType } from '@/features/payments/types/payment.types'
 
 export function AdminPaymentsPage() {
@@ -15,6 +20,8 @@ export function AdminPaymentsPage() {
   const { data, isLoading, error } = useAdminPayments(filters)
   const markAsPaidMutation = useMarkPaymentAsPaid()
   const cancelMutation = useCancelPayment()
+  const { dialogProps: confirmDialogProps, confirm } = useConfirmDialog()
+  const { dialogProps: promptDialogProps, prompt } = usePromptDialog()
 
   const handleSearchByStudent = (studentId: string) => {
     const id = studentId ? parseInt(studentId, 10) : undefined
@@ -61,14 +68,26 @@ export function AdminPaymentsPage() {
     }
   }
 
-  const handleMarkAsPaid = (id: number) => {
-    if (window.confirm('¿Marcar este pago como pagado?')) {
+  const handleMarkAsPaid = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Marcar como pagado',
+      message: '¿Marcar este pago como pagado?',
+      confirmLabel: 'Sí, marcar como pagado',
+      variant: 'info',
+    })
+    if (confirmed) {
       markAsPaidMutation.mutate({ id })
     }
   }
 
-  const handleCancel = (id: number) => {
-    const reason = window.prompt('Motivo de cancelación (opcional):')
+  const handleCancel = async (id: number) => {
+    const reason = await prompt({
+      title: 'Cancelar pago',
+      message: '¿Estás seguro de que quieres cancelar este pago?',
+      inputLabel: 'Motivo de cancelación (opcional)',
+      inputPlaceholder: 'Ingresa el motivo...',
+      confirmLabel: 'Cancelar pago',
+    })
     if (reason !== null) {
       cancelMutation.mutate({
         id,
@@ -239,9 +258,7 @@ export function AdminPaymentsPage() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-        </div>
+        <LoadingState />
       ) : data ? (
         <>
           <PaymentTable
@@ -279,6 +296,9 @@ export function AdminPaymentsPage() {
           )}
         </>
       ) : null}
+
+      <ConfirmDialog {...confirmDialogProps} isLoading={markAsPaidMutation.isPending} />
+      <PromptDialog {...promptDialogProps} isLoading={cancelMutation.isPending} />
     </div>
   )
 }

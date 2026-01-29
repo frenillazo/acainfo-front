@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useGeneratePayment, useGenerateMonthlyPayments } from '../hooks/useAdminPayments'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { PaymentType } from '@/features/payments/types/payment.types'
 
 export function AdminPaymentGeneratePage() {
@@ -12,6 +14,7 @@ export function AdminPaymentGeneratePage() {
 
   const generatePaymentMutation = useGeneratePayment()
   const generateMonthlyMutation = useGenerateMonthlyPayments()
+  const { dialogProps, confirm } = useConfirmDialog()
 
   const currentYear = new Date().getFullYear()
   const currentMonth = new Date().getMonth() + 1
@@ -45,7 +48,7 @@ export function AdminPaymentGeneratePage() {
     )
   }
 
-  const handleGenerateMonthly = (e: React.FormEvent) => {
+  const handleGenerateMonthly = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!billingMonth || !billingYear) {
@@ -53,11 +56,14 @@ export function AdminPaymentGeneratePage() {
       return
     }
 
-    if (
-      !window.confirm(
-        `¿Generar pagos mensuales para ${getMonthName(parseInt(billingMonth, 10))} ${billingYear}? Esto creará pagos para todas las inscripciones REGULARES activas.`
-      )
-    ) {
+    const confirmed = await confirm({
+      title: 'Generar pagos mensuales',
+      message: `¿Generar pagos mensuales para ${getMonthName(parseInt(billingMonth, 10))} ${billingYear}? Esto creará pagos para todas las inscripciones REGULARES activas.`,
+      confirmLabel: 'Sí, generar pagos',
+      variant: 'warning',
+    })
+
+    if (!confirmed) {
       return
     }
 
@@ -350,6 +356,8 @@ export function AdminPaymentGeneratePage() {
           </form>
         </div>
       )}
+
+      <ConfirmDialog {...dialogProps} isLoading={generateMonthlyMutation.isPending} />
     </div>
   )
 }

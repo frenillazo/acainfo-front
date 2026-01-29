@@ -3,6 +3,7 @@ import type { Session } from '../../types/admin.types'
 import { SessionStatusBadge } from './SessionStatusBadge'
 import { SessionTypeBadge } from './SessionTypeBadge'
 import { SessionModeBadge } from './SessionModeBadge'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 
 interface SessionTableProps {
   sessions: Session[]
@@ -20,11 +21,7 @@ function formatDate(dateStr: string): string {
 
 export function SessionTable({ sessions, isLoading }: SessionTableProps) {
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (sessions.length === 0) {

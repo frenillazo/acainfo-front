@@ -25,7 +25,6 @@ export function UpcomingSessionCard({ session }: UpcomingSessionCardProps) {
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-medium text-gray-900">{session.subjectName}</h3>
-          <p className="text-sm text-gray-500">{session.subjectCode}</p>
         </div>
         {session.hasReservation && (
           <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">

@@ -56,7 +56,6 @@ export function TeacherTable({
                     <div className="font-medium text-gray-900">
                       {teacher.fullName}
                     </div>
-                    <div className="text-sm text-gray-500">ID: {teacher.id}</div>
                   </div>
                 </div>
               </td>

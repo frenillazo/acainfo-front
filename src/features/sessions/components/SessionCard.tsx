@@ -44,9 +44,8 @@ export function SessionCard({ session }: SessionCardProps) {
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="mb-2 flex items-center gap-2">
+          <div className="mb-2">
             <h3 className="text-lg font-semibold text-gray-900">{session.subjectName}</h3>
-            <span className="text-sm text-gray-500">({session.subjectCode})</span>
           </div>
 
           <div className="space-y-2 text-sm">

@@ -11,6 +11,9 @@ import { useMaterials } from '@/features/materials/hooks/useMaterials'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { MaterialUploadForm } from '@/features/materials/components/MaterialUploadForm'
 import { MaterialsGroupedByCategory } from '@/features/materials/components/MaterialsGroupedByCategory'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { UploadMaterialRequest } from '@/features/materials/types/material.types'
 
 export function AdminSubjectDetailPage() {
@@ -21,6 +24,7 @@ export function AdminSubjectDetailPage() {
   const { data: subject, isLoading, error } = useAdminSubject(subjectId)
   const archiveMutation = useArchiveSubject()
   const deleteMutation = useDeleteSubject()
+  const { dialogProps, confirm } = useConfirmDialog()
 
   // Materials management
   const [showUploadForm, setShowUploadForm] = useState(false)
@@ -43,18 +47,26 @@ export function AdminSubjectDetailPage() {
     }
   }, [subjectId])
 
-  const handleArchive = () => {
-    if (window.confirm('¿Estás seguro de que quieres archivar esta asignatura?')) {
+  const handleArchive = async () => {
+    const confirmed = await confirm({
+      title: 'Archivar asignatura',
+      message: '¿Estás seguro de que quieres archivar esta asignatura?',
+      confirmLabel: 'Sí, archivar',
+      variant: 'warning',
+    })
+    if (confirmed) {
       archiveMutation.mutate(subjectId)
     }
   }
 
-  const handleDelete = () => {
-    if (
-      window.confirm(
-        '¿Estás seguro de que quieres eliminar esta asignatura? Esta acción no se puede deshacer.'
-      )
-    ) {
+  const handleDelete = async () => {
+    const confirmed = await confirm({
+      title: 'Eliminar asignatura',
+      message: '¿Estás seguro de que quieres eliminar esta asignatura? Esta acción no se puede deshacer.',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       deleteMutation.mutate(subjectId, {
         onSuccess: () => {
           navigate('/admin/subjects')
@@ -73,7 +85,13 @@ export function AdminSubjectDetailPage() {
   }
 
   const handleDeleteMaterial = async (materialId: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este material?')) {
+    const confirmed = await confirm({
+      title: 'Eliminar material',
+      message: '¿Estás seguro de que quieres eliminar este material?',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       const success = await deleteMaterial(materialId)
       if (success) {
         // Reload materials
@@ -83,11 +101,7 @@ export function AdminSubjectDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !subject) {
@@ -387,6 +401,8 @@ export function AdminSubjectDetailPage() {
           </div>
         )}
       </section>
+
+      <ConfirmDialog {...dialogProps} isLoading={archiveMutation.isPending || deleteMutation.isPending} />
     </div>
   )
 }

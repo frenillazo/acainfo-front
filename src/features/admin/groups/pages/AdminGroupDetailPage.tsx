@@ -6,6 +6,9 @@ import {
 } from '../hooks/useAdminGroups'
 import { GroupStatusBadge } from '../components/GroupStatusBadge'
 import { GroupTypeBadge } from '../components/GroupTypeBadge'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function AdminGroupDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -15,19 +18,28 @@ export function AdminGroupDetailPage() {
   const { data: group, isLoading, error } = useAdminGroup(groupId)
   const cancelMutation = useCancelGroup()
   const deleteMutation = useDeleteGroup()
+  const { dialogProps, confirm } = useConfirmDialog()
 
-  const handleCancel = () => {
-    if (window.confirm('¿Estás seguro de que quieres cancelar este grupo?')) {
+  const handleCancel = async () => {
+    const confirmed = await confirm({
+      title: 'Cancelar grupo',
+      message: '¿Estás seguro de que quieres cancelar este grupo?',
+      confirmLabel: 'Sí, cancelar',
+      variant: 'warning',
+    })
+    if (confirmed) {
       cancelMutation.mutate(groupId)
     }
   }
 
-  const handleDelete = () => {
-    if (
-      window.confirm(
-        '¿Estás seguro de que quieres eliminar este grupo? Esta acción no se puede deshacer.'
-      )
-    ) {
+  const handleDelete = async () => {
+    const confirmed = await confirm({
+      title: 'Eliminar grupo',
+      message: '¿Estás seguro de que quieres eliminar este grupo? Esta acción no se puede deshacer.',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       deleteMutation.mutate(groupId, {
         onSuccess: () => {
           navigate('/admin/groups')
@@ -37,11 +49,7 @@ export function AdminGroupDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !group) {
@@ -264,6 +272,8 @@ export function AdminGroupDetailPage() {
           </dl>
         </div>
       </div>
+
+      <ConfirmDialog {...dialogProps} isLoading={cancelMutation.isPending || deleteMutation.isPending} />
     </div>
   )
 }

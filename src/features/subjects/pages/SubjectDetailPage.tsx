@@ -7,6 +7,7 @@ import type { Group } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
 import { useMaterials } from '@/features/materials/hooks/useMaterials'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 import { useEffect } from 'react'
 import { useGroupRequests, useAddSupporter } from '@/features/group-requests/hooks/useGroupRequests'
 import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
@@ -79,13 +80,9 @@ export function SubjectDetailPage() {
     }
   }
 
-  
+
   if (isLoadingSubject) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (subjectError || !subject) {
@@ -108,14 +105,13 @@ export function SubjectDetailPage() {
           Asignaturas
         </Link>
         <span>/</span>
-        <span className="text-gray-900">{subject.code}</span>
+        <span className="text-gray-900">{subject.name}</span>
       </div>
 
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{subject.name}</h1>
-            <p className="mt-1 text-gray-500">{subject.code}</p>
           </div>
           <span
             className={cn(

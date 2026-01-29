@@ -20,7 +20,6 @@ export function EnrollmentCard({ enrollment }: EnrollmentCardProps) {
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-medium text-gray-900">{enrollment.subjectName}</h3>
-          <p className="text-sm text-gray-500">{enrollment.subjectCode}</p>
         </div>
         <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
           {GROUP_TYPE_LABELS[enrollment.groupType as keyof typeof GROUP_TYPE_LABELS] || enrollment.groupType}

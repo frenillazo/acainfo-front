@@ -2,6 +2,11 @@ import { useParams, Link } from 'react-router-dom'
 import { useAdminPayment, useMarkPaymentAsPaid, useCancelPayment } from '../hooks/useAdminPayments'
 import { PaymentStatusBadge } from '../components/PaymentStatusBadge'
 import { PaymentTypeBadge } from '../components/PaymentTypeBadge'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { PromptDialog } from '@/shared/components/common/PromptDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { usePromptDialog } from '@/shared/hooks/usePromptDialog'
 import { formatCurrency } from '@/shared/utils/formatCurrency'
 
 export function AdminPaymentDetailPage() {
@@ -11,15 +16,29 @@ export function AdminPaymentDetailPage() {
   const { data: payment, isLoading, error } = useAdminPayment(paymentId)
   const markAsPaidMutation = useMarkPaymentAsPaid()
   const cancelMutation = useCancelPayment()
+  const { dialogProps: confirmDialogProps, confirm } = useConfirmDialog()
+  const { dialogProps: promptDialogProps, prompt } = usePromptDialog()
 
-  const handleMarkAsPaid = () => {
-    if (window.confirm('¿Marcar este pago como pagado?')) {
+  const handleMarkAsPaid = async () => {
+    const confirmed = await confirm({
+      title: 'Marcar como pagado',
+      message: '¿Marcar este pago como pagado?',
+      confirmLabel: 'Sí, marcar como pagado',
+      variant: 'info',
+    })
+    if (confirmed) {
       markAsPaidMutation.mutate({ id: paymentId })
     }
   }
 
-  const handleCancel = () => {
-    const reason = window.prompt('Motivo de cancelación (opcional):')
+  const handleCancel = async () => {
+    const reason = await prompt({
+      title: 'Cancelar pago',
+      message: '¿Estás seguro de que quieres cancelar este pago?',
+      inputLabel: 'Motivo de cancelación (opcional)',
+      inputPlaceholder: 'Ingresa el motivo...',
+      confirmLabel: 'Cancelar pago',
+    })
     if (reason !== null) {
       cancelMutation.mutate({
         id: paymentId,
@@ -29,11 +48,7 @@ export function AdminPaymentDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !payment) {
@@ -250,6 +265,9 @@ export function AdminPaymentDetailPage() {
           </div>
         </dl>
       </div>
+
+      <ConfirmDialog {...confirmDialogProps} isLoading={markAsPaidMutation.isPending} />
+      <PromptDialog {...promptDialogProps} isLoading={cancelMutation.isPending} />
     </div>
   )
 }

@@ -75,9 +75,6 @@ export function PaymentTable({
                   <div className="font-medium text-gray-900">
                     {payment.studentName}
                   </div>
-                  <div className="text-sm text-gray-500">
-                    ID: {payment.studentId}
-                  </div>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <div className="font-medium text-gray-900">

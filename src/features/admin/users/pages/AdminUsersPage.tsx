@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAdminUsers } from '../hooks/useAdminUsers'
 import { UserTable } from '../components/UserTable'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 import type { UserFilters, UserStatus, RoleType } from '../../types/admin.types'
 
 export function AdminUsersPage() {
@@ -146,9 +147,7 @@ export function AdminUsersPage() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-        </div>
+        <LoadingState />
       ) : data ? (
         <>
           <UserTable key={`page-${data.page}`} users={data.content} />

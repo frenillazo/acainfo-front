@@ -1,16 +1,13 @@
 import { useAdminDashboardStats } from '../hooks/useAdminDashboard'
 import { StatCard } from '../components/StatCard'
 import { QuickActionCard } from '../components/QuickActionCard'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 
 export function AdminDashboardPage() {
   const { data: stats, isLoading, error } = useAdminDashboardStats()
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error) {

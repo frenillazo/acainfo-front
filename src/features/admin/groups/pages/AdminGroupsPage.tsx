@@ -6,6 +6,9 @@ import {
   useDeleteGroup,
 } from '../hooks/useAdminGroups'
 import { GroupTable } from '../components/GroupTable'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { GroupFilters, GroupStatus, GroupType } from '../../types/admin.types'
 
 export function AdminGroupsPage() {
@@ -17,6 +20,7 @@ export function AdminGroupsPage() {
   const { data, isLoading, error } = useAdminGroups(filters)
   const cancelMutation = useCancelGroup()
   const deleteMutation = useDeleteGroup()
+  const { dialogProps, confirm } = useConfirmDialog()
 
   const handleStatusChange = (status: GroupStatus | '') => {
     setFilters((prev) => ({
@@ -40,14 +44,26 @@ export function AdminGroupsPage() {
     }
   }
 
-  const handleCancel = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres cancelar este grupo?')) {
+  const handleCancel = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Cancelar grupo',
+      message: '¿Estás seguro de que quieres cancelar este grupo?',
+      confirmLabel: 'Sí, cancelar',
+      variant: 'warning',
+    })
+    if (confirmed) {
       cancelMutation.mutate(id)
     }
   }
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este grupo? Esta acción no se puede deshacer.')) {
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Eliminar grupo',
+      message: '¿Estás seguro de que quieres eliminar este grupo? Esta acción no se puede deshacer.',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       deleteMutation.mutate(id)
     }
   }
@@ -148,9 +164,7 @@ export function AdminGroupsPage() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-        </div>
+        <LoadingState />
       ) : data ? (
         <>
           <GroupTable
@@ -188,6 +202,8 @@ export function AdminGroupsPage() {
           )}
         </>
       ) : null}
+
+      <ConfirmDialog {...dialogProps} isLoading={cancelMutation.isPending || deleteMutation.isPending} />
     </div>
   )
 }

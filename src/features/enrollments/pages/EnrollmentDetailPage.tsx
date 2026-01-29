@@ -1,6 +1,9 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useEnrollment, useWithdraw } from '../hooks/useEnrollments'
 import { EnrollmentDetailCard } from '../components/EnrollmentDetailCard'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function EnrollmentDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -9,9 +12,18 @@ export function EnrollmentDetailPage() {
 
   const { data: enrollment, isLoading, error } = useEnrollment(enrollmentId)
   const { mutate: withdraw, isPending: isWithdrawing } = useWithdraw()
+  const { dialogProps, confirm } = useConfirmDialog()
 
-  const handleWithdraw = () => {
-    if (window.confirm('¿Estás seguro de que quieres retirarte de este grupo?')) {
+  const handleWithdraw = async () => {
+    const confirmed = await confirm({
+      title: 'Retirarse del grupo',
+      message: '¿Estás seguro de que quieres retirarte de este grupo? Esta acción no se puede deshacer.',
+      confirmLabel: 'Sí, retirarme',
+      cancelLabel: 'Cancelar',
+      variant: 'danger',
+    })
+
+    if (confirmed) {
       withdraw(enrollmentId, {
         onSuccess: () => {
           navigate('/enrollments')
@@ -21,11 +33,7 @@ export function EnrollmentDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !enrollment) {
@@ -57,6 +65,8 @@ export function EnrollmentDetailPage() {
         onWithdraw={handleWithdraw}
         isWithdrawing={isWithdrawing}
       />
+
+      <ConfirmDialog {...dialogProps} isLoading={isWithdrawing} />
     </div>
   )
 }

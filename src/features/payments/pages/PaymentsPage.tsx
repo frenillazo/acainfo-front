@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { usePayments } from '../hooks/usePayments'
 import { PaymentCard } from '../components/PaymentCard'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 import type { Payment, PaymentStatus } from '../types/payment.types'
 import { cn } from '@/shared/utils/cn'
 
@@ -35,11 +36,7 @@ export function PaymentsPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error) {

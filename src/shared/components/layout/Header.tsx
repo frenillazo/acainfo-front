@@ -48,6 +48,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               'rounded-md p-2 text-gray-500 lg:hidden',
               'hover:bg-gray-100 hover:text-gray-600'
             )}
+            aria-label="Abrir menú de navegación"
           >
             <svg
               className="h-6 w-6"
@@ -55,6 +56,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -75,6 +77,9 @@ export function Header({ onMenuClick }: HeaderProps) {
                   'hover:bg-gray-100 hover:text-gray-900',
                   'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
                 )}
+                aria-label="Menú de usuario"
+                aria-expanded={dropdownOpen}
+                aria-haspopup="true"
               >
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-600">
                   {user.firstName[0]}

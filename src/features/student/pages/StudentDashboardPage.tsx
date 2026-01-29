@@ -5,6 +5,7 @@ import { WelcomeCard } from '../components/WelcomeCard'
 import { EnrollmentCard } from '../components/EnrollmentCard'
 import { UpcomingSessionCard } from '../components/UpcomingSessionCard'
 import { PaymentSummaryCard } from '../components/PaymentSummaryCard'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 
 export function StudentDashboardPage() {
   const { hasRole, user, isLoading: isLoadingAuth } = useAuth()
@@ -25,11 +26,7 @@ export function StudentDashboardPage() {
   }
 
   if (isLoadingAuth || isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error) {

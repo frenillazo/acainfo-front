@@ -12,6 +12,9 @@ import { SessionStatusBadge } from '../components/SessionStatusBadge'
 import { SessionTypeBadge } from '../components/SessionTypeBadge'
 import { SessionModeBadge } from '../components/SessionModeBadge'
 import { ClassroomBadge } from '../../schedules/components/ClassroomBadge'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { PostponeSessionRequest, Classroom, SessionMode } from '../../types/admin.types'
 
 const CLASSROOMS: { key: Classroom; label: string }[] = [
@@ -45,21 +48,40 @@ export function AdminSessionDetailPage() {
   const cancelMutation = useCancelSession()
   const postponeMutation = usePostponeSession()
   const deleteMutation = useDeleteSession()
+  const { dialogProps, confirm } = useConfirmDialog()
 
-  const handleStart = () => {
-    if (window.confirm('¿Iniciar esta sesion?')) {
+  const handleStart = async () => {
+    const confirmed = await confirm({
+      title: 'Iniciar sesión',
+      message: '¿Iniciar esta sesión?',
+      confirmLabel: 'Sí, iniciar',
+      variant: 'info',
+    })
+    if (confirmed) {
       startMutation.mutate(sessionId)
     }
   }
 
-  const handleComplete = () => {
-    if (window.confirm('¿Marcar esta sesion como completada?')) {
+  const handleComplete = async () => {
+    const confirmed = await confirm({
+      title: 'Completar sesión',
+      message: '¿Marcar esta sesión como completada?',
+      confirmLabel: 'Sí, completar',
+      variant: 'info',
+    })
+    if (confirmed) {
       completeMutation.mutate(sessionId)
     }
   }
 
-  const handleCancel = () => {
-    if (window.confirm('¿Cancelar esta sesion?')) {
+  const handleCancel = async () => {
+    const confirmed = await confirm({
+      title: 'Cancelar sesión',
+      message: '¿Cancelar esta sesión?',
+      confirmLabel: 'Sí, cancelar',
+      variant: 'warning',
+    })
+    if (confirmed) {
       cancelMutation.mutate(sessionId)
     }
   }
@@ -77,8 +99,14 @@ export function AdminSessionDetailPage() {
     )
   }
 
-  const handleDelete = () => {
-    if (window.confirm('¿Eliminar esta sesion? Esta accion no se puede deshacer.')) {
+  const handleDelete = async () => {
+    const confirmed = await confirm({
+      title: 'Eliminar sesión',
+      message: '¿Eliminar esta sesión? Esta acción no se puede deshacer.',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       deleteMutation.mutate(sessionId, {
         onSuccess: () => navigate('/admin/sessions'),
       })
@@ -86,11 +114,7 @@ export function AdminSessionDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !session) {
@@ -306,6 +330,8 @@ export function AdminSessionDetailPage() {
           </dl>
         </div>
       </div>
+
+      <ConfirmDialog {...dialogProps} />
 
       {/* Postpone Modal */}
       {showPostponeModal && (

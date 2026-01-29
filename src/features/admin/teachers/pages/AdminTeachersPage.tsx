@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminTeachers, useDeleteTeacher } from '../hooks/useAdminTeachers'
 import { TeacherTable } from '../components/TeacherTable'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { TeacherFilters, UserStatus } from '../../types/admin.types'
 
 export function AdminTeachersPage() {
@@ -12,6 +15,7 @@ export function AdminTeachersPage() {
 
   const { data, isLoading, error } = useAdminTeachers(filters)
   const deleteMutation = useDeleteTeacher()
+  const { dialogProps, confirm } = useConfirmDialog()
 
   const handleSearchChange = (searchTerm: string) => {
     setFilters((prev) => ({ ...prev, searchTerm, page: 0 }))
@@ -31,8 +35,14 @@ export function AdminTeachersPage() {
     }
   }
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este profesor?')) {
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Eliminar profesor',
+      message: '¿Estás seguro de que quieres eliminar este profesor?',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       deleteMutation.mutate(id)
     }
   }
@@ -128,9 +138,7 @@ export function AdminTeachersPage() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-        </div>
+        <LoadingState />
       ) : data ? (
         <>
           <TeacherTable
@@ -166,6 +174,8 @@ export function AdminTeachersPage() {
           )}
         </>
       ) : null}
+
+      <ConfirmDialog {...dialogProps} isLoading={deleteMutation.isPending} />
     </div>
   )
 }

@@ -8,26 +8,12 @@ export const apiClient = axios.create({
   },
 })
 
-// Interceptor: Add token and user ID to requests
+// Interceptor: Add token to requests
 apiClient.interceptors.request.use((requestConfig) => {
   const token = localStorage.getItem('accessToken')
   if (token) {
     requestConfig.headers.Authorization = `Bearer ${token}`
   }
-
-  // Add X-User-Id header from auth storage (temporary until security context is implemented)
-  const authStorage = localStorage.getItem('auth-storage')
-  if (authStorage) {
-    try {
-      const { state } = JSON.parse(authStorage)
-      if (state?.user?.id) {
-        requestConfig.headers['X-User-Id'] = state.user.id.toString()
-      }
-    } catch (error) {
-      console.error('Failed to parse auth storage:', error)
-    }
-  }
-
   return requestConfig
 })
 

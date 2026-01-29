@@ -5,6 +5,9 @@ import {
   useRejectGroupRequest,
 } from '../hooks/useGroupRequests'
 import { GroupRequestStatusBadge } from '../components/GroupRequestStatusBadge'
+import { PromptDialog } from '@/shared/components/common/PromptDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { usePromptDialog } from '@/shared/hooks/usePromptDialog'
 import { formatDateTime } from '@/shared/utils/formatters'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { Users, CheckCircle, XCircle } from 'lucide-react'
@@ -19,9 +22,16 @@ export function AdminGroupRequestDetailPage() {
   const { data: groupRequest, isLoading, error } = useGroupRequest(requestId)
   const approveMutation = useApproveGroupRequest()
   const rejectMutation = useRejectGroupRequest()
+  const { dialogProps, prompt } = usePromptDialog()
 
-  const handleApprove = () => {
-    const response = window.prompt('Mensaje de aprobacion (opcional):')
+  const handleApprove = async () => {
+    const response = await prompt({
+      title: 'Aprobar solicitud',
+      message: '¿Aprobar esta solicitud de grupo?',
+      inputLabel: 'Mensaje de aprobacion (opcional)',
+      inputPlaceholder: 'Ingresa un mensaje...',
+      confirmLabel: 'Aprobar',
+    })
     if (response !== null && user) {
       approveMutation.mutate(
         {
@@ -40,8 +50,14 @@ export function AdminGroupRequestDetailPage() {
     }
   }
 
-  const handleReject = () => {
-    const response = window.prompt('Motivo del rechazo:')
+  const handleReject = async () => {
+    const response = await prompt({
+      title: 'Rechazar solicitud',
+      message: '¿Rechazar esta solicitud de grupo?',
+      inputLabel: 'Motivo del rechazo',
+      inputPlaceholder: 'Ingresa el motivo...',
+      confirmLabel: 'Rechazar',
+    })
     if (response !== null && user) {
       rejectMutation.mutate(
         {
@@ -61,11 +77,7 @@ export function AdminGroupRequestDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !groupRequest) {
@@ -101,10 +113,11 @@ export function AdminGroupRequestDetailPage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Solicitud #{groupRequest.id}
+              Solicitud de {groupRequest.subjectName || 'Grupo'}
             </h1>
             <p className="mt-1 text-gray-500">
-              Solicitud de grupo {GROUP_TYPE_LABELS[groupRequest.requestedGroupType]}
+              Tipo: {GROUP_TYPE_LABELS[groupRequest.requestedGroupType]}
+              {groupRequest.subjectDegree && ` - ${groupRequest.subjectDegree}`}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -145,10 +158,6 @@ export function AdminGroupRequestDetailPage() {
           </h2>
           <dl className="space-y-4">
             <div>
-              <dt className="text-sm font-medium text-gray-500">ID</dt>
-              <dd className="mt-1 text-sm text-gray-900">{groupRequest.id}</dd>
-            </div>
-            <div>
               <dt className="text-sm font-medium text-gray-500">Estado</dt>
               <dd className="mt-1">
                 <GroupRequestStatusBadge
@@ -164,24 +173,27 @@ export function AdminGroupRequestDetailPage() {
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">ID Materia</dt>
+              <dt className="text-sm font-medium text-gray-500">Materia</dt>
               <dd className="mt-1 text-sm text-gray-900">
                 <Link
                   to={`/admin/subjects/${groupRequest.subjectId}`}
                   className="text-blue-600 hover:text-blue-800"
                 >
-                  #{groupRequest.subjectId}
+                  {groupRequest.subjectName || `Ver materia`}
                 </Link>
+                {groupRequest.subjectDegree && (
+                  <span className="ml-2 text-xs text-gray-500">({groupRequest.subjectDegree})</span>
+                )}
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">ID Solicitante</dt>
+              <dt className="text-sm font-medium text-gray-500">Solicitante</dt>
               <dd className="mt-1 text-sm text-gray-900">
                 <Link
                   to={`/admin/users/${groupRequest.requesterId}`}
                   className="text-blue-600 hover:text-blue-800"
                 >
-                  #{groupRequest.requesterId}
+                  {groupRequest.requesterName || `Ver usuario`}
                 </Link>
               </dd>
             </div>
@@ -312,6 +324,8 @@ export function AdminGroupRequestDetailPage() {
           </dl>
         </div>
       </div>
+
+      <PromptDialog {...dialogProps} isLoading={approveMutation.isPending || rejectMutation.isPending} />
     </div>
   )
 }

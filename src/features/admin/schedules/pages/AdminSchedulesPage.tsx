@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useEnrichedSchedules } from '../hooks/useAdminSchedules'
 import { GlobalScheduleGrid } from '../components/GlobalScheduleGrid'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 import type { Classroom, DayOfWeek, GroupStatus } from '../../types/admin.types'
 
 const CLASSROOMS: { key: Classroom | ''; label: string }[] = [
@@ -124,9 +125,7 @@ export function AdminSchedulesPage() {
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Horario semanal</h2>
 
         {isLoading ? (
-          <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-          </div>
+          <LoadingState />
         ) : error ? (
           <div className="rounded-lg bg-red-50 p-4 text-red-700">
             Error al cargar los horarios. Por favor, intenta de nuevo.

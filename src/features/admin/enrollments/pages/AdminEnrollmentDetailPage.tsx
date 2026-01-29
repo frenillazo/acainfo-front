@@ -4,6 +4,9 @@ import {
   useWithdrawEnrollment,
 } from '../hooks/useAdminEnrollments'
 import { EnrollmentStatusBadge } from '@/features/enrollments/components/EnrollmentStatusBadge'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function AdminEnrollmentDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -12,11 +15,16 @@ export function AdminEnrollmentDetailPage() {
 
   const { data: enrollment, isLoading, error } = useAdminEnrollment(enrollmentId)
   const withdrawMutation = useWithdrawEnrollment()
+  const { dialogProps, confirm } = useConfirmDialog()
 
-  const handleWithdraw = () => {
-    if (
-      window.confirm('¿Estás seguro de que quieres retirar esta inscripción?')
-    ) {
+  const handleWithdraw = async () => {
+    const confirmed = await confirm({
+      title: 'Retirar inscripción',
+      message: '¿Estás seguro de que quieres retirar esta inscripción?',
+      confirmLabel: 'Sí, retirar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       withdrawMutation.mutate(enrollmentId, {
         onSuccess: () => {
           navigate('/admin/enrollments')
@@ -26,11 +34,7 @@ export function AdminEnrollmentDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !enrollment) {
@@ -267,6 +271,8 @@ export function AdminEnrollmentDetailPage() {
           </dl>
         </div>
       </div>
+
+      <ConfirmDialog {...dialogProps} isLoading={withdrawMutation.isPending} />
     </div>
   )
 }

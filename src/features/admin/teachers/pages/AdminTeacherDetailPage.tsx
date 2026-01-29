@@ -1,6 +1,9 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAdminTeacher, useDeleteTeacher } from '../hooks/useAdminTeachers'
 import { UserStatusBadge } from '../../users/components/UserStatusBadge'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 
 export function AdminTeacherDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -9,11 +12,16 @@ export function AdminTeacherDetailPage() {
 
   const { data: teacher, isLoading, error } = useAdminTeacher(teacherId)
   const deleteMutation = useDeleteTeacher()
+  const { dialogProps, confirm } = useConfirmDialog()
 
-  const handleDelete = () => {
-    if (
-      window.confirm('¿Estás seguro de que quieres eliminar este profesor?')
-    ) {
+  const handleDelete = async () => {
+    const confirmed = await confirm({
+      title: 'Eliminar profesor',
+      message: '¿Estás seguro de que quieres eliminar este profesor?',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
       deleteMutation.mutate(teacherId, {
         onSuccess: () => {
           navigate('/admin/teachers')
@@ -23,11 +31,7 @@ export function AdminTeacherDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !teacher) {
@@ -158,6 +162,8 @@ export function AdminTeacherDetailPage() {
           </dl>
         </div>
       </div>
+
+      <ConfirmDialog {...dialogProps} isLoading={deleteMutation.isPending} />
     </div>
   )
 }

@@ -5,6 +5,7 @@ import {
   useRemoveSupporter,
 } from '../hooks/useGroupRequests'
 import { GroupRequestStatusBadge } from '../components/GroupRequestStatusBadge'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 import { formatDateTime } from '@/shared/utils/formatters'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { Users, Plus, Minus } from 'lucide-react'
@@ -38,11 +39,7 @@ export function GroupRequestDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (error || !groupRequest) {

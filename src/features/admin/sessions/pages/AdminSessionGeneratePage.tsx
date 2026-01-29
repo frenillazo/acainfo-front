@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAdminGroups } from '../../groups/hooks/useAdminGroups'
 import { useGenerateSessions, usePreviewGenerateSessions } from '../hooks/useAdminSessions'
 import { SessionTable } from '../components/SessionTable'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { GenerateSessionsRequest, Session } from '../../types/admin.types'
 
 export function AdminSessionGeneratePage() {
@@ -20,6 +22,7 @@ export function AdminSessionGeneratePage() {
 
   const previewMutation = usePreviewGenerateSessions()
   const generateMutation = useGenerateSessions()
+  const { dialogProps, confirm } = useConfirmDialog()
 
   const isFormValid = groupId && startDate && endDate && new Date(startDate) <= new Date(endDate)
 
@@ -39,10 +42,16 @@ export function AdminSessionGeneratePage() {
     })
   }
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!isFormValid || typeof groupId !== 'number') return
 
-    if (!window.confirm(`¿Generar ${previewSessions.length} sesiones?`)) return
+    const confirmed = await confirm({
+      title: 'Generar sesiones',
+      message: `¿Generar ${previewSessions.length} sesiones?`,
+      confirmLabel: 'Sí, generar',
+      variant: 'info',
+    })
+    if (!confirmed) return
 
     const request: GenerateSessionsRequest = {
       groupId,
@@ -221,6 +230,8 @@ export function AdminSessionGeneratePage() {
           Verifica que el grupo tenga horarios configurados.
         </div>
       )}
+
+      <ConfirmDialog {...dialogProps} isLoading={generateMutation.isPending} />
     </div>
   )
 }

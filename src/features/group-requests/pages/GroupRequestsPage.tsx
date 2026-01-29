@@ -6,6 +6,7 @@ import {
   useRemoveSupporter,
 } from '../hooks/useGroupRequests'
 import { GroupRequestStatusBadge } from '../components/GroupRequestStatusBadge'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 import type { GroupRequestFilters } from '../types/groupRequest.types'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { formatDate } from '@/shared/utils/formatters'
@@ -116,9 +117,7 @@ export function GroupRequestsPage() {
 
       {/* List */}
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-        </div>
+        <LoadingState />
       ) : data && data.content.length > 0 ? (
         <>
           <div className="space-y-4">

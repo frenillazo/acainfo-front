@@ -3,6 +3,7 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { useEnrollments } from '@/features/enrollments/hooks/useEnrollments'
 import { useSessions } from '../hooks/useSessions'
 import { SessionCard } from '../components/SessionCard'
+import { LoadingState } from '@/shared/components/common/LoadingState'
 import type { SessionFilters } from '../types/session.types'
 
 export function SessionsPage() {
@@ -64,11 +65,7 @@ export function SessionsPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-      </div>
-    )
+    return <LoadingState />
   }
 
   if (!activeEnrollments.length) {

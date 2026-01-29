@@ -5,6 +5,9 @@ import {
   useRejectGroupRequest,
 } from '../hooks/useGroupRequests'
 import { GroupRequestTable } from '../components/GroupRequestTable'
+import { PromptDialog } from '@/shared/components/common/PromptDialog'
+import { LoadingState } from '@/shared/components/common/LoadingState'
+import { usePromptDialog } from '@/shared/hooks/usePromptDialog'
 import type { GroupRequestStatus, GroupRequestFilters } from '../types/groupRequest.types'
 import type { GroupType } from '@/shared/types/api.types'
 import { useAuthStore } from '@/features/auth/store/authStore'
@@ -15,10 +18,12 @@ export function AdminGroupRequestsPage() {
     page: 0,
     size: 10,
   })
+  const [pendingAction, setPendingAction] = useState<{ type: 'approve' | 'reject'; id: number } | null>(null)
 
   const { data, isLoading, error } = useGroupRequests(filters)
   const approveMutation = useApproveGroupRequest()
   const rejectMutation = useRejectGroupRequest()
+  const { dialogProps, prompt } = usePromptDialog()
 
   const handleStatusChange = (status: GroupRequestStatus | '') => {
     setFilters((prev) => ({
@@ -47,8 +52,16 @@ export function AdminGroupRequestsPage() {
     }
   }
 
-  const handleApprove = (id: number) => {
-    const response = window.prompt('Mensaje de aprobacion (opcional):')
+  const handleApprove = async (id: number) => {
+    setPendingAction({ type: 'approve', id })
+    const response = await prompt({
+      title: 'Aprobar solicitud',
+      message: '¿Aprobar esta solicitud de grupo?',
+      inputLabel: 'Mensaje de aprobacion (opcional)',
+      inputPlaceholder: 'Ingresa un mensaje...',
+      confirmLabel: 'Aprobar',
+    })
+    setPendingAction(null)
     if (response !== null && user) {
       approveMutation.mutate({
         id,
@@ -60,8 +73,16 @@ export function AdminGroupRequestsPage() {
     }
   }
 
-  const handleReject = (id: number) => {
-    const response = window.prompt('Motivo del rechazo:')
+  const handleReject = async (id: number) => {
+    setPendingAction({ type: 'reject', id })
+    const response = await prompt({
+      title: 'Rechazar solicitud',
+      message: '¿Rechazar esta solicitud de grupo?',
+      inputLabel: 'Motivo del rechazo',
+      inputPlaceholder: 'Ingresa el motivo...',
+      confirmLabel: 'Rechazar',
+    })
+    setPendingAction(null)
     if (response !== null && user) {
       rejectMutation.mutate({
         id,
@@ -176,9 +197,7 @@ export function AdminGroupRequestsPage() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-        </div>
+        <LoadingState />
       ) : data ? (
         <>
           <GroupRequestTable
@@ -215,6 +234,8 @@ export function AdminGroupRequestsPage() {
           )}
         </>
       ) : null}
+
+      <PromptDialog {...dialogProps} isLoading={approveMutation.isPending || rejectMutation.isPending} />
     </div>
   )
 }

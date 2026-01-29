@@ -5,7 +5,10 @@ export type GroupRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED'
 export interface GroupRequest {
   id: number
   subjectId: number
+  subjectName?: string
+  subjectDegree?: string
   requesterId: number
+  requesterName?: string
   requestedGroupType: GroupType
   status: GroupRequestStatus
   supporterIds: number[]
