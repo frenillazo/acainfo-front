@@ -1,36 +1,12 @@
 import type { PaymentType } from '../types/payment.types'
-import { cn } from '@/shared/utils/cn'
+import { Badge } from '@/shared/components/ui/Badge'
+import { PAYMENT_TYPE_CONFIG } from '@/shared/config/badgeConfig'
 
 interface PaymentTypeBadgeProps {
   type: PaymentType
 }
 
-const typeConfig: Record<PaymentType, { label: string; className: string }> = {
-  INITIAL: {
-    label: 'Inicial',
-    className: 'bg-blue-100 text-blue-700',
-  },
-  MONTHLY: {
-    label: 'Mensual',
-    className: 'bg-purple-100 text-purple-700',
-  },
-  INTENSIVE_FULL: {
-    label: 'Intensivo',
-    className: 'bg-orange-100 text-orange-700',
-  },
-}
-
 export function PaymentTypeBadge({ type }: PaymentTypeBadgeProps) {
-  const config = typeConfig[type]
-
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-        config.className
-      )}
-    >
-      {config.label}
-    </span>
-  )
+  const config = PAYMENT_TYPE_CONFIG[type]
+  return <Badge variant={config.variant}>{config.label}</Badge>
 }

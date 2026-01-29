@@ -1,5 +1,6 @@
 import type { PaymentStatus } from '../types/payment.types'
-import { cn } from '@/shared/utils/cn'
+import { Badge } from '@/shared/components/ui/Badge'
+import { PAYMENT_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 
 interface PaymentStatusBadgeProps {
   status: PaymentStatus
@@ -7,44 +8,18 @@ interface PaymentStatusBadgeProps {
   daysOverdue?: number | null
 }
 
-// OVERDUE is not a status but a calculated state (isOverdue field)
-// We use a separate type for display purposes
-type DisplayStatus = PaymentStatus | 'OVERDUE'
-
-const statusConfig: Record<DisplayStatus, { label: string; className: string }> = {
-  PENDING: {
-    label: 'Pendiente',
-    className: 'bg-yellow-100 text-yellow-700',
-  },
-  PAID: {
-    label: 'Pagado',
-    className: 'bg-green-100 text-green-700',
-  },
-  OVERDUE: {
-    label: 'Vencido',
-    className: 'bg-red-100 text-red-700',
-  },
-  CANCELLED: {
-    label: 'Cancelado',
-    className: 'bg-gray-100 text-gray-700',
-  },
-}
-
 export function PaymentStatusBadge({ status, isOverdue, daysOverdue }: PaymentStatusBadgeProps) {
-  const displayStatus: DisplayStatus = isOverdue && status === 'PENDING' ? 'OVERDUE' : status
-  const displayConfig = statusConfig[displayStatus]
+  if (isOverdue && status === 'PENDING') {
+    return (
+      <Badge variant="error">
+        Vencido
+        {daysOverdue && daysOverdue > 0 && (
+          <span className="ml-1 text-xs">({daysOverdue}d)</span>
+        )}
+      </Badge>
+    )
+  }
 
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium',
-        displayConfig.className
-      )}
-    >
-      {displayConfig.label}
-      {isOverdue && daysOverdue && daysOverdue > 0 && (
-        <span className="text-xs">({daysOverdue}d)</span>
-      )}
-    </span>
-  )
+  const config = PAYMENT_STATUS_CONFIG[status]
+  return <Badge variant={config.variant}>{config.label}</Badge>
 }

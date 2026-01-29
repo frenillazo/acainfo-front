@@ -1,43 +1,17 @@
 import type { PaymentStatus } from '@/features/payments/types/payment.types'
-import { cn } from '@/shared/utils/cn'
+import { Badge } from '@/shared/components/ui/Badge'
+import { PAYMENT_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 
 interface PaymentStatusBadgeProps {
   status: PaymentStatus
   isOverdue?: boolean
 }
 
-const statusConfig: Record<PaymentStatus, { label: string; className: string }> = {
-  PENDING: {
-    label: 'Pendiente',
-    className: 'bg-yellow-100 text-yellow-800',
-  },
-  PAID: {
-    label: 'Pagado',
-    className: 'bg-green-100 text-green-800',
-  },
-  CANCELLED: {
-    label: 'Cancelado',
-    className: 'bg-gray-100 text-gray-800',
-  },
-}
-
 export function PaymentStatusBadge({ status, isOverdue }: PaymentStatusBadgeProps) {
-  const config = statusConfig[status]
+  if (isOverdue && status === 'PENDING') {
+    return <Badge variant="error">Vencido</Badge>
+  }
 
-  const className = isOverdue && status === 'PENDING'
-    ? 'bg-red-100 text-red-800'
-    : config.className
-
-  const label = isOverdue && status === 'PENDING' ? 'Vencido' : config.label
-
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-        className
-      )}
-    >
-      {label}
-    </span>
-  )
+  const config = PAYMENT_STATUS_CONFIG[status]
+  return <Badge variant={config.variant}>{config.label}</Badge>
 }
