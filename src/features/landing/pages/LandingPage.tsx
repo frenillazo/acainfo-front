@@ -58,14 +58,50 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="fixed top-0 z-50 w-full bg-white/90 backdrop-blur-sm shadow-sm">
+      <nav className="fixed top-0 z-50 w-full bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="AcaInfo" className="h-8 w-auto" />
               <span className="text-xl font-bold text-blue-600">AcaInfo</span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              {/* Contact info - hidden on very small screens */}
+              <div className="hidden md:flex items-center gap-3 text-sm text-gray-600">
+                <a
+                  href="https://wa.me/34638517245"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 hover:text-green-600 transition-colors"
+                  aria-label="WhatsApp 638 517 245"
+                >
+                  <svg className="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                  </svg>
+                  <span>Pablo</span>
+                </a>
+                <span className="text-gray-300">|</span>
+                <a
+                  href="https://wa.me/34600530760"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 hover:text-green-600 transition-colors"
+                  aria-label="WhatsApp 600 530 760"
+                >
+                  <svg className="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                  </svg>
+                  <span>David</span>
+                </a>
+                <span className="text-gray-300">|</span>
+                <a
+                  href="mailto:acainfodavid@gmail.com"
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  acainfodavid@gmail.com
+                </a>
+              </div>
+              <div className="hidden sm:block h-6 w-px bg-gray-300 mx-1" />
               <Link
                 to="/login"
                 className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
@@ -190,6 +226,10 @@ export function LandingPage() {
                 prácticos y resolución de exámenes reales, preparándote de forma
                 integral para superar tus asignaturas con éxito.
               </p>
+              <p className="text-lg text-gray-600">
+                  Conocemos al detalle las preferencias del profesorado universitario. Este es el camino más
+                corto y menos desagradable hacia tu aprobado
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
@@ -199,7 +239,7 @@ export function LandingPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                   </svg>
                 </div>
-                <h3 className="mt-4 text-2xl font-bold text-gray-900">+500</h3>
+                <h3 className="mt-4 text-2xl font-bold text-gray-900">+1000</h3>
                 <p className="text-gray-600">Alumnos formados</p>
               </div>
 
@@ -209,7 +249,7 @@ export function LandingPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
                   </svg>
                 </div>
-                <h3 className="mt-4 text-2xl font-bold text-gray-900">95%</h3>
+                <h3 className="mt-4 text-2xl font-bold text-gray-900">90%</h3>
                 <p className="text-gray-600">Tasa de aprobados</p>
               </div>
 
@@ -219,7 +259,7 @@ export function LandingPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                   </svg>
                 </div>
-                <h3 className="mt-4 text-2xl font-bold text-gray-900">+10</h3>
+                <h3 className="mt-4 text-2xl font-bold text-gray-900">4</h3>
                 <p className="text-gray-600">Profesores expertos</p>
               </div>
 
@@ -271,7 +311,7 @@ export function LandingPage() {
                   <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                   </svg>
-                  Máximo 8 alumnos por grupo
+                  Máximo 20 alumnos por grupo
                 </li>
                 <li className="flex items-center gap-2">
                   <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
@@ -283,7 +323,7 @@ export function LandingPage() {
                   <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                   </svg>
-                  Tutorías personalizadas
+                  Atención personalizada 24/7
                 </li>
               </ul>
             </div>
@@ -364,7 +404,7 @@ export function LandingPage() {
           {/* Degrees */}
           <div className="mt-16 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-800 p-8 text-white">
             <h3 className="text-center text-2xl font-bold">
-              Especialidades que impartimos
+              Nuestra oferta
             </h3>
             <div className="mt-8 grid gap-6 md:grid-cols-2">
               <div className="flex items-start gap-4 rounded-xl bg-white/10 p-6">
@@ -374,10 +414,11 @@ export function LandingPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold">Ingeniería Informática</h4>
+                  <h4 className="text-lg font-semibold">Grado en Ingeniería Informática / Grado en inteligencia artificial y ciberseguridad</h4>
                   <p className="mt-2 text-blue-100">
-                    Programación, Estructuras de Datos, Bases de Datos, Redes,
-                    Sistemas Operativos, Inteligencia Artificial y más.
+                    Fundamentos de programación, estructuras de datos, sistemas operativos, matemática discreta, álgebra,
+                    fundamentos físicos de la informática, análisis matemático y métodos numéricos, sistemas concurrentes y distribuidos,
+                    diseño de algoritmos, electrónica digital y muchas más
                   </p>
                 </div>
               </div>
@@ -388,10 +429,10 @@ export function LandingPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold">Ingeniería Industrial</h4>
+                  <h4 className="text-lg font-semibold">Ingenierías mecánica, eléctrica, electrónica y organización industrial</h4>
                   <p className="mt-2 text-blue-100">
-                    Cálculo, Álgebra, Física, Termodinámica, Mecánica,
-                    Resistencia de Materiales, Electrotecnia y más.
+                    Matemáticas I y II, física I y II, mecánica de fluidos, termodinámica, electrotecnia, informática, dibujo, expresión
+                    y muchas más
                   </p>
                 </div>
               </div>
@@ -433,20 +474,39 @@ export function LandingPage() {
                 </div>
               </div>
 
+              {/* WhatsApp contacts */}
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-500 text-white">
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Teléfono</h3>
-                  <p className="mt-1 text-gray-600">
-                    {/* TODO: Replace with actual phone number */}
-                    <a href="tel:+34600000000" className="hover:text-blue-600">
-                      +34 600 000 000
+                  <h3 className="text-lg font-semibold text-gray-900">WhatsApp</h3>
+                  <div className="mt-1 space-y-2">
+                    <a
+                      href="https://wa.me/34638517245"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors"
+                    >
+                      <span>Pablo: +34 638 517 245</span>
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                      </svg>
                     </a>
-                  </p>
+                    <a
+                      href="https://wa.me/34600530760"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors"
+                    >
+                      <span>David: +34 600 530 760</span>
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                      </svg>
+                    </a>
+                  </div>
                 </div>
               </div>
 
@@ -459,76 +519,26 @@ export function LandingPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Email</h3>
                   <p className="mt-1 text-gray-600">
-                    {/* TODO: Replace with actual email */}
-                    <a href="mailto:info@acainfo.es" className="hover:text-blue-600">
-                      info@acainfo.es
+                    <a href="mailto:acainfodavid@gmail.com" className="hover:text-blue-600 transition-colors">
+                      acainfodavid@gmail.com
                     </a>
                   </p>
                 </div>
               </div>
 
-              {/* Social Media */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Síguenos</h3>
-                <div className="mt-4 flex gap-4">
-                  {/* Instagram */}
-                  <a
-                    href="#" // TODO: Replace with actual Instagram URL
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white transition-colors"
-                    aria-label="Instagram"
-                  >
-                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              {/* Availability notice */}
+              <div className="rounded-xl bg-green-50 border border-green-200 p-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100">
+                    <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                  </a>
-                  {/* Facebook */}
-                  <a
-                    href="#" // TODO: Replace with actual Facebook URL
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white transition-colors"
-                    aria-label="Facebook"
-                  >
-                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                  </a>
-                  {/* WhatsApp */}
-                  <a
-                    href="#" // TODO: Replace with actual WhatsApp URL (wa.me/phone)
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-green-500 hover:text-white transition-colors"
-                    aria-label="WhatsApp"
-                  >
-                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                    </svg>
-                  </a>
-                  {/* Twitter/X */}
-                  <a
-                    href="#" // TODO: Replace with actual Twitter/X URL
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-black hover:text-white transition-colors"
-                    aria-label="Twitter"
-                  >
-                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                  </a>
-                </div>
-              </div>
-
-              {/* Hours */}
-              <div className="rounded-xl bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900">Horario de atención</h3>
-                <div className="mt-4 space-y-2 text-gray-600">
-                  <div className="flex justify-between">
-                    <span>Lunes - Viernes</span>
-                    <span className="font-medium">16:00 - 21:00</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Sábado</span>
-                    <span className="font-medium">09:00 - 14:00</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Domingo</span>
-                    <span className="font-medium text-red-500">Cerrado</span>
+                  <div>
+                    <h3 className="font-semibold text-green-800">Disponibles casi 24/7</h3>
+                    <p className="mt-1 text-sm text-green-700">
+                      Escríbenos por WhatsApp en cualquier momento y te responderemos lo antes posible.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -586,7 +596,7 @@ export function LandingPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="AcaInfo" className="h-8 w-auto brightness-0 invert" />
+              <img src="/logo.png" alt="AcaInfo" className="h-8 w-auto" />
               <span className="text-xl font-bold text-white">AcaInfo</span>
             </div>
             <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
