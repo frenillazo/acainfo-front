@@ -29,7 +29,7 @@ export function EnrollmentDetailPage() {
     if (confirmed) {
       withdraw(enrollmentId, {
         onSuccess: () => {
-          navigate('/enrollments')
+          navigate('/dashboard/enrollments')
         },
       })
     }
@@ -43,7 +43,7 @@ export function EnrollmentDetailPage() {
     return (
       <div className="space-y-4">
         <ErrorState error={error} title="Error al cargar la inscripción" />
-        <Link to="/enrollments" className="text-blue-600 hover:text-blue-700">
+        <Link to="/dashboard/enrollments" className="text-blue-600 hover:text-blue-700">
           &larr; Volver a inscripciones
         </Link>
       </div>
@@ -54,7 +54,7 @@ export function EnrollmentDetailPage() {
     <div className="space-y-6">
       <Breadcrumbs
         items={[
-          { label: 'Inscripciones', href: '/enrollments' },
+          { label: 'Inscripciones', href: '/dashboard/enrollments' },
           { label: enrollment.subjectName },
         ]}
       />

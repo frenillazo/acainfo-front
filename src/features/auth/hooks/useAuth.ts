@@ -33,7 +33,7 @@ export const useAuth = () => {
       // Navigate based on role - roles is a string array: ["ADMIN", "STUDENT"]
       const isAdminOnly =
         data.user.roles.includes('ADMIN') && !data.user.roles.includes('STUDENT')
-      navigate(isAdminOnly ? '/admin' : '/')
+      navigate(isAdminOnly ? '/admin' : '/dashboard')
     },
   })
 
@@ -44,7 +44,7 @@ export const useAuth = () => {
       // User is included in the auth response from backend
       setAuth(data, data.user)
       queryClient.invalidateQueries({ queryKey: ['auth'] })
-      navigate('/')
+      navigate('/dashboard')
     },
   })
 

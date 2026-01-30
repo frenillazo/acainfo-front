@@ -73,7 +73,7 @@ export function GroupRequestsPage() {
           </p>
         </div>
         <Link
-          to="/group-requests/new"
+          to="/dashboard/group-requests/new"
           className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
           Nueva solicitud
@@ -225,7 +225,7 @@ export function GroupRequestsPage() {
         <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
           <p className="text-gray-500">No hay solicitudes de grupo</p>
           <Link
-            to="/group-requests/new"
+            to="/dashboard/group-requests/new"
             className="mt-4 inline-block text-sm text-blue-600 hover:text-blue-800"
           >
             Crear una nueva solicitud

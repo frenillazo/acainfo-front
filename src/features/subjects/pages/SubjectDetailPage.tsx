@@ -63,7 +63,7 @@ export function SubjectDetailPage() {
         studentId: user.id,
         groupId: group.id,
       })
-      navigate('/enrollments')
+      navigate('/dashboard/enrollments')
     } catch (error) {
       console.error('Error enrolling:', error)
     }
@@ -91,7 +91,7 @@ export function SubjectDetailPage() {
     return (
       <div className="space-y-4">
         <ErrorState error={subjectError} title="Error al cargar la asignatura" />
-        <Link to="/subjects" className="text-blue-600 hover:underline">
+        <Link to="/dashboard/subjects" className="text-blue-600 hover:underline">
           Volver a asignaturas
         </Link>
       </div>
@@ -102,7 +102,7 @@ export function SubjectDetailPage() {
     <div className="space-y-6">
       <Breadcrumbs
         items={[
-          { label: 'Asignaturas', href: '/subjects' },
+          { label: 'Asignaturas', href: '/dashboard/subjects' },
           { label: subject.name },
         ]}
       />

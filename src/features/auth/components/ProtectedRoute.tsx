@@ -18,7 +18,7 @@ export function ProtectedRoute({ roles, children }: ProtectedRouteProps) {
   if (roles && roles.length > 0) {
     const hasRequiredRole = roles.some((role) => hasRole(role))
     if (!hasRequiredRole) {
-      return <Navigate to="/" replace />
+      return <Navigate to="/dashboard" replace />
     }
   }
 

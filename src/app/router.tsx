@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { ProtectedRoute, LoginPage, RegisterPage, ProfilePage } from '@/features/auth'
+import { LandingPage } from '@/features/landing'
 import { StudentDashboardPage } from '@/features/student'
 import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
 import { PaymentsPage } from '@/features/payments'
@@ -58,6 +59,10 @@ function NotFoundPage() {
 export const router = createBrowserRouter([
   // Public routes
   {
+    path: '/',
+    element: <LandingPage />,
+  },
+  {
     path: '/login',
     element: <LoginPage />,
   },
@@ -68,7 +73,7 @@ export const router = createBrowserRouter([
 
   // Protected routes (student)
   {
-    path: '/',
+    path: '/dashboard',
     element: (
       <ProtectedRoute>
         <MainLayout />

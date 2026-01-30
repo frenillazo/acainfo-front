@@ -36,27 +36,27 @@ const ICON_CLASS = 'h-5 w-5'
 const studentNavigation: NavItem[] = [
   {
     name: 'Dashboard',
-    href: '/',
+    href: '/dashboard',
     icon: <Home className={ICON_CLASS} />,
   },
   {
     name: 'Mis Inscripciones',
-    href: '/enrollments',
+    href: '/dashboard/enrollments',
     icon: <GraduationCap className={ICON_CLASS} />,
   },
   {
     name: 'Sesiones',
-    href: '/sessions',
+    href: '/dashboard/sessions',
     icon: <Calendar className={ICON_CLASS} />,
   },
   {
     name: 'Pagos',
-    href: '/payments',
+    href: '/dashboard/payments',
     icon: <CreditCard className={ICON_CLASS} />,
   },
   {
     name: 'Asignaturas',
-    href: '/subjects',
+    href: '/dashboard/subjects',
     icon: <BookOpen className={ICON_CLASS} />,
   },
   {

@@ -74,7 +74,7 @@ export function PaymentSummaryCard({ paymentStatus }: PaymentSummaryCardProps) {
       </div>
 
       <Link
-        to="/payments"
+        to="/dashboard/payments"
         className={cn(
           'mt-4 block w-full rounded-md px-4 py-2 text-center text-sm font-medium',
           hasIssues

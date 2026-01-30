@@ -48,7 +48,7 @@ export function GroupRequestDetailPage() {
     return (
       <div className="space-y-4">
         <Link
-          to="/group-requests"
+          to="/dashboard/group-requests"
           className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
         >
           ← Volver a solicitudes
@@ -67,7 +67,7 @@ export function GroupRequestDetailPage() {
       {/* Breadcrumb */}
       <Breadcrumbs
         items={[
-          { label: 'Solicitudes', href: '/group-requests' },
+          { label: 'Solicitudes', href: '/dashboard/group-requests' },
           { label: groupRequest.subjectName || 'Solicitud' },
         ]}
       />
