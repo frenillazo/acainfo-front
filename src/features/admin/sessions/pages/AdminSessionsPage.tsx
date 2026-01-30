@@ -4,6 +4,7 @@ import { useAdminSessions } from '../hooks/useAdminSessions'
 import { useAdminGroups } from '../../groups/hooks/useAdminGroups'
 import { useAdminSubjects } from '../../subjects/hooks/useAdminSubjects'
 import { SessionTable } from '../components/SessionTable'
+import { Pagination } from '@/shared/components/ui/Pagination'
 import type { SessionStatus, SessionType, SessionMode, SessionFilters } from '../../types/admin.types'
 
 const SESSION_STATUSES: { key: SessionStatus | ''; label: string }[] = [
@@ -279,35 +280,15 @@ export function AdminSessionsPage() {
         ) : (
           <SessionTable sessions={sessions} isLoading={isLoading} />
         )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3">
-            <div className="text-sm text-gray-500">
-              Mostrando {sessions.length} de {totalElements} sesiones
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPage(p => Math.max(0, p - 1))}
-                disabled={page === 0}
-                className="rounded-md border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              >
-                Anterior
-              </button>
-              <span className="flex items-center px-3 text-sm text-gray-700">
-                Pagina {page + 1} de {totalPages}
-              </span>
-              <button
-                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-                disabled={page >= totalPages - 1}
-                className="rounded-md border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              >
-                Siguiente
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        isFirst={page === 0}
+        isLast={page >= totalPages - 1}
+      />
     </div>
   )
 }

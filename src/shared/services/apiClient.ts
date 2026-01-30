@@ -45,11 +45,13 @@ apiClient.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
         return apiClient(originalRequest)
       } catch {
-        // Refresh failed, clear and redirect to login
+        // Refresh failed, clear auth state and redirect to login
         localStorage.removeItem('accessToken')
         localStorage.removeItem('refreshToken')
+        localStorage.removeItem('auth-storage')
         window.location.href = '/login'
-        return Promise.reject(error)
+        // Return a promise that never resolves to prevent error propagation
+        return new Promise(() => {})
       }
     }
 

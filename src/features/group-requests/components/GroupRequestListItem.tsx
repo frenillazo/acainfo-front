@@ -32,7 +32,7 @@ export function GroupRequestListItem({ groupRequest, basePath = '/group-requests
             />
           </div>
           <p className="mt-1 text-sm text-gray-500">
-            Materia #{groupRequest.subjectId}
+            {groupRequest.subjectName || 'Asignatura'}
           </p>
           {groupRequest.justification && (
             <p className="mt-1 text-sm text-gray-600 line-clamp-2">

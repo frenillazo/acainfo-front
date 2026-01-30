@@ -68,7 +68,7 @@ export function GroupRequestDetailPage() {
       <Breadcrumbs
         items={[
           { label: 'Solicitudes', href: '/group-requests' },
-          { label: `Solicitud #${groupRequest.id}` },
+          { label: groupRequest.subjectName || 'Solicitud' },
         ]}
       />
 
@@ -78,7 +78,7 @@ export function GroupRequestDetailPage() {
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold text-gray-900">
-                Solicitud #{groupRequest.id}
+                {groupRequest.subjectName || 'Solicitud de grupo'}
               </h1>
               {isOwnRequest && (
                 <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
@@ -87,7 +87,8 @@ export function GroupRequestDetailPage() {
               )}
             </div>
             <p className="mt-1 text-gray-500">
-              Grupo {GROUP_TYPE_LABELS[groupRequest.requestedGroupType]} para materia #{groupRequest.subjectId}
+              Grupo {GROUP_TYPE_LABELS[groupRequest.requestedGroupType]}
+              {groupRequest.subjectDegree && ` - ${groupRequest.subjectDegree}`}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -150,7 +151,7 @@ export function GroupRequestDetailPage() {
                   to={`/subjects/${groupRequest.subjectId}`}
                   className="text-blue-600 hover:text-blue-800"
                 >
-                  Ver materia #{groupRequest.subjectId}
+                  {groupRequest.subjectName || 'Ver materia'}
                 </Link>
               </dd>
             </div>

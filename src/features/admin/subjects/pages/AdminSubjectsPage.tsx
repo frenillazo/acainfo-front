@@ -9,6 +9,7 @@ import { SubjectTable } from '../components/SubjectTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Pagination } from '@/shared/components/ui/Pagination'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { SubjectFilters, SubjectStatus, Degree } from '../../types/admin.types'
 
@@ -204,30 +205,13 @@ export function AdminSubjectsPage() {
             isDeleting={deleteMutation.isPending}
           />
 
-          {/* Pagination */}
-          {data.totalPages > 1 && (
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
-              <div className="text-sm text-gray-500">
-                Página {(data.page ?? 0) + 1} de {data.totalPages}
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handlePageChange((data.page ?? 0) - 1)}
-                  disabled={data.first}
-                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Anterior
-                </button>
-                <button
-                  onClick={() => handlePageChange((data.page ?? 0) + 1)}
-                  disabled={data.last}
-                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Siguiente
-                </button>
-              </div>
-            </div>
-          )}
+          <Pagination
+            currentPage={data.page ?? 0}
+            totalPages={data.totalPages}
+            onPageChange={handlePageChange}
+            isFirst={data.first}
+            isLast={data.last}
+          />
         </>
       ) : null}
 
