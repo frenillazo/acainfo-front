@@ -49,6 +49,14 @@ export function AdminSubjectsPage() {
     }))
   }
 
+  const handleYearChange = (year: number | '') => {
+    setFilters((prev) => ({
+      ...prev,
+      year: year || undefined,
+      page: 0,
+    }))
+  }
+
   const handlePageChange = (page: number) => {
     if (!Number.isNaN(page) && page >= 0) {
       setFilters((prev) => ({ ...prev, page }))
@@ -105,7 +113,7 @@ export function AdminSubjectsPage() {
 
       {/* Filters */}
       <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {/* Search */}
           <div>
             <label
@@ -150,6 +158,28 @@ export function AdminSubjectsPage() {
               <option value="">Todos</option>
               <option value="INGENIERIA_INFORMATICA">Ing. Informática</option>
               <option value="INGENIERIA_INDUSTRIAL">Ing. Industrial</option>
+            </select>
+          </div>
+
+          {/* Year filter */}
+          <div>
+            <label
+              htmlFor="year"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Curso
+            </label>
+            <select
+              id="year"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              value={filters.year ?? ''}
+              onChange={(e) => handleYearChange(e.target.value ? Number(e.target.value) : '')}
+            >
+              <option value="">Todos</option>
+              <option value="1">1º Curso</option>
+              <option value="2">2º Curso</option>
+              <option value="3">3º Curso</option>
+              <option value="4">4º Curso</option>
             </select>
           </div>
 

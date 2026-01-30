@@ -19,6 +19,7 @@ const createSubjectSchema = z.object({
   degree: z.enum(['INGENIERIA_INFORMATICA', 'INGENIERIA_INDUSTRIAL'] as const, {
     message: 'Selecciona un grado',
   }),
+  year: z.coerce.number().min(1).max(4).optional(),
 })
 
 const updateSubjectSchema = z.object({
@@ -27,6 +28,7 @@ const updateSubjectSchema = z.object({
     .min(1, 'El nombre es requerido')
     .max(100, 'El nombre no puede exceder 100 caracteres')
     .optional(),
+  year: z.coerce.number().min(1).max(4).optional().nullable(),
   status: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED']).optional(),
 })
 
@@ -50,6 +52,13 @@ const statusOptions: { value: SubjectStatus; label: string }[] = [
   { value: 'ACTIVE', label: 'Activa' },
   { value: 'INACTIVE', label: 'Inactiva' },
   { value: 'ARCHIVED', label: 'Archivada' },
+]
+
+const yearOptions: { value: number; label: string }[] = [
+  { value: 1, label: '1º Curso' },
+  { value: 2, label: '2º Curso' },
+  { value: 3, label: '3º Curso' },
+  { value: 4, label: '4º Curso' },
 ]
 
 export function SubjectForm({
@@ -133,6 +142,29 @@ export function SubjectForm({
           <p className="mt-1 text-xs text-gray-500">
             El grado no se puede modificar
           </p>
+        </div>
+
+        {/* Year */}
+        <div>
+          <label
+            htmlFor="year"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Curso
+          </label>
+          <select
+            id="year"
+            {...register('year' as keyof CreateSubjectFormData)}
+            defaultValue={subject.year ?? ''}
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            <option value="">Sin asignar</option>
+            {yearOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Status */}
@@ -271,6 +303,28 @@ export function SubjectForm({
         {errors.degree && (
           <p className="mt-1 text-sm text-red-600">{errors.degree.message}</p>
         )}
+      </div>
+
+      {/* Year */}
+      <div>
+        <label
+          htmlFor="year"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Curso <span className="text-gray-400">(opcional)</span>
+        </label>
+        <select
+          id="year"
+          {...register('year')}
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="">Sin asignar</option>
+          {yearOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       {error && (

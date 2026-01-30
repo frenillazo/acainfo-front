@@ -12,13 +12,23 @@ const degreeOptions: { value: Degree | ''; label: string }[] = [
   { value: 'INGENIERIA_INDUSTRIAL', label: 'Ingeniería Industrial' },
 ]
 
+const yearOptions: { value: number | ''; label: string }[] = [
+  { value: '', label: 'Todos los cursos' },
+  { value: 1, label: '1º Curso' },
+  { value: 2, label: '2º Curso' },
+  { value: 3, label: '3º Curso' },
+  { value: 4, label: '4º Curso' },
+]
+
 export function SubjectsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedDegree, setSelectedDegree] = useState<Degree | ''>('')
+  const [selectedYear, setSelectedYear] = useState<number | ''>('')
 
   const filters: SubjectFilters = {
     searchTerm: searchTerm || undefined,
     degree: selectedDegree || undefined,
+    year: selectedYear || undefined,
     status: 'ACTIVE',
     size: 50,
     sortBy: 'name',
@@ -85,6 +95,21 @@ export function SubjectsPage() {
             </option>
           ))}
         </select>
+
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value ? Number(e.target.value) : '')}
+          className={cn(
+            'rounded-lg border border-gray-300 px-4 py-2',
+            'focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
+          )}
+        >
+          {yearOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       {subjects.length > 0 ? (
@@ -96,7 +121,7 @@ export function SubjectsPage() {
       ) : (
         <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
           <p className="text-gray-500">
-            {searchTerm || selectedDegree
+            {searchTerm || selectedDegree || selectedYear
               ? 'No se encontraron asignaturas con los filtros aplicados'
               : 'No hay asignaturas disponibles'}
           </p>

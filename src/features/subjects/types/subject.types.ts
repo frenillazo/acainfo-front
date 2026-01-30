@@ -9,6 +9,7 @@ export interface Subject {
   name: string
   displayName: string
   degree: Degree
+  year: number | null
   status: SubjectStatus
   currentGroupCount: number
   active: boolean
@@ -22,6 +23,7 @@ export interface SubjectFilters {
   code?: string
   searchTerm?: string
   degree?: Degree
+  year?: number
   status?: SubjectStatus
   page?: number
   size?: number
