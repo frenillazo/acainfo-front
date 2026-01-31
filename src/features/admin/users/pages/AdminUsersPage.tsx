@@ -8,6 +8,8 @@ import { Pagination } from '@/shared/components/ui/Pagination'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import { adminApi, type DeactivationResult } from '@/features/auth/services/adminApi'
 import { UserMinus, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { UserFilters, UserStatus, RoleType } from '../../types/admin.types'
 
 export function AdminUsersPage() {
@@ -24,6 +26,7 @@ export function AdminUsersPage() {
   const [showBatchMode, setShowBatchMode] = useState(false)
   const [batchResult, setBatchResult] = useState<DeactivationResult | null>(null)
 
+  const { dialogProps, confirm } = useConfirmDialog()
   const { data, isLoading, error } = useAdminUsers(filters)
 
   // Batch deactivation mutation
@@ -31,7 +34,7 @@ export function AdminUsersPage() {
     mutationFn: adminApi.deactivateBatch,
     onSuccess: (result) => {
       setBatchResult(result)
-      setSelectedUserIds([])
+      // No limpiar selección aquí - mantenerla para contexto hasta cerrar resultado
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
     },
   })
@@ -71,16 +74,25 @@ export function AdminUsersPage() {
     }
   }
 
-  const handleBatchDeactivate = () => {
+  const handleBatchDeactivate = async () => {
     if (selectedUserIds.length === 0) return
-    if (
-      !confirm(
-        `¿Estás seguro de que quieres desactivar ${selectedUserIds.length} usuario(s)?\n\nSolo se desactivarán los usuarios que NO tengan inscripciones activas.`
-      )
-    ) {
-      return
+
+    const confirmed = await confirm({
+      title: 'Desactivar usuarios',
+      message: `¿Estás seguro de que quieres desactivar ${selectedUserIds.length} usuario(s)?\n\nSolo se desactivarán los usuarios que NO tengan inscripciones activas.`,
+      confirmLabel: 'Sí, desactivar',
+      cancelLabel: 'Cancelar',
+      variant: 'danger',
+    })
+
+    if (confirmed) {
+      deactivateMutation.mutate(selectedUserIds)
     }
-    deactivateMutation.mutate(selectedUserIds)
+  }
+
+  const handleCloseResult = () => {
+    setBatchResult(null)
+    setSelectedUserIds([])
   }
 
   const toggleBatchMode = () => {
@@ -176,12 +188,16 @@ export function AdminUsersPage() {
           {batchResult.errors.length > 0 && (
             <div className="mt-2 p-2 bg-red-50 rounded text-sm text-red-700">
               <p className="font-medium">Errores:</p>
-              <ul className="list-disc list-inside mt-1">
+              <ul className="list-disc list-inside mt-1 space-y-1">
                 {batchResult.errors.slice(0, 5).map((err, i) => (
-                  <li key={i}>{err}</li>
+                  <li key={i} className="truncate" title={err}>
+                    {err}
+                  </li>
                 ))}
                 {batchResult.errors.length > 5 && (
-                  <li>... y {batchResult.errors.length - 5} más</li>
+                  <li className="text-red-600 font-medium">
+                    ... y {batchResult.errors.length - 5} errores más
+                  </li>
                 )}
               </ul>
             </div>
@@ -189,7 +205,7 @@ export function AdminUsersPage() {
           <button
             type="button"
             className="mt-2 rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
-            onClick={() => setBatchResult(null)}
+            onClick={handleCloseResult}
           >
             Cerrar
           </button>
@@ -302,6 +318,8 @@ export function AdminUsersPage() {
           />
         </>
       ) : null}
+
+      <ConfirmDialog {...dialogProps} isLoading={deactivateMutation.isPending} />
     </div>
   )
 }
