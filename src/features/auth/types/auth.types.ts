@@ -21,6 +21,15 @@ export interface ChangePasswordRequest {
   newPassword: string
 }
 
+export interface ResendVerificationRequest {
+  email: string
+}
+
+export interface MessageResponse {
+  message: string
+  timestamp: string
+}
+
 export interface AssignRoleRequest {
   roleType: RoleType
 }

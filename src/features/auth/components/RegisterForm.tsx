@@ -4,11 +4,24 @@ import { z } from 'zod'
 import { useAuth } from '../hooks/useAuth'
 import { cn } from '@/shared/utils/cn'
 
+const ALLOWED_DOMAINS = ['red.ujaen.es', 'gmail.com']
+
 const registerSchema = z
   .object({
     firstName: z.string().min(2, 'Mínimo 2 caracteres'),
     lastName: z.string().min(2, 'Mínimo 2 caracteres'),
-    email: z.string().email('Email inválido'),
+    email: z
+      .string()
+      .email('Email inválido')
+      .refine(
+        (email) => {
+          const domain = email.split('@')[1]?.toLowerCase()
+          return domain && ALLOWED_DOMAINS.includes(domain)
+        },
+        {
+          message: 'Solo se permiten emails de @red.ujaen.es o @gmail.com',
+        }
+      ),
     password: z.string().min(8, 'Mínimo 8 caracteres'),
     confirmPassword: z.string(),
   })
@@ -111,6 +124,9 @@ export function RegisterForm() {
             errors.email ? 'border-red-500' : 'border-gray-300'
           )}
         />
+        <p className="mt-1 text-xs text-gray-500">
+          Solo se permiten emails de @red.ujaen.es o @gmail.com
+        </p>
         {errors.email && (
           <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
         )}

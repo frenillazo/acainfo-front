@@ -1,5 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom'
-import { ProtectedRoute, LoginPage, RegisterPage, ProfilePage } from '@/features/auth'
+import {
+  ProtectedRoute,
+  LoginPage,
+  RegisterPage,
+  ProfilePage,
+  VerificationPendingPage,
+  VerifyEmailPage,
+} from '@/features/auth'
 import { LandingPage } from '@/features/landing'
 import { StudentDashboardPage } from '@/features/student'
 import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
@@ -69,6 +76,14 @@ export const router = createBrowserRouter([
   {
     path: '/register',
     element: <RegisterPage />,
+  },
+  {
+    path: '/verification-pending',
+    element: <VerificationPendingPage />,
+  },
+  {
+    path: '/verify-email',
+    element: <VerifyEmailPage />,
   },
 
   // Protected routes (student)

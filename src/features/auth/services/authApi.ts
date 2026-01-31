@@ -6,6 +6,7 @@ import type {
   User,
   UpdateProfileRequest,
   ChangePasswordRequest,
+  MessageResponse,
 } from '../types/auth.types'
 
 export const authApi = {
@@ -14,8 +15,8 @@ export const authApi = {
     return response.data
   },
 
-  register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/auth/register', data)
+  register: async (data: RegisterRequest): Promise<User> => {
+    const response = await apiClient.post<User>('/auth/register', data)
     return response.data
   },
 
@@ -46,5 +47,20 @@ export const authApi = {
 
   changePassword: async (data: ChangePasswordRequest): Promise<void> => {
     await apiClient.put('/users/profile/password', data)
+  },
+
+  verifyEmail: async (token: string): Promise<MessageResponse> => {
+    const response = await apiClient.get<MessageResponse>(
+      `/auth/verify-email?token=${token}`
+    )
+    return response.data
+  },
+
+  resendVerification: async (email: string): Promise<MessageResponse> => {
+    const response = await apiClient.post<MessageResponse>(
+      '/auth/resend-verification',
+      { email }
+    )
+    return response.data
   },
 }

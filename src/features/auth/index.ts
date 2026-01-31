@@ -10,6 +10,8 @@ export { RoleManagementPanel } from './components/RoleManagementPanel'
 export { LoginPage } from './pages/LoginPage'
 export { RegisterPage } from './pages/RegisterPage'
 export { ProfilePage } from './pages/ProfilePage'
+export { VerificationPendingPage } from './pages/VerificationPendingPage'
+export { VerifyEmailPage } from './pages/VerifyEmailPage'
 
 // Hooks
 export { useAuth } from './hooks/useAuth'

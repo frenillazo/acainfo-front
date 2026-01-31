@@ -41,10 +41,9 @@ export const useAuth = () => {
   const registerMutation = useMutation({
     mutationFn: authApi.register,
     onSuccess: (data) => {
-      // User is included in the auth response from backend
-      setAuth(data, data.user)
-      queryClient.invalidateQueries({ queryKey: ['auth'] })
-      navigate('/dashboard')
+      // Registration now requires email verification
+      // User is returned with PENDING_ACTIVATION status, no tokens
+      navigate('/verification-pending', { state: { email: data.email } })
     },
   })
 
