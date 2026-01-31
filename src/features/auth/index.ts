@@ -2,6 +2,7 @@
 export { LoginForm } from './components/LoginForm'
 export { RegisterForm } from './components/RegisterForm'
 export { ProtectedRoute } from './components/ProtectedRoute'
+export { RestrictedAccountBanner } from './components/RestrictedAccountBanner'
 export { ProfileEditForm } from './components/ProfileEditForm'
 export { ChangePasswordForm } from './components/ChangePasswordForm'
 export { RoleManagementPanel } from './components/RoleManagementPanel'

@@ -35,4 +35,28 @@ export const adminApi = {
     const response = await apiClient.put<User>(`/admin/users/${userId}/status`, request)
     return response.data
   },
+
+  // POST /admin/users/deactivate-batch - Batch deactivate users
+  deactivateBatch: async (userIds: number[]): Promise<DeactivationResult> => {
+    const response = await apiClient.post<DeactivationResult>(
+      '/admin/users/deactivate-batch',
+      { userIds }
+    )
+    return response.data
+  },
+
+  // POST /admin/trigger-status-check - Manually trigger status check job
+  triggerStatusCheck: async (): Promise<{ message: string }> => {
+    const response = await apiClient.post<{ message: string }>(
+      '/admin/trigger-status-check'
+    )
+    return response.data
+  },
+}
+
+export interface DeactivationResult {
+  totalProcessed: number
+  deactivated: number
+  skipped: number
+  errors: string[]
 }
