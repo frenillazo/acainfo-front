@@ -66,6 +66,7 @@ export type GroupStatus = 'OPEN' | 'CLOSED' | 'CANCELLED'
 
 export interface Group {
   id: number
+  name: string
   subjectId: number
   teacherId: number
   type: GroupType

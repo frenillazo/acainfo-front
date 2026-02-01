@@ -75,7 +75,7 @@ export function AdminGroupDetailPage() {
         homeHref="/admin"
         items={[
           { label: 'Grupos', href: '/admin/groups' },
-          { label: group.subjectName },
+          { label: group.name },
         ]}
       />
 
@@ -85,12 +85,12 @@ export function AdminGroupDetailPage() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-900">
-                {group.subjectName}
+                {group.name}
               </h1>
               <GroupTypeBadge type={group.type} />
               <GroupStatusBadge status={group.status} />
             </div>
-            <p className="mt-1 text-gray-500">{group.subjectCode}</p>
+            <p className="mt-1 text-gray-500">{group.subjectName} · {group.subjectCode}</p>
           </div>
           <div className="flex items-center gap-3">
             <Link

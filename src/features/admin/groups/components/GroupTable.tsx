@@ -27,10 +27,10 @@ export function GroupTable({
 }: GroupTableProps) {
   const columns: Column<Group>[] = [
     {
-      key: 'subject',
-      header: 'Asignatura',
+      key: 'name',
+      header: 'Grupo',
       render: (group) => (
-        <TextCell primary={group.subjectName} secondary={group.subjectCode} />
+        <TextCell primary={group.name} secondary={group.subjectName} />
       ),
     },
     {

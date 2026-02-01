@@ -20,9 +20,10 @@ export function GroupCard({ group, onEnroll, isEnrolling }: GroupCardProps) {
     >
       <div className="flex items-start justify-between">
         <div>
+          <h3 className="font-medium text-gray-900">{group.name}</h3>
           <span
             className={cn(
-              'inline-block rounded-full px-2.5 py-0.5 text-xs font-medium',
+              'mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium',
               group.isIntensive
                 ? 'bg-orange-100 text-orange-700'
                 : 'bg-blue-100 text-blue-700'

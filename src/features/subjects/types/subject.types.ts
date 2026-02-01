@@ -33,6 +33,7 @@ export interface SubjectFilters {
 
 export interface Group {
   id: number
+  name: string
   subjectId: number
   teacherId: number
   type: GroupType
