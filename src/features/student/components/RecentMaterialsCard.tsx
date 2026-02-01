@@ -4,15 +4,30 @@ import { materialApi } from '@/features/materials/services/materialApi'
 import type { Material } from '@/features/materials/types/material.types'
 import { formatDate } from '@/shared/utils/formatters'
 import { Spinner, Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useActiveEnrollmentSubjectIds } from '@/features/enrollments/hooks/useEnrollments'
+import { useAuthStore } from '@/features/auth/store/authStore'
 
 export function RecentMaterialsCard() {
   const [downloadingId, setDownloadingId] = useState<number | null>(null)
+  const user = useAuthStore((state) => state.user)
+  const userId = user?.id ?? 0
 
-  const { data: materials, isLoading, error } = useQuery({
+  // Get active enrollment subject IDs to filter materials
+  const { activeSubjectIds, isLoading: isLoadingEnrollments } = useActiveEnrollmentSubjectIds(userId)
+
+  const { data: allMaterials, isLoading: isLoadingMaterials, error } = useQuery({
     queryKey: ['materials', 'recent'],
     queryFn: () => materialApi.getRecent(3),
   })
+
+  // Filter materials to only show those from subjects with active enrollment
+  const materials = useMemo(() => {
+    if (!allMaterials || activeSubjectIds.size === 0) return []
+    return allMaterials.filter((material) => activeSubjectIds.has(material.subjectId))
+  }, [allMaterials, activeSubjectIds])
+
+  const isLoading = isLoadingMaterials || isLoadingEnrollments
 
   const handleDownload = async (material: Material) => {
     setDownloadingId(material.id)
@@ -41,12 +56,15 @@ export function RecentMaterialsCard() {
   }
 
   if (!materials || materials.length === 0) {
+    const hasEnrollments = activeSubjectIds.size > 0
     return (
       <Card padding="md">
         <CardTitle>Materiales Recientes</CardTitle>
         <CardContent>
           <p className="text-sm text-gray-500">
-            No hay materiales nuevos en los ultimos 3 dias
+            {hasEnrollments
+              ? 'No hay materiales nuevos en los ultimos 3 dias'
+              : 'Inscríbete en una asignatura para ver los materiales'}
           </p>
         </CardContent>
       </Card>

@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useSubject, useGroupsBySubject } from '../hooks/useSubjects'
-import { useEnroll } from '@/features/enrollments/hooks/useEnrollments'
+import { useEnroll, useActiveEnrollmentSubjectIds } from '@/features/enrollments/hooks/useEnrollments'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { GroupCard } from '../components/GroupCard'
 import type { Group } from '../types/subject.types'
@@ -12,7 +12,7 @@ import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useEffect } from 'react'
 import { useCheckInterest, useMarkInterest, useRemoveInterest } from '@/features/group-requests/hooks/useGroupRequests'
-import { HandMetal } from 'lucide-react'
+import { HandMetal, Lock } from 'lucide-react'
 
 const degreeLabels: Record<string, string> = {
   INGENIERIA_INFORMATICA: 'Ingeniería Informática',
@@ -35,6 +35,10 @@ export function SubjectDetailPage() {
   const markInterestMutation = useMarkInterest()
   const removeInterestMutation = useRemoveInterest()
   const isToggling = markInterestMutation.isPending || removeInterestMutation.isPending
+
+  // Check if student has active enrollment in this subject
+  const { hasActiveEnrollment, isLoading: isLoadingEnrollments } = useActiveEnrollmentSubjectIds(userId)
+  const canAccessMaterials = hasActiveEnrollment(subjectId)
 
   // Materials
   const {
@@ -211,12 +215,22 @@ export function SubjectDetailPage() {
       <section>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Materiales de la Asignatura</h2>
-          {isLoadingMaterials && (
+          {(isLoadingMaterials || isLoadingEnrollments) && (
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
           )}
         </div>
 
-        {materials.length > 0 ? (
+        {!canAccessMaterials ? (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-8 text-center">
+            <Lock className="mx-auto mb-3 h-10 w-10 text-amber-500" />
+            <p className="font-medium text-amber-700">
+              Para acceder al material debes estar inscrito
+            </p>
+            <p className="mt-2 text-sm text-amber-600">
+              Inscríbete en uno de los grupos disponibles para desbloquear los materiales de esta asignatura.
+            </p>
+          </div>
+        ) : materials.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {materials.map((material) => (
               <MaterialCard
