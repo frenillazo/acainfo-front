@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { cn } from '@/shared/utils/cn'
+import { Card } from '@/shared/components/ui'
 
 interface QuickActionCardProps {
   title: string
@@ -31,20 +32,16 @@ export function QuickActionCard({
   color = 'blue',
 }: QuickActionCardProps) {
   return (
-    <Link
-      to={href}
-      className={cn(
-        'block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-colors',
-        colorClasses[color]
-      )}
-    >
-      <div className="flex items-start gap-3">
-        <div className={cn('mt-0.5', iconColorClasses[color])}>{icon}</div>
-        <div>
-          <h3 className="font-medium text-gray-900">{title}</h3>
-          <p className="mt-1 text-sm text-gray-500">{description}</p>
+    <Link to={href}>
+      <Card padding="sm" className={cn('transition-colors', colorClasses[color])}>
+        <div className="flex items-start gap-3">
+          <div className={cn('mt-0.5', iconColorClasses[color])}>{icon}</div>
+          <div>
+            <h3 className="font-medium text-gray-900">{title}</h3>
+            <p className="mt-1 text-sm text-gray-500">{description}</p>
+          </div>
         </div>
-      </div>
+      </Card>
     </Link>
   )
 }

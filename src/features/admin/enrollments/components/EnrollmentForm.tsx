@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery } from '@tanstack/react-query'
-import { cn } from '@/shared/utils/cn'
 import { adminApi } from '../../services/adminApi'
+import { SearchableList } from '@/shared/components/form'
+import { Button, Alert } from '@/shared/components/ui'
 
 const enrollmentSchema = z.object({
   studentId: z.number({ message: 'Selecciona un estudiante' }).min(1, 'Selecciona un estudiante'),
@@ -57,146 +58,76 @@ export function EnrollmentForm({
   const students = studentsData?.content ?? []
   const groups = groupsData?.content ?? []
 
+  const studentItems = students.map((s) => ({
+    id: s.id,
+    primary: s.fullName,
+    secondary: s.email,
+  }))
+
+  const groupItems = groups
+    .filter((group) =>
+      groupSearch
+        ? group.subjectName?.toLowerCase().includes(groupSearch.toLowerCase()) ||
+          group.type?.toLowerCase().includes(groupSearch.toLowerCase())
+        : true
+    )
+    .map((g) => ({
+      id: g.id,
+      primary: `${g.subjectName} - ${g.type}`,
+      secondary: `Profesor: ${g.teacherName} | Capacidad: ${g.currentEnrollmentCount}/${g.maxCapacity}`,
+    }))
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Student Selection */}
-      <div>
-        <label
-          htmlFor="studentSearch"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Estudiante
-        </label>
-        <input
-          type="text"
-          id="studentSearch"
-          placeholder="Buscar estudiante por nombre o email..."
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          value={studentSearch}
-          onChange={(e) => setStudentSearch(e.target.value)}
-        />
-        <div className="mt-2 max-h-48 overflow-y-auto rounded-md border border-gray-200">
-          {isLoadingStudents ? (
-            <div className="p-3 text-center text-sm text-gray-500">Cargando...</div>
-          ) : students.length === 0 ? (
-            <div className="p-3 text-center text-sm text-gray-500">No se encontraron estudiantes</div>
-          ) : (
-            students.map((student) => (
-              <button
-                key={student.id}
-                type="button"
-                onClick={() => setValue('studentId', student.id)}
-                className={cn(
-                  'flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-gray-50',
-                  selectedStudentId === student.id && 'bg-blue-50 text-blue-700'
-                )}
-              >
-                <div>
-                  <div className="font-medium">{student.fullName}</div>
-                  <div className="text-gray-500">{student.email}</div>
-                </div>
-                {selectedStudentId === student.id && (
-                  <span className="text-blue-600">✓</span>
-                )}
-              </button>
-            ))
-          )}
-        </div>
-        <input type="hidden" {...register('studentId', { valueAsNumber: true })} />
-        {errors.studentId && (
-          <p className="mt-1 text-sm text-red-600">{errors.studentId.message}</p>
-        )}
-      </div>
+      <SearchableList
+        label="Estudiante"
+        placeholder="Buscar estudiante por nombre o email..."
+        items={studentItems}
+        selectedId={selectedStudentId}
+        onSelect={(id) => setValue('studentId', id as number)}
+        isLoading={isLoadingStudents}
+        error={errors.studentId?.message}
+        emptyMessage="No se encontraron estudiantes"
+        searchValue={studentSearch}
+        onSearchChange={setStudentSearch}
+      />
+      <input type="hidden" {...register('studentId', { valueAsNumber: true })} />
 
-      {/* Group Selection */}
-      <div>
-        <label
-          htmlFor="groupSearch"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Grupo
-        </label>
-        <input
-          type="text"
-          id="groupSearch"
-          placeholder="Buscar grupo..."
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          value={groupSearch}
-          onChange={(e) => setGroupSearch(e.target.value)}
-        />
-        <div className="mt-2 max-h-48 overflow-y-auto rounded-md border border-gray-200">
-          {isLoadingGroups ? (
-            <div className="p-3 text-center text-sm text-gray-500">Cargando...</div>
-          ) : groups.length === 0 ? (
-            <div className="p-3 text-center text-sm text-gray-500">No se encontraron grupos</div>
-          ) : (
-            groups
-              .filter((group) =>
-                groupSearch
-                  ? group.subjectName?.toLowerCase().includes(groupSearch.toLowerCase()) ||
-                    group.type?.toLowerCase().includes(groupSearch.toLowerCase())
-                  : true
-              )
-              .map((group) => (
-                <button
-                  key={group.id}
-                  type="button"
-                  onClick={() => setValue('groupId', group.id)}
-                  className={cn(
-                    'flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-gray-50',
-                    selectedGroupId === group.id && 'bg-blue-50 text-blue-700'
-                  )}
-                >
-                  <div>
-                    <div className="font-medium">
-                      {group.subjectName} - {group.type}
-                    </div>
-                    <div className="text-gray-500">
-                      Profesor: {group.teacherName} | Capacidad: {group.currentEnrollmentCount}/{group.maxCapacity}
-                    </div>
-                  </div>
-                  {selectedGroupId === group.id && (
-                    <span className="text-blue-600">✓</span>
-                  )}
-                </button>
-              ))
-          )}
-        </div>
-        <input type="hidden" {...register('groupId', { valueAsNumber: true })} />
-        {errors.groupId && (
-          <p className="mt-1 text-sm text-red-600">{errors.groupId.message}</p>
-        )}
-      </div>
+      <SearchableList
+        label="Grupo"
+        placeholder="Buscar grupo..."
+        items={groupItems}
+        selectedId={selectedGroupId}
+        onSelect={(id) => setValue('groupId', id as number)}
+        isLoading={isLoadingGroups}
+        error={errors.groupId?.message}
+        emptyMessage="No se encontraron grupos"
+        searchValue={groupSearch}
+        onSearchChange={setGroupSearch}
+      />
+      <input type="hidden" {...register('groupId', { valueAsNumber: true })} />
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-700">
-            {error.message || 'Error al crear la inscripción'}
-          </p>
-        </div>
+        <Alert
+          variant="error"
+          message={error.message || 'Error al crear la inscripción'}
+        />
       )}
 
       <div className="flex justify-end gap-3">
         {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
+          <Button type="button" variant="secondary" onClick={onCancel}>
             Cancelar
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="submit"
-          disabled={isSubmitting || !selectedStudentId || !selectedGroupId}
-          className={cn(
-            'rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white',
-            'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500',
-            'disabled:cursor-not-allowed disabled:opacity-50'
-          )}
+          disabled={!selectedStudentId || !selectedGroupId}
+          isLoading={isSubmitting}
+          loadingText="Creando..."
         >
-          {isSubmitting ? 'Creando...' : 'Crear inscripción'}
-        </button>
+          Crear inscripción
+        </Button>
       </div>
     </form>
   )

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Material } from '../types/material.types'
 import { getFileIcon, CATEGORY_ICONS } from '../types/material.types'
 import { cn } from '@/shared/utils/cn'
+import { Card } from '@/shared/components/ui'
 
 interface MaterialCardProps {
   material: Material
@@ -30,7 +31,7 @@ export function MaterialCard({
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+    <Card variant="interactive" padding="sm">
       <div className="flex items-start gap-3">
         {/* File Icon */}
         <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 text-2xl">
@@ -133,6 +134,6 @@ export function MaterialCard({
           )}
         </div>
       </div>
-    </div>
+    </Card>
   )
 }

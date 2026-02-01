@@ -1,6 +1,7 @@
 import type { Group } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
 import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
+import { Card } from '@/shared/components/ui'
 
 interface GroupCardProps {
   group: Group
@@ -12,12 +13,10 @@ export function GroupCard({ group, onEnroll, isEnrolling }: GroupCardProps) {
   const isFull = group.availableSeats !== null && group.availableSeats <= 0
 
   return (
-    <div
-      className={cn(
-        'rounded-lg border bg-white p-4 shadow-sm',
-        !group.isOpen && 'opacity-60',
-        isFull && 'border-orange-200 bg-orange-50'
-      )}
+    <Card
+      padding="sm"
+      variant={isFull ? 'warning' : 'default'}
+      className={cn(!group.isOpen && 'opacity-60')}
     >
       <div className="flex items-start justify-between">
         <div>
@@ -111,6 +110,6 @@ export function GroupCard({ group, onEnroll, isEnrolling }: GroupCardProps) {
           Inscripciones cerradas
         </p>
       )}
-    </div>
+    </Card>
   )
 }

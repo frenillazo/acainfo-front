@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useProfile } from '../hooks/useProfile'
+import { PasswordField } from '@/shared/components/form'
+import { Button, Alert } from '@/shared/components/ui'
 import type { ChangePasswordRequest } from '../types/auth.types'
 
 interface ChangePasswordFormProps {
@@ -21,12 +23,6 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
     newPassword?: string
     confirmPassword?: string
   }>({})
-
-  const [showPasswords, setShowPasswords] = useState({
-    current: false,
-    new: false,
-    confirm: false,
-  })
 
   // Clear error when form changes
   useEffect(() => {
@@ -99,134 +95,61 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
     }
   }
 
-  const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
-    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }))
-  }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label
-          htmlFor="currentPassword"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Current Password
-        </label>
-        <div className="relative mt-1">
-          <input
-            type={showPasswords.current ? 'text' : 'password'}
-            id="currentPassword"
-            value={formData.currentPassword}
-            onChange={(e) => handleChange('currentPassword', e.target.value)}
-            className={`block w-full rounded-md border ${
-              validationErrors.currentPassword ? 'border-red-500' : 'border-gray-300'
-            } px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
-            disabled={isLoading}
-            autoComplete="current-password"
-          />
-          <button
-            type="button"
-            onClick={() => togglePasswordVisibility('current')}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-            tabIndex={-1}
-          >
-            {showPasswords.current ? '🙈' : '👁️'}
-          </button>
-        </div>
-        {validationErrors.currentPassword && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.currentPassword}</p>
-        )}
-      </div>
+      <PasswordField
+        label="Current Password"
+        name="currentPassword"
+        value={formData.currentPassword}
+        onChange={(value) => handleChange('currentPassword', value)}
+        error={validationErrors.currentPassword}
+        disabled={isLoading}
+        autoComplete="current-password"
+      />
 
-      <div>
-        <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
-          New Password
-        </label>
-        <div className="relative mt-1">
-          <input
-            type={showPasswords.new ? 'text' : 'password'}
-            id="newPassword"
-            value={formData.newPassword}
-            onChange={(e) => handleChange('newPassword', e.target.value)}
-            minLength={6}
-            className={`block w-full rounded-md border ${
-              validationErrors.newPassword ? 'border-red-500' : 'border-gray-300'
-            } px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
-            disabled={isLoading}
-            autoComplete="new-password"
-          />
-          <button
-            type="button"
-            onClick={() => togglePasswordVisibility('new')}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-            tabIndex={-1}
-          >
-            {showPasswords.new ? '🙈' : '👁️'}
-          </button>
-        </div>
-        {validationErrors.newPassword && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.newPassword}</p>
-        )}
-        <p className="mt-1 text-xs text-gray-500">Minimum 6 characters</p>
-      </div>
+      <PasswordField
+        label="New Password"
+        name="newPassword"
+        value={formData.newPassword}
+        onChange={(value) => handleChange('newPassword', value)}
+        minLength={6}
+        error={validationErrors.newPassword}
+        helperText="Minimum 6 characters"
+        disabled={isLoading}
+        autoComplete="new-password"
+      />
 
-      <div>
-        <label
-          htmlFor="confirmPassword"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Confirm New Password
-        </label>
-        <div className="relative mt-1">
-          <input
-            type={showPasswords.confirm ? 'text' : 'password'}
-            id="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={(e) => handleChange('confirmPassword', e.target.value)}
-            className={`block w-full rounded-md border ${
-              validationErrors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-            } px-3 py-2 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
-            disabled={isLoading}
-            autoComplete="new-password"
-          />
-          <button
-            type="button"
-            onClick={() => togglePasswordVisibility('confirm')}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-            tabIndex={-1}
-          >
-            {showPasswords.confirm ? '🙈' : '👁️'}
-          </button>
-        </div>
-        {validationErrors.confirmPassword && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.confirmPassword}</p>
-        )}
-      </div>
+      <PasswordField
+        label="Confirm New Password"
+        name="confirmPassword"
+        value={formData.confirmPassword}
+        onChange={(value) => handleChange('confirmPassword', value)}
+        error={validationErrors.confirmPassword}
+        disabled={isLoading}
+        autoComplete="new-password"
+      />
 
-      {error && (
-        <div className="rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-800">{error}</p>
-        </div>
-      )}
+      {error && <Alert variant="error" message={error} />}
 
       <div className="flex gap-3">
-        <button
+        <Button
           type="submit"
-          disabled={isLoading}
-          className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          isLoading={isLoading}
+          loadingText="Changing Password..."
+          className="flex-1"
         >
-          {isLoading ? 'Changing Password...' : 'Change Password'}
-        </button>
+          Change Password
+        </Button>
 
         {onCancel && (
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={onCancel}
             disabled={isLoading}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
-          </button>
+          </Button>
         )}
       </div>
     </form>

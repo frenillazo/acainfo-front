@@ -1,7 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { cn } from '@/shared/utils/cn'
+import { FormField } from '@/shared/components/form'
+import { Button, Alert } from '@/shared/components/ui'
 import type { Teacher } from '../../types/admin.types'
 
 const createTeacherSchema = z.object({
@@ -53,136 +54,63 @@ export function TeacherForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {!isEditing && (
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Email
-          </label>
-          <input
-            {...register('email')}
-            type="email"
-            id="email"
-            autoComplete="email"
-            className={cn(
-              'mt-1 block w-full rounded-md border px-3 py-2 shadow-sm',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500',
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            )}
-          />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-          )}
-        </div>
+        <FormField
+          {...register('email')}
+          label="Email"
+          type="email"
+          autoComplete="email"
+          error={errors.email?.message}
+        />
       )}
 
       {!isEditing && (
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Contraseña
-          </label>
-          <input
-            {...register('password')}
-            type="password"
-            id="password"
-            autoComplete="new-password"
-            className={cn(
-              'mt-1 block w-full rounded-md border px-3 py-2 shadow-sm',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500',
-              errors.password ? 'border-red-500' : 'border-gray-300'
-            )}
-          />
-          {errors.password && (
-            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-          )}
-        </div>
+        <FormField
+          {...register('password')}
+          label="Contraseña"
+          type="password"
+          autoComplete="new-password"
+          error={errors.password?.message}
+        />
       )}
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="firstName"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Nombre
-          </label>
-          <input
-            {...register('firstName')}
-            type="text"
-            id="firstName"
-            autoComplete="given-name"
-            className={cn(
-              'mt-1 block w-full rounded-md border px-3 py-2 shadow-sm',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500',
-              errors.firstName ? 'border-red-500' : 'border-gray-300'
-            )}
-          />
-          {errors.firstName && (
-            <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
-          )}
-        </div>
+        <FormField
+          {...register('firstName')}
+          label="Nombre"
+          type="text"
+          autoComplete="given-name"
+          error={errors.firstName?.message}
+        />
 
-        <div>
-          <label
-            htmlFor="lastName"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Apellidos
-          </label>
-          <input
-            {...register('lastName')}
-            type="text"
-            id="lastName"
-            autoComplete="family-name"
-            className={cn(
-              'mt-1 block w-full rounded-md border px-3 py-2 shadow-sm',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500',
-              errors.lastName ? 'border-red-500' : 'border-gray-300'
-            )}
-          />
-          {errors.lastName && (
-            <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
-          )}
-        </div>
+        <FormField
+          {...register('lastName')}
+          label="Apellidos"
+          type="text"
+          autoComplete="family-name"
+          error={errors.lastName?.message}
+        />
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-700">
-            {error.message || 'Error al guardar el profesor'}
-          </p>
-        </div>
+        <Alert
+          variant="error"
+          message={error.message || 'Error al guardar el profesor'}
+        />
       )}
 
       <div className="flex justify-end gap-3">
         {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
+          <Button type="button" variant="secondary" onClick={onCancel}>
             Cancelar
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="submit"
-          disabled={isSubmitting}
-          className={cn(
-            'rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white',
-            'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500',
-            'disabled:cursor-not-allowed disabled:opacity-50'
-          )}
+          isLoading={isSubmitting}
+          loadingText="Guardando..."
         >
-          {isSubmitting
-            ? 'Guardando...'
-            : isEditing
-              ? 'Guardar cambios'
-              : 'Crear profesor'}
-        </button>
+          {isEditing ? 'Guardar cambios' : 'Crear profesor'}
+        </Button>
       </div>
     </form>
   )

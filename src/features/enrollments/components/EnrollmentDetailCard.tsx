@@ -3,6 +3,7 @@ import { EnrollmentStatusBadge } from './EnrollmentStatusBadge'
 import { formatDate } from '@/shared/utils/formatters'
 import { cn } from '@/shared/utils/cn'
 import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
+import { Card } from '@/shared/components/ui'
 
 interface EnrollmentDetailCardProps {
   enrollment: EnrollmentDetail
@@ -16,7 +17,7 @@ export function EnrollmentDetailCard({
   isWithdrawing,
 }: EnrollmentDetailCardProps) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+    <Card padding="none">
       <div className="border-b border-gray-200 p-6">
         <div className="flex items-start justify-between">
           <div>
@@ -68,6 +69,6 @@ export function EnrollmentDetailCard({
           </div>
         )}
       </div>
-    </div>
+    </Card>
   )
 }

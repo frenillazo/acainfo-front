@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom'
 import type { Teacher } from '../../types/admin.types'
 import { UserStatusBadge } from '../../users/components/UserStatusBadge'
+import {
+  DataTable,
+  ActionsCell,
+  ActionButton,
+  Avatar,
+  type Column,
+} from '@/shared/components/ui'
 
 interface TeacherTableProps {
   teachers: Teacher[]
@@ -13,84 +20,72 @@ export function TeacherTable({
   onDelete,
   isDeleting,
 }: TeacherTableProps) {
-  if (teachers.length === 0) {
-    return (
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center text-gray-500">
-        No se encontraron profesores
-      </div>
-    )
-  }
+  const columns: Column<Teacher>[] = [
+    {
+      key: 'teacher',
+      header: 'Profesor',
+      render: (teacher) => (
+        <div className="flex items-center">
+          <Avatar name={teacher.fullName} size="md" color="blue" />
+          <div className="ml-4">
+            <div className="font-medium text-gray-900">{teacher.fullName}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'email',
+      header: 'Email',
+      render: (teacher) => (
+        <span className="text-sm text-gray-500">{teacher.email}</span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Estado',
+      render: (teacher) => <UserStatusBadge status={teacher.status} />,
+    },
+    {
+      key: 'createdAt',
+      header: 'Creado',
+      render: (teacher) => (
+        <span className="text-sm text-gray-500">
+          {new Date(teacher.createdAt).toLocaleDateString('es-ES')}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Acciones',
+      align: 'right',
+      render: (teacher) => (
+        <ActionsCell>
+          <Link
+            to={`/admin/teachers/${teacher.id}`}
+            className="font-medium text-blue-600 hover:text-blue-800"
+          >
+            Ver detalle
+          </Link>
+          {onDelete && (
+            <ActionButton
+              onClick={() => onDelete(teacher.id)}
+              variant="danger"
+              disabled={isDeleting}
+            >
+              Eliminar
+            </ActionButton>
+          )}
+        </ActionsCell>
+      ),
+    },
+  ]
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Profesor
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Email
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Estado
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Creado
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-              Acciones
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {teachers.map((teacher) => (
-            <tr key={teacher.id} className="hover:bg-gray-50">
-              <td className="whitespace-nowrap px-6 py-4">
-                <div className="flex items-center">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-medium text-blue-600">
-                    {teacher.firstName[0]}
-                    {teacher.lastName[0]}
-                  </div>
-                  <div className="ml-4">
-                    <div className="font-medium text-gray-900">
-                      {teacher.fullName}
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                {teacher.email}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                <UserStatusBadge status={teacher.status} />
-              </td>
-              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                {new Date(teacher.createdAt).toLocaleDateString('es-ES')}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
-                <div className="flex items-center justify-end gap-3">
-                  <Link
-                    to={`/admin/teachers/${teacher.id}`}
-                    className="font-medium text-blue-600 hover:text-blue-800"
-                  >
-                    Ver detalle
-                  </Link>
-                  {onDelete && (
-                    <button
-                      onClick={() => onDelete(teacher.id)}
-                      disabled={isDeleting}
-                      className="font-medium text-red-600 hover:text-red-800 disabled:opacity-50"
-                    >
-                      Eliminar
-                    </button>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      data={teachers}
+      columns={columns}
+      keyExtractor={(teacher) => teacher.id}
+      emptyMessage="No se encontraron profesores"
+    />
   )
 }

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import type { PaymentSummary } from '../types/student.types'
 import { cn } from '@/shared/utils/cn'
 import { formatCurrency, formatDate } from '@/shared/utils/formatters'
+import { Card } from '@/shared/components/ui'
 
 interface PaymentSummaryCardProps {
   paymentStatus: PaymentSummary
@@ -11,13 +12,10 @@ export function PaymentSummaryCard({ paymentStatus }: PaymentSummaryCardProps) {
   const hasIssues = paymentStatus.hasOverduePayments || !paymentStatus.canAccessResources
 
   return (
-    <div
-      className={cn(
-        'rounded-lg border p-4 shadow-sm',
-        hasIssues
-          ? 'border-red-200 bg-red-50'
-          : 'border-gray-200 bg-white'
-      )}
+    <Card
+      padding="sm"
+      variant={hasIssues ? 'error' : 'default'}
+      className={hasIssues ? 'bg-red-50' : ''}
     >
       <div className="flex items-center justify-between">
         <h3 className="font-medium text-gray-900">Estado de Pagos</h3>
@@ -84,6 +82,6 @@ export function PaymentSummaryCard({ paymentStatus }: PaymentSummaryCardProps) {
       >
         {hasIssues ? 'Regularizar pagos' : 'Ver pagos'}
       </Link>
-    </div>
+    </Card>
   )
 }

@@ -1,4 +1,5 @@
 import { cn } from '@/shared/utils/cn'
+import { Card } from '@/shared/components/ui'
 
 interface StatCardProps {
   title: string
@@ -19,7 +20,7 @@ const colorClasses = {
 
 export function StatCard({ title, value, icon, color = 'blue', subtitle }: StatCardProps) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <Card padding="md">
       <div className="flex items-center gap-4">
         <div className={cn('rounded-lg p-3', colorClasses[color])}>
           {icon}
@@ -32,6 +33,6 @@ export function StatCard({ title, value, icon, color = 'blue', subtitle }: StatC
           )}
         </div>
       </div>
-    </div>
+    </Card>
   )
 }

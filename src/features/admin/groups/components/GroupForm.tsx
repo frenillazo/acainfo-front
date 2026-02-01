@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery } from '@tanstack/react-query'
-import { cn } from '@/shared/utils/cn'
 import { adminApi } from '../../services/adminApi'
-import type { Group, GroupType, GroupStatus } from '../../types/admin.types'
+import { FormField, FormSelect, SearchableList } from '@/shared/components/form'
+import { Button, Alert } from '@/shared/components/ui'
+import type { Group } from '../../types/admin.types'
 
 const createGroupSchema = z.object({
   subjectId: z.number({ message: 'Selecciona una asignatura' }).min(1),
@@ -32,6 +33,20 @@ interface GroupFormProps {
   error?: Error | null
   onCancel?: () => void
 }
+
+const groupTypeOptions = [
+  { value: '', label: 'Selecciona un tipo' },
+  { value: 'REGULAR_Q1', label: 'Cuatrimestre 1 (máx. 24)' },
+  { value: 'REGULAR_Q2', label: 'Cuatrimestre 2 (máx. 24)' },
+  { value: 'INTENSIVE_Q1', label: 'Intensivo Enero (máx. 50)' },
+  { value: 'INTENSIVE_Q2', label: 'Intensivo Junio (máx. 50)' },
+]
+
+const statusOptions = [
+  { value: 'OPEN', label: 'Abierto' },
+  { value: 'CLOSED', label: 'Cerrado' },
+  { value: 'CANCELLED', label: 'Cancelado' },
+]
 
 export function GroupForm({
   group,
@@ -79,79 +94,57 @@ export function GroupForm({
   const subjects = subjectsData?.content ?? []
   const teachers = teachersData?.content ?? []
 
+  const subjectItems = subjects.map((s) => ({
+    id: s.id,
+    primary: s.name,
+    secondary: s.code,
+  }))
+
+  const teacherItems = teachers.map((t) => ({
+    id: t.id,
+    primary: t.fullName,
+    secondary: t.email,
+  }))
+
   if (isEditing) {
     return (
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Status (only for editing) */}
-        <div>
-          <label
-            htmlFor="status"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Estado
-          </label>
-          <select
-            id="status"
-            {...register('status' as keyof CreateGroupFormData)}
-            defaultValue={group.status}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
-            <option value="OPEN">Abierto</option>
-            <option value="CLOSED">Cerrado</option>
-            <option value="CANCELLED">Cancelado</option>
-          </select>
-        </div>
+        <FormSelect
+          {...register('status' as keyof CreateGroupFormData)}
+          label="Estado"
+          options={statusOptions}
+          defaultValue={group.status}
+        />
 
-        {/* Capacity */}
-        <div>
-          <label
-            htmlFor="capacity"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Capacidad personalizada (opcional)
-          </label>
-          <input
-            type="number"
-            id="capacity"
-            min={1}
-            {...register('capacity', { valueAsNumber: true })}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            placeholder={`Default: ${group.maxCapacity}`}
-          />
-          <p className="mt-1 text-xs text-gray-500">
-            Deja vacío para usar la capacidad por defecto
-          </p>
-        </div>
+        <FormField
+          {...register('capacity', { valueAsNumber: true })}
+          label="Capacidad personalizada (opcional)"
+          type="number"
+          min={1}
+          placeholder={`Default: ${group.maxCapacity}`}
+          helperText="Deja vacío para usar la capacidad por defecto"
+        />
 
         {error && (
-          <div className="rounded-md bg-red-50 p-3">
-            <p className="text-sm text-red-700">
-              {error.message || 'Error al guardar el grupo'}
-            </p>
-          </div>
+          <Alert
+            variant="error"
+            message={error.message || 'Error al guardar el grupo'}
+          />
         )}
 
         <div className="flex justify-end gap-3">
           {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
+            <Button type="button" variant="secondary" onClick={onCancel}>
               Cancelar
-            </button>
+            </Button>
           )}
-          <button
+          <Button
             type="submit"
-            disabled={isSubmitting}
-            className={cn(
-              'rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white',
-              'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500',
-              'disabled:cursor-not-allowed disabled:opacity-50'
-            )}
+            isLoading={isSubmitting}
+            loadingText="Guardando..."
           >
-            {isSubmitting ? 'Guardando...' : 'Guardar cambios'}
-          </button>
+            Guardar cambios
+          </Button>
         </div>
       </form>
     )
@@ -159,205 +152,79 @@ export function GroupForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Subject Selection */}
-      <div>
-        <label
-          htmlFor="subjectSearch"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Asignatura
-        </label>
-        <input
-          type="text"
-          id="subjectSearch"
-          placeholder="Buscar asignatura..."
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          value={subjectSearch}
-          onChange={(e) => setSubjectSearch(e.target.value)}
-        />
-        <div className="mt-2 max-h-48 overflow-y-auto rounded-md border border-gray-200">
-          {isLoadingSubjects ? (
-            <div className="p-3 text-center text-sm text-gray-500">Cargando...</div>
-          ) : subjects.length === 0 ? (
-            <div className="p-3 text-center text-sm text-gray-500">No hay asignaturas</div>
-          ) : (
-            subjects
-              .filter((s) =>
-                subjectSearch
-                  ? s.name?.toLowerCase().includes(subjectSearch.toLowerCase()) ||
-                    s.code?.toLowerCase().includes(subjectSearch.toLowerCase())
-                  : true
-              )
-              .map((subject) => (
-                <button
-                  key={subject.id}
-                  type="button"
-                  onClick={() => setValue('subjectId', subject.id)}
-                  className={cn(
-                    'flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-gray-50',
-                    selectedSubjectId === subject.id && 'bg-blue-50 text-blue-700'
-                  )}
-                >
-                  <div>
-                    <div className="font-medium">{subject.name}</div>
-                    <div className="text-gray-500">{subject.code}</div>
-                  </div>
-                  {selectedSubjectId === subject.id && (
-                    <span className="text-blue-600">✓</span>
-                  )}
-                </button>
-              ))
-          )}
-        </div>
-        <input type="hidden" {...register('subjectId', { valueAsNumber: true })} />
-        {errors.subjectId && (
-          <p className="mt-1 text-sm text-red-600">{errors.subjectId.message}</p>
-        )}
-      </div>
+      <SearchableList
+        label="Asignatura"
+        placeholder="Buscar asignatura..."
+        items={subjectItems}
+        selectedId={selectedSubjectId}
+        onSelect={(id) => setValue('subjectId', id as number)}
+        isLoading={isLoadingSubjects}
+        error={errors.subjectId?.message}
+        emptyMessage="No hay asignaturas"
+        searchValue={subjectSearch}
+        onSearchChange={setSubjectSearch}
+      />
+      <input type="hidden" {...register('subjectId', { valueAsNumber: true })} />
 
-      {/* Teacher Selection */}
-      <div>
-        <label
-          htmlFor="teacherSearch"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Profesor
-        </label>
-        <input
-          type="text"
-          id="teacherSearch"
-          placeholder="Buscar profesor..."
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          value={teacherSearch}
-          onChange={(e) => setTeacherSearch(e.target.value)}
-        />
-        <div className="mt-2 max-h-48 overflow-y-auto rounded-md border border-gray-200">
-          {isLoadingTeachers ? (
-            <div className="p-3 text-center text-sm text-gray-500">Cargando...</div>
-          ) : teachers.length === 0 ? (
-            <div className="p-3 text-center text-sm text-gray-500">No hay profesores</div>
-          ) : (
-            teachers.map((teacher) => (
-              <button
-                key={teacher.id}
-                type="button"
-                onClick={() => setValue('teacherId', teacher.id)}
-                className={cn(
-                  'flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-gray-50',
-                  selectedTeacherId === teacher.id && 'bg-blue-50 text-blue-700'
-                )}
-              >
-                <div>
-                  <div className="font-medium">{teacher.fullName}</div>
-                  <div className="text-gray-500">{teacher.email}</div>
-                </div>
-                {selectedTeacherId === teacher.id && (
-                  <span className="text-blue-600">✓</span>
-                )}
-              </button>
-            ))
-          )}
-        </div>
-        <input type="hidden" {...register('teacherId', { valueAsNumber: true })} />
-        {errors.teacherId && (
-          <p className="mt-1 text-sm text-red-600">{errors.teacherId.message}</p>
-        )}
-      </div>
+      <SearchableList
+        label="Profesor"
+        placeholder="Buscar profesor..."
+        items={teacherItems}
+        selectedId={selectedTeacherId}
+        onSelect={(id) => setValue('teacherId', id as number)}
+        isLoading={isLoadingTeachers}
+        error={errors.teacherId?.message}
+        emptyMessage="No hay profesores"
+        searchValue={teacherSearch}
+        onSearchChange={setTeacherSearch}
+      />
+      <input type="hidden" {...register('teacherId', { valueAsNumber: true })} />
 
-      {/* Type */}
-      <div>
-        <label
-          htmlFor="type"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Tipo de grupo
-        </label>
-        <select
-          id="type"
-          {...register('type')}
-          className={cn(
-            'mt-1 block w-full rounded-md border px-3 py-2 text-sm',
-            'focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500',
-            errors.type ? 'border-red-500' : 'border-gray-300'
-          )}
-        >
-          <option value="">Selecciona un tipo</option>
-          <option value="REGULAR_Q1">Cuatrimestre 1 (máx. 24)</option>
-          <option value="REGULAR_Q2">Cuatrimestre 2 (máx. 24)</option>
-          <option value="INTENSIVE_Q1">Intensivo Enero (máx. 50)</option>
-          <option value="INTENSIVE_Q2">Intensivo Junio (máx. 50)</option>
-        </select>
-        {errors.type && (
-          <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
-        )}
-      </div>
+      <FormSelect
+        {...register('type')}
+        label="Tipo de grupo"
+        options={groupTypeOptions}
+        error={errors.type?.message}
+      />
 
-      {/* Capacity (optional) */}
-      <div>
-        <label
-          htmlFor="capacity"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Capacidad personalizada (opcional)
-        </label>
-        <input
-          type="number"
-          id="capacity"
-          min={1}
-          {...register('capacity', { valueAsNumber: true })}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          placeholder="Dejar vacío para usar el default"
-        />
-      </div>
+      <FormField
+        {...register('capacity', { valueAsNumber: true })}
+        label="Capacidad personalizada (opcional)"
+        type="number"
+        min={1}
+        placeholder="Dejar vacío para usar el default"
+      />
 
-      {/* Price per hour (optional) */}
-      <div>
-        <label
-          htmlFor="pricePerHour"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Precio por hora (opcional)
-        </label>
-        <input
-          type="number"
-          id="pricePerHour"
-          min={0.01}
-          step={0.01}
-          {...register('pricePerHour', { valueAsNumber: true })}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          placeholder="Default: 15.00 €"
-        />
-      </div>
+      <FormField
+        {...register('pricePerHour', { valueAsNumber: true })}
+        label="Precio por hora (opcional)"
+        type="number"
+        min={0.01}
+        step={0.01}
+        placeholder="Default: 15.00 €"
+      />
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3">
-          <p className="text-sm text-red-700">
-            {error.message || 'Error al crear el grupo'}
-          </p>
-        </div>
+        <Alert
+          variant="error"
+          message={error.message || 'Error al crear el grupo'}
+        />
       )}
 
       <div className="flex justify-end gap-3">
         {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
+          <Button type="button" variant="secondary" onClick={onCancel}>
             Cancelar
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="submit"
-          disabled={isSubmitting || !selectedSubjectId || !selectedTeacherId}
-          className={cn(
-            'rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white',
-            'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500',
-            'disabled:cursor-not-allowed disabled:opacity-50'
-          )}
+          disabled={!selectedSubjectId || !selectedTeacherId}
+          isLoading={isSubmitting}
+          loadingText="Creando..."
         >
-          {isSubmitting ? 'Creando...' : 'Crear grupo'}
-        </button>
+          Crear grupo
+        </Button>
       </div>
     </form>
   )

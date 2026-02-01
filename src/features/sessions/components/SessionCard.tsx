@@ -1,6 +1,7 @@
 import type { Session } from '../types/session.types'
 import { SessionStatusBadge } from './SessionStatusBadge'
 import { SessionModeBadge } from './SessionModeBadge'
+import { Card } from '@/shared/components/ui'
 
 interface SessionCardProps {
   session: Session
@@ -37,10 +38,10 @@ export function SessionCard({ session }: SessionCardProps) {
   const isUpcoming = session.status === 'SCHEDULED' && new Date(session.date) >= new Date()
 
   return (
-    <div
-      className={`rounded-lg border ${
-        isUpcoming ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
-      } p-4 shadow-sm transition-all hover:shadow-md`}
+    <Card
+      variant="interactive"
+      padding="sm"
+      className={isUpcoming ? 'border-blue-200 bg-blue-50' : ''}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
@@ -115,6 +116,6 @@ export function SessionCard({ session }: SessionCardProps) {
           Pospuesta al {formatDate(session.postponedToDate)}
         </div>
       )}
-    </div>
+    </Card>
   )
 }

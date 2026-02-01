@@ -14,6 +14,7 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const hasRole = (role: RoleType) => user.roles.includes(role)
+  const isOnlyStudent = user.roles.length === 1 && user.roles.includes('STUDENT')
 
   const handleAssignRole = async (roleType: RoleType) => {
     setIsLoading(true)
@@ -161,7 +162,7 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
             ) : (
               <button
                 onClick={() => handleAssignRole('ADMIN')}
-                disabled={isLoading}
+                disabled={isLoading || isOnlyStudent}
                 className={cn(
                   'rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white',
                   'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
@@ -196,7 +197,7 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
             ) : (
               <button
                 onClick={() => handleAssignRole('TEACHER')}
-                disabled={isLoading}
+                disabled={isLoading || isOnlyStudent}
                 className={cn(
                   'rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white',
                   'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
@@ -208,9 +209,15 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
             )}
           </div>
 
-          {user.roles.length <= 1 && (
+          {user.roles.length <= 1 && !isOnlyStudent && (
             <p className="text-xs text-gray-500">
               Note: Users must have at least one role. Cannot remove last role.
+            </p>
+          )}
+
+          {isOnlyStudent && (
+            <p className="text-xs text-amber-600 mt-2">
+              Nota: Los usuarios con rol de estudiante no pueden recibir roles de administrador o profesor.
             </p>
           )}
         </div>

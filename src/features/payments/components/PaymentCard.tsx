@@ -3,6 +3,7 @@ import { PaymentStatusBadge } from './PaymentStatusBadge'
 import { PaymentTypeBadge } from './PaymentTypeBadge'
 import { formatCurrency, formatDate } from '@/shared/utils/formatters'
 import { cn } from '@/shared/utils/cn'
+import { Card } from '@/shared/components/ui'
 
 interface PaymentCardProps {
   payment: Payment
@@ -13,12 +14,7 @@ export function PaymentCard({ payment, onPayClick }: PaymentCardProps) {
   const canPay = payment.status === 'PENDING' || payment.isOverdue
 
   return (
-    <div
-      className={cn(
-        'rounded-lg border bg-white p-4 shadow-sm',
-        payment.isOverdue ? 'border-red-200' : 'border-gray-200'
-      )}
-    >
+    <Card padding="sm" variant={payment.isOverdue ? 'error' : 'default'}>
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-medium text-gray-900">{payment.subjectName}</h3>
@@ -77,6 +73,6 @@ export function PaymentCard({ payment, onPayClick }: PaymentCardProps) {
           {payment.isOverdue ? 'Pagar ahora (vencido)' : 'Pagar'}
         </button>
       )}
-    </div>
+    </Card>
   )
 }

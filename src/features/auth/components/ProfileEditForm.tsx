@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useProfile } from '../hooks/useProfile'
 import { useAuthStore } from '../store/authStore'
+import { FormFieldControlled } from '@/shared/components/form'
+import { Button, Alert } from '@/shared/components/ui'
 import type { UpdateProfileRequest } from '../types/auth.types'
 
 interface ProfileEditFormProps {
@@ -89,70 +91,50 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-          First Name
-        </label>
-        <input
-          type="text"
-          id="firstName"
-          value={formData.firstName}
-          onChange={(e) => handleChange('firstName', e.target.value)}
-          maxLength={50}
-          className={`mt-1 block w-full rounded-md border ${
-            validationErrors.firstName ? 'border-red-500' : 'border-gray-300'
-          } px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
-          disabled={isLoading}
-        />
-        {validationErrors.firstName && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.firstName}</p>
-        )}
-      </div>
+      <FormFieldControlled
+        label="First Name"
+        name="firstName"
+        type="text"
+        value={formData.firstName}
+        onChange={(value) => handleChange('firstName', value)}
+        maxLength={50}
+        error={validationErrors.firstName}
+        disabled={isLoading}
+      />
 
-      <div>
-        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-          Last Name
-        </label>
-        <input
-          type="text"
-          id="lastName"
-          value={formData.lastName}
-          onChange={(e) => handleChange('lastName', e.target.value)}
-          maxLength={50}
-          className={`mt-1 block w-full rounded-md border ${
-            validationErrors.lastName ? 'border-red-500' : 'border-gray-300'
-          } px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500`}
-          disabled={isLoading}
-        />
-        {validationErrors.lastName && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.lastName}</p>
-        )}
-      </div>
+      <FormFieldControlled
+        label="Last Name"
+        name="lastName"
+        type="text"
+        value={formData.lastName}
+        onChange={(value) => handleChange('lastName', value)}
+        maxLength={50}
+        error={validationErrors.lastName}
+        disabled={isLoading}
+      />
 
-      {error && (
-        <div className="rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-800">{error}</p>
-        </div>
-      )}
+      {error && <Alert variant="error" message={error} />}
 
       <div className="flex gap-3">
-        <button
+        <Button
           type="submit"
-          disabled={isLoading || !hasChanges}
-          className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!hasChanges}
+          isLoading={isLoading}
+          loadingText="Updating..."
+          className="flex-1"
         >
-          {isLoading ? 'Updating...' : 'Update Profile'}
-        </button>
+          Update Profile
+        </Button>
 
         {onCancel && (
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={onCancel}
             disabled={isLoading}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
-          </button>
+          </Button>
         )}
       </div>
     </form>
