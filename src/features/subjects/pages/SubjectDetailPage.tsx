@@ -11,8 +11,8 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useEffect } from 'react'
-import { useGroupRequests, useAddSupporter } from '@/features/group-requests/hooks/useGroupRequests'
-import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
+import { useCheckInterest, useMarkInterest, useRemoveInterest } from '@/features/group-requests/hooks/useGroupRequests'
+import { HandMetal } from 'lucide-react'
 
 const degreeLabels: Record<string, string> = {
   INGENIERIA_INFORMATICA: 'Ingeniería Informática',
@@ -25,17 +25,16 @@ export function SubjectDetailPage() {
   const subjectId = Number(id)
 
   const user = useAuthStore((state) => state.user)
+  const userId = user?.id ?? 0
   const { data: subject, isLoading: isLoadingSubject, error: subjectError } = useSubject(subjectId)
   const { data: groupsData, isLoading: isLoadingGroups } = useGroupsBySubject(subjectId, 'OPEN')
   const enrollMutation = useEnroll()
 
-  // Group requests for this subject
-  const { data: requestsData, isLoading: isLoadingRequests } = useGroupRequests({
-    subjectId,
-    status: 'PENDING'
-  })
-  const pendingRequests = requestsData?.content ?? []
-  const addSupporterMutation = useAddSupporter()
+  // "Me interesa" functionality
+  const { data: isInterested, isLoading: isCheckingInterest } = useCheckInterest(subjectId, userId)
+  const markInterestMutation = useMarkInterest()
+  const removeInterestMutation = useRemoveInterest()
+  const isToggling = markInterestMutation.isPending || removeInterestMutation.isPending
 
   // Materials
   const {
@@ -69,19 +68,15 @@ export function SubjectDetailPage() {
     }
   }
 
-  const handleSupport = async (requestId: number) => {
-    if (!user?.id) return
+  const handleToggleInterest = () => {
+    if (!userId || isToggling) return
 
-    try {
-      await addSupporterMutation.mutateAsync({
-        id: requestId,
-        data: { studentId: user.id }
-      })
-    } catch (error) {
-      console.error('Error supporting request:', error)
+    if (isInterested) {
+      removeInterestMutation.mutate({ subjectId, studentId: userId })
+    } else {
+      markInterestMutation.mutate({ subjectId, requesterId: userId })
     }
   }
-
 
   if (isLoadingSubject) {
     return <LoadingState />
@@ -112,16 +107,34 @@ export function SubjectDetailPage() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{subject.name}</h1>
           </div>
-          <span
-            className={cn(
-              'rounded-full px-3 py-1 text-sm font-medium',
-              subject.active
-                ? 'bg-green-100 text-green-700'
-                : 'bg-gray-100 text-gray-600'
-            )}
-          >
-            {subject.active ? 'Activa' : 'Inactiva'}
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleToggleInterest}
+              disabled={isToggling || isCheckingInterest}
+              className={cn(
+                'flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors',
+                isInterested
+                  ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                  : 'bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600',
+                (isToggling || isCheckingInterest) && 'opacity-50 cursor-not-allowed'
+              )}
+            >
+              <HandMetal
+                className={cn('h-4 w-4', isInterested && 'fill-current')}
+              />
+              Me renta
+            </button>
+            <span
+              className={cn(
+                'rounded-full px-3 py-1 text-sm font-medium',
+                subject.active
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-gray-100 text-gray-600'
+              )}
+            >
+              {subject.active ? 'Activa' : 'Inactiva'}
+            </span>
+          </div>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
@@ -163,20 +176,9 @@ export function SubjectDetailPage() {
       <section>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Grupos Disponibles</h2>
-          <div className="flex items-center gap-3">
-            {isLoadingGroups && (
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
-            )}
-            <Link
-              to={`/group-requests/new?subjectId=${subjectId}`}
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              Solicitar grupo
-            </Link>
-          </div>
+          {isLoadingGroups && (
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
+          )}
         </div>
 
         {enrollMutation.isError && (
@@ -204,91 +206,6 @@ export function SubjectDetailPage() {
           </div>
         )}
       </section>
-
-      {/* Pending Group Requests Section */}
-      {pendingRequests.length > 0 && (
-        <section>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Solicitudes de Grupo Pendientes</h2>
-            {isLoadingRequests && (
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
-            )}
-          </div>
-
-          <div className="space-y-3">
-            {pendingRequests.map((request) => {
-              const isRequester = user?.id === request.requesterId
-              const hasSupported = user?.id ? request.supporterIds.includes(user.id) : false
-              const canSupport = !isRequester && !hasSupported
-
-              return (
-                <div
-                  key={request.id}
-                  className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                          {GROUP_TYPE_LABELS[request.requestedGroupType] || request.requestedGroupType}
-                        </span>
-                        {isRequester && (
-                          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                            Tu solicitud
-                          </span>
-                        )}
-                      </div>
-                      {request.justification && (
-                        <p className="mt-2 text-sm text-gray-600">{request.justification}</p>
-                      )}
-                      <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                          </svg>
-                          {request.supporterCount} / 8 apoyos
-                        </span>
-                        {request.supportersNeeded > 0 && (
-                          <span className="text-amber-600">
-                            Faltan {request.supportersNeeded} apoyos
-                          </span>
-                        )}
-                        {request.hasMinimumSupporters && (
-                          <span className="text-green-600 font-medium">
-                            ¡Listo para revisión!
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="ml-4">
-                      {canSupport && (
-                        <button
-                          onClick={() => handleSupport(request.id)}
-                          disabled={addSupporterMutation.isPending}
-                          className="inline-flex items-center gap-1 rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
-                        >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z" />
-                          </svg>
-                          Apoyar
-                        </button>
-                      )}
-                      {hasSupported && (
-                        <span className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-600">
-                          <svg className="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                          </svg>
-                          Apoyado
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </section>
-      )}
 
       {/* Materials Section */}
       <section>

@@ -15,7 +15,7 @@ const classroomLabels: Record<string, string> = {
 
 export function UpcomingSessionCard({ session }: UpcomingSessionCardProps) {
   return (
-    <Link to={`/sessions/${session.sessionId}`}>
+    <Link to={`/dashboard/sessions/${session.sessionId}`}>
       <Card variant="interactive" padding="sm">
         <div className="flex items-start justify-between">
           <div>

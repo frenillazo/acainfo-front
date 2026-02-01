@@ -148,7 +148,7 @@ export function GroupRequestDetailPage() {
               <dt className="text-sm font-medium text-gray-500">Materia</dt>
               <dd className="mt-1 text-sm text-gray-900">
                 <Link
-                  to={`/subjects/${groupRequest.subjectId}`}
+                  to={`/dashboard/subjects/${groupRequest.subjectId}`}
                   className="text-blue-600 hover:text-blue-800"
                 >
                   {groupRequest.subjectName || 'Ver materia'}

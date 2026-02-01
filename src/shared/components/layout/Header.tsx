@@ -35,7 +35,7 @@ export function Header({ onMenuClick }: HeaderProps) {
     setDropdownOpen(false)
   }, [location.pathname])
 
-  const profilePath = location.pathname.startsWith('/admin') ? '/admin/profile' : '/profile'
+  const profilePath = location.pathname.startsWith('/admin') ? '/admin/profile' : '/dashboard/profile'
 
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">

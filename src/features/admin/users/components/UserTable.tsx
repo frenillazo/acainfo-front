@@ -3,11 +3,14 @@ import type { User } from '../../types/admin.types'
 import { UserStatusBadge } from './UserStatusBadge'
 import { RoleBadge } from './RoleBadge'
 
+type SelectionMode = 'none' | 'deactivate' | 'activate'
+
 interface UserTableProps {
   users: User[]
   selectedUserIds?: number[]
   onSelectionChange?: (userIds: number[]) => void
   showSelection?: boolean
+  selectionMode?: SelectionMode
 }
 
 export function UserTable({
@@ -15,13 +18,24 @@ export function UserTable({
   selectedUserIds = [],
   onSelectionChange,
   showSelection = false,
+  selectionMode = 'deactivate',
 }: UserTableProps) {
+  const isUserSelectable = (user: User) => {
+    if (selectionMode === 'deactivate') {
+      // For deactivation: only ACTIVE users without ADMIN role
+      return user.status === 'ACTIVE' && !user.roles.includes('ADMIN')
+    } else if (selectionMode === 'activate') {
+      // For activation: only INACTIVE users
+      return user.status === 'INACTIVE'
+    }
+    return false
+  }
+
   const handleSelectAll = (checked: boolean) => {
     if (!onSelectionChange) return
     if (checked) {
-      // Only select users that can be deactivated (ACTIVE students without ADMIN role)
       const selectableIds = users
-        .filter((u) => u.status === 'ACTIVE' && !u.roles.includes('ADMIN'))
+        .filter(isUserSelectable)
         .map((u) => u.id)
       onSelectionChange(selectableIds)
     } else {
@@ -38,14 +52,23 @@ export function UserTable({
     }
   }
 
-  const isUserSelectable = (user: User) => {
-    return user.status === 'ACTIVE' && !user.roles.includes('ADMIN')
-  }
-
   const selectableUsers = users.filter(isUserSelectable)
   const allSelectableSelected =
     selectableUsers.length > 0 &&
     selectableUsers.every((u) => selectedUserIds.includes(u.id))
+
+  const getSelectionTitle = (user: User, selectable: boolean) => {
+    if (selectable) return undefined
+    if (selectionMode === 'deactivate') {
+      if (user.roles.includes('ADMIN')) {
+        return 'Los usuarios admin no pueden ser desactivados'
+      }
+      return 'Solo usuarios activos pueden ser desactivados'
+    } else if (selectionMode === 'activate') {
+      return 'Solo usuarios inactivos pueden ser activados'
+    }
+    return undefined
+  }
 
   if (users.length === 0) {
     return (
@@ -67,7 +90,7 @@ export function UserTable({
                   className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   checked={allSelectableSelected}
                   onChange={(e) => handleSelectAll(e.target.checked)}
-                  title="Seleccionar todos los usuarios activos"
+                  title={`Seleccionar todos los usuarios ${selectionMode === 'activate' ? 'inactivos' : 'activos'}`}
                 />
               </th>
             )}
@@ -109,11 +132,7 @@ export function UserTable({
                       checked={isSelected}
                       disabled={!selectable}
                       onChange={(e) => handleSelectUser(user.id, e.target.checked)}
-                      title={
-                        !selectable
-                          ? 'Solo usuarios activos sin rol admin pueden ser desactivados'
-                          : undefined
-                      }
+                      title={getSelectionTitle(user, selectable)}
                     />
                   </td>
                 )}

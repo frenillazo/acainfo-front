@@ -59,3 +59,17 @@ export interface GroupRequestFilters {
   sortBy?: string
   sortDirection?: 'ASC' | 'DESC'
 }
+
+// "Me Interesa" types
+export interface SubjectInterestSummary {
+  subjectId: number
+  subjectName: string
+  subjectCode: string
+  degreeName: string
+  interestedCount: number
+}
+
+export interface MarkInterestRequest {
+  subjectId: number
+  requesterId: number
+}

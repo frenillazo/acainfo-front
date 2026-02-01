@@ -75,25 +75,23 @@ export function StudentDashboardPage() {
             )}
           </section>
 
-          {/* Upcoming Sessions */}
+          {/* Next Session */}
           <section>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">
-                Próximas Sesiones
+                Próxima Sesión
               </h2>
-              <span className="text-sm text-gray-500">
-                {overview.upcomingSessions.length} sesiones
-              </span>
+              {overview.upcomingSessions.length > 1 && (
+                <a
+                  href="/dashboard/sessions"
+                  className="text-sm text-blue-600 hover:text-blue-700"
+                >
+                  Ver todas ({overview.upcomingSessions.length})
+                </a>
+              )}
             </div>
             {overview.upcomingSessions.length > 0 ? (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {overview.upcomingSessions.map((session) => (
-                  <UpcomingSessionCard
-                    key={session.sessionId}
-                    session={session}
-                  />
-                ))}
-              </div>
+              <UpcomingSessionCard session={overview.upcomingSessions[0]} />
             ) : (
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 text-center text-gray-500">
                 No tienes sesiones próximas

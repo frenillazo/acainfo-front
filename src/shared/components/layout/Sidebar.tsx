@@ -115,7 +115,7 @@ const adminNavigation: NavItem[] = [
     icon: <CreditCard className={ICON_CLASS} />,
   },
   {
-    name: 'Solicitudes de Grupo',
+    name: 'Demanda de Asignaturas',
     href: '/admin/group-requests',
     icon: <ClipboardList className={ICON_CLASS} />,
   },

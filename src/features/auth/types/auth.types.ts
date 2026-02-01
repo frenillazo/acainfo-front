@@ -9,11 +9,13 @@ export interface RegisterRequest {
   password: string
   firstName: string
   lastName: string
+  phoneNumber: string
 }
 
 export interface UpdateProfileRequest {
   firstName: string
   lastName: string
+  phoneNumber?: string
 }
 
 export interface ChangePasswordRequest {
@@ -58,6 +60,7 @@ export interface User {
   firstName: string
   lastName: string
   fullName: string
+  phoneNumber: string
   status: UserStatus
   roles: RoleType[] // Backend returns roles as string array: ["ADMIN", "STUDENT"]
   createdAt: string

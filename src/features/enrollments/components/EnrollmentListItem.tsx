@@ -14,7 +14,7 @@ export function EnrollmentListItem({ enrollment }: EnrollmentListItemProps) {
 
   return (
     <Link
-      to={`/enrollments/${enrollment.id}`}
+      to={`/dashboard/enrollments/${enrollment.id}`}
       className={cn(
         'block rounded-lg border border-gray-200 bg-white p-4',
         'transition-shadow hover:shadow-md'

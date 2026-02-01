@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
-import { useCreateGroupRequest } from '../hooks/useGroupRequests'
+import { useMarkInterest } from '../hooks/useGroupRequests'
 import { useSubjects, useSubject } from '@/features/subjects/hooks/useSubjects'
-import { GROUP_TYPE_LABELS, type GroupType } from '@/shared/types/api.types'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-
-const groupTypeOptions = (Object.entries(GROUP_TYPE_LABELS) as [GroupType, string][]).map(
-  ([value, label]) => ({ value, label })
-)
+import { Heart } from 'lucide-react'
 
 export function GroupRequestCreatePage() {
   const navigate = useNavigate()
@@ -16,7 +12,7 @@ export function GroupRequestCreatePage() {
   const preselectedSubjectId = searchParams.get('subjectId')
 
   const { user } = useAuthStore()
-  const createMutation = useCreateGroupRequest()
+  const markInterestMutation = useMarkInterest()
 
   // Cargar asignaturas para el selector
   const { data: subjectsData, isLoading: isLoadingSubjects } = useSubjects({ status: 'ACTIVE' })
@@ -27,8 +23,6 @@ export function GroupRequestCreatePage() {
 
   const [formData, setFormData] = useState({
     subjectId: preselectedSubjectId || '',
-    requestedGroupType: '' as GroupType | '',
-    justification: '',
   })
 
   // Actualizar subjectId cuando se carga de la URL
@@ -47,10 +41,6 @@ export function GroupRequestCreatePage() {
       newErrors.subjectId = 'La asignatura es requerida'
     }
 
-    if (!formData.requestedGroupType) {
-      newErrors.requestedGroupType = 'El tipo de grupo es requerido'
-    }
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -60,16 +50,14 @@ export function GroupRequestCreatePage() {
 
     if (!validate() || !user) return
 
-    createMutation.mutate(
+    markInterestMutation.mutate(
       {
         subjectId: parseInt(formData.subjectId, 10),
         requesterId: user.id,
-        requestedGroupType: formData.requestedGroupType as GroupType,
-        justification: formData.justification || undefined,
       },
       {
         onSuccess: () => {
-          navigate(preselectedSubjectId ? `/subjects/${preselectedSubjectId}` : '/subjects')
+          navigate('/dashboard/group-requests')
         },
       }
     )
@@ -79,20 +67,20 @@ export function GroupRequestCreatePage() {
     <div className="space-y-6">
       {/* Breadcrumb */}
       <Link
-        to={preselectedSubjectId ? `/subjects/${preselectedSubjectId}` : '/subjects'}
-        className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
+        to="/dashboard/group-requests"
+        className="inline-flex items-center text-sm text-pink-600 hover:text-pink-800"
       >
-        ← {preselectedSubjectId ? 'Volver a la asignatura' : 'Volver a asignaturas'}
+        ← Volver a mis intereses
       </Link>
 
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
-          Nueva Solicitud de Grupo
+          <Heart className="inline-block h-6 w-6 mr-2 text-pink-500" />
+          Marcar Interes
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Solicita la creacion de un nuevo grupo para una materia.
-          Necesitas al menos 8 apoyos para que tu solicitud sea considerada.
+          Indica que asignatura te interesa para que los administradores puedan ver la demanda.
         </p>
       </div>
 
@@ -123,7 +111,7 @@ export function GroupRequestCreatePage() {
                   className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1 ${
                     errors.subjectId
                       ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                      : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                      : 'border-gray-300 focus:border-pink-500 focus:ring-pink-500'
                   }`}
                 >
                   <option value="">Selecciona una asignatura</option>
@@ -138,105 +126,41 @@ export function GroupRequestCreatePage() {
                 <p className="mt-1 text-sm text-red-600">{errors.subjectId}</p>
               )}
             </div>
-
-            {/* Group Type */}
-            <div>
-              <label
-                htmlFor="requestedGroupType"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Tipo de Grupo *
-              </label>
-              <select
-                id="requestedGroupType"
-                value={formData.requestedGroupType}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    requestedGroupType: e.target.value as GroupType,
-                  }))
-                }
-                className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1 ${
-                  errors.requestedGroupType
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-                }`}
-              >
-                <option value="">Selecciona un tipo</option>
-                {groupTypeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              {errors.requestedGroupType && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.requestedGroupType}
-                </p>
-              )}
-            </div>
-
-            {/* Justification */}
-            <div>
-              <label
-                htmlFor="justification"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Justificacion (opcional)
-              </label>
-              <textarea
-                id="justification"
-                rows={4}
-                value={formData.justification}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    justification: e.target.value,
-                  }))
-                }
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                placeholder="Explica por que necesitas este nuevo grupo..."
-                maxLength={500}
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                {formData.justification.length}/500 caracteres
-              </p>
-            </div>
           </div>
         </div>
 
         {/* Info box */}
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-          <h3 className="text-sm font-medium text-blue-800">
-            Como funciona el proceso
+        <div className="rounded-lg border border-pink-200 bg-pink-50 p-4">
+          <h3 className="text-sm font-medium text-pink-800">
+            <Heart className="inline-block h-4 w-4 mr-1" />
+            Como funciona
           </h3>
-          <ul className="mt-2 space-y-1 text-sm text-blue-700">
-            <li>1. Tu solicitud sera visible para otros estudiantes</li>
-            <li>2. Necesitas que al menos 8 estudiantes apoyen tu solicitud</li>
-            <li>3. Un administrador revisara las solicitudes con suficientes apoyos</li>
-            <li>4. Si se aprueba, se creara el nuevo grupo</li>
+          <ul className="mt-2 space-y-1 text-sm text-pink-700">
+            <li>1. Selecciona la asignatura que te interesa</li>
+            <li>2. Los administradores veran cuantos alumnos estan interesados</li>
+            <li>3. Podras quitar tu interes en cualquier momento</li>
           </ul>
         </div>
 
         {/* Error message */}
-        {createMutation.isError && (
-          <ErrorState error={createMutation.error} title="Error al crear la solicitud" />
+        {markInterestMutation.isError && (
+          <ErrorState error={markInterestMutation.error} title="Error al marcar interes" />
         )}
 
         {/* Submit */}
         <div className="flex justify-end gap-3">
           <Link
-            to={preselectedSubjectId ? `/subjects/${preselectedSubjectId}` : '/subjects'}
+            to="/dashboard/group-requests"
             className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
             Cancelar
           </Link>
           <button
             type="submit"
-            disabled={createMutation.isPending}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            disabled={markInterestMutation.isPending}
+            className="rounded-md bg-pink-600 px-4 py-2 text-sm font-medium text-white hover:bg-pink-700 disabled:opacity-50"
           >
-            {createMutation.isPending ? 'Creando...' : 'Crear Solicitud'}
+            {markInterestMutation.isPending ? 'Guardando...' : 'Me interesa'}
           </button>
         </div>
       </form>

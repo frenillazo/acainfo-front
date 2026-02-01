@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   useGroupRequests,
-  useAddSupporter,
-  useRemoveSupporter,
+  useRemoveInterest,
 } from '../hooks/useGroupRequests'
 import { GroupRequestStatusBadge } from '../components/GroupRequestStatusBadge'
 import { LoadingState } from '@/shared/components/common/LoadingState'
@@ -11,8 +10,7 @@ import { ErrorState } from '@/shared/components/common/ErrorState'
 import type { GroupRequestFilters } from '../types/groupRequest.types'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { formatDate } from '@/shared/utils/formatters'
-import { Users, Plus, Minus } from 'lucide-react'
-import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
+import { Heart, HeartOff, Calendar } from 'lucide-react'
 
 export function GroupRequestsPage() {
   const { user } = useAuthStore()
@@ -20,11 +18,11 @@ export function GroupRequestsPage() {
     page: 0,
     size: 10,
     status: 'PENDING',
+    requesterId: user?.id,
   })
 
   const { data, isLoading, error } = useGroupRequests(filters)
-  const addSupporterMutation = useAddSupporter()
-  const removeSupporterMutation = useRemoveSupporter()
+  const removeInterestMutation = useRemoveInterest()
 
   const handlePageChange = (page: number) => {
     if (!Number.isNaN(page) && page >= 0) {
@@ -32,32 +30,19 @@ export function GroupRequestsPage() {
     }
   }
 
-  const handleSupport = (requestId: number) => {
+  const handleRemoveInterest = (subjectId: number) => {
     if (user) {
-      addSupporterMutation.mutate({
-        id: requestId,
-        data: { studentId: user.id },
-      })
-    }
-  }
-
-  const handleRemoveSupport = (requestId: number) => {
-    if (user) {
-      removeSupporterMutation.mutate({
-        id: requestId,
+      removeInterestMutation.mutate({
+        subjectId,
         studentId: user.id,
       })
     }
   }
 
-  const isSupporter = (supporterIds: number[]) => {
-    return user ? supporterIds.includes(user.id) : false
-  }
-
-  const isProcessing = addSupporterMutation.isPending || removeSupporterMutation.isPending
+  const isProcessing = removeInterestMutation.isPending
 
   if (error) {
-    return <ErrorState error={error} title="Error al cargar solicitudes" />
+    return <ErrorState error={error} title="Error al cargar intereses" />
   }
 
   return (
@@ -66,17 +51,18 @@ export function GroupRequestsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Solicitudes de Grupo
+            Asignaturas que me interesan
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Apoya solicitudes de nuevos grupos o crea la tuya
+            Marca las asignaturas que te interesan para que los administradores puedan ver la demanda
           </p>
         </div>
         <Link
           to="/dashboard/group-requests/new"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="rounded-md bg-pink-600 px-4 py-2 text-sm font-medium text-white hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
         >
-          Nueva solicitud
+          <Heart className="inline-block h-4 w-4 mr-1" />
+          Marcar interes
         </Link>
       </div>
 
@@ -86,7 +72,7 @@ export function GroupRequestsPage() {
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-gray-700">Mostrar:</span>
             <select
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-pink-500 focus:outline-none focus:ring-1 focus:ring-pink-500"
               value={filters.status ?? ''}
               onChange={(e) =>
                 setFilters((prev) => ({
@@ -96,14 +82,14 @@ export function GroupRequestsPage() {
                 }))
               }
             >
-              <option value="PENDING">Pendientes</option>
-              <option value="">Todas</option>
+              <option value="PENDING">Activos</option>
+              <option value="">Todos</option>
             </select>
           </div>
           <div className="ml-auto text-sm text-gray-500">
             {data ? (
               <>
-                {data.content.length} de {data.totalElements} solicitudes
+                {data.content.length} de {data.totalElements} intereses
               </>
             ) : (
               'Cargando...'
@@ -118,82 +104,53 @@ export function GroupRequestsPage() {
       ) : data && data.content.length > 0 ? (
         <>
           <div className="space-y-4">
-            {data.content.map((request) => {
-              const userIsSupporter = isSupporter(request.supporterIds)
-              const isOwnRequest = user?.id === request.requesterId
-
-              return (
-                <div
-                  key={request.id}
-                  className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Link
-                          to={`/group-requests/${request.id}`}
-                          className="text-base font-medium text-gray-900 hover:text-blue-600"
-                        >
-                          {GROUP_TYPE_LABELS[request.requestedGroupType] || request.requestedGroupType}
-                        </Link>
-                        <GroupRequestStatusBadge
-                          status={request.status}
-                          supportersNeeded={request.supportersNeeded}
-                        />
-                        {isOwnRequest && (
-                          <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                            Tu solicitud
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-sm text-gray-500">
-                        Materia #{request.subjectId}
-                      </p>
-                      {request.justification && (
-                        <p className="mt-2 text-sm text-gray-600 line-clamp-2">
-                          {request.justification}
-                        </p>
-                      )}
-                      <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Users className="h-3.5 w-3.5" />
-                          <span className={request.hasMinimumSupporters ? 'text-green-600 font-medium' : ''}>
-                            {request.supporterCount} / 8 apoyos
-                          </span>
-                        </span>
-                        <span>Creada: {formatDate(request.createdAt)}</span>
-                        {request.expiresAt && (
-                          <span>Expira: {formatDate(request.expiresAt)}</span>
-                        )}
-                      </div>
+            {data.content.map((request) => (
+              <div
+                key={request.id}
+                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-base font-medium text-gray-900">
+                        {request.subjectName || `Asignatura #${request.subjectId}`}
+                      </span>
+                      <GroupRequestStatusBadge
+                        status={request.status}
+                        supportersNeeded={0}
+                      />
+                      <span className="inline-flex items-center rounded-full bg-pink-100 px-2 py-0.5 text-xs font-medium text-pink-700">
+                        <Heart className="mr-1 h-3 w-3 fill-current" />
+                        Me interesa
+                      </span>
                     </div>
-                    <div className="flex-shrink-0">
-                      {request.isPending && !isOwnRequest && (
-                        userIsSupporter ? (
-                          <button
-                            onClick={() => handleRemoveSupport(request.id)}
-                            disabled={isProcessing}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                          >
-                            <Minus className="h-4 w-4" />
-                            Quitar apoyo
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleSupport(request.id)}
-                            disabled={isProcessing}
-                            className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-                          >
-                            <Plus className="h-4 w-4" />
-                            Apoyar
-                          </button>
-                        )
-                      )}
+                    {request.subjectDegree && (
+                      <p className="mt-1 text-sm text-gray-500">
+                        {request.subjectDegree}
+                      </p>
+                    )}
+                    <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3.5 w-3.5" />
+                        Marcado: {formatDate(request.createdAt)}
+                      </span>
                     </div>
                   </div>
+                  <div className="flex-shrink-0">
+                    {request.isPending && (
+                      <button
+                        onClick={() => handleRemoveInterest(request.subjectId)}
+                        disabled={isProcessing}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        <HeartOff className="h-4 w-4" />
+                        Quitar interes
+                      </button>
+                    )}
+                  </div>
                 </div>
-              )
-            })}
+              </div>
+            ))}
           </div>
 
           {/* Pagination */}
@@ -223,12 +180,13 @@ export function GroupRequestsPage() {
         </>
       ) : (
         <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
-          <p className="text-gray-500">No hay solicitudes de grupo</p>
+          <Heart className="mx-auto h-12 w-12 text-gray-300" />
+          <p className="mt-2 text-gray-500">No tienes asignaturas marcadas como interes</p>
           <Link
             to="/dashboard/group-requests/new"
-            className="mt-4 inline-block text-sm text-blue-600 hover:text-blue-800"
+            className="mt-4 inline-block text-sm text-pink-600 hover:text-pink-800"
           >
-            Crear una nueva solicitud
+            Marcar una asignatura como interes
           </Link>
         </div>
       )}

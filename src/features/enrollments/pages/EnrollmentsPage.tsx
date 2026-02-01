@@ -50,7 +50,7 @@ export function EnrollmentsPage() {
             {activeEnrollments.map((enrollment) => (
               <Link
                 key={enrollment.id}
-                to={`/enrollments/${enrollment.id}`}
+                to={`/dashboard/enrollments/${enrollment.id}`}
                 className={cn(
                   'rounded-lg border border-gray-200 bg-white p-4 shadow-sm',
                   'transition-shadow hover:shadow-md'
@@ -87,7 +87,7 @@ export function EnrollmentsPage() {
             {waitingEnrollments.map((enrollment) => (
               <Link
                 key={enrollment.id}
-                to={`/enrollments/${enrollment.id}`}
+                to={`/dashboard/enrollments/${enrollment.id}`}
                 className={cn(
                   'rounded-lg border border-yellow-200 bg-yellow-50 p-4',
                   'transition-shadow hover:shadow-md'
@@ -123,7 +123,7 @@ export function EnrollmentsPage() {
             {otherEnrollments.map((enrollment) => (
               <Link
                 key={enrollment.id}
-                to={`/enrollments/${enrollment.id}`}
+                to={`/dashboard/enrollments/${enrollment.id}`}
                 className={cn(
                   'rounded-lg border border-gray-200 bg-white p-4 opacity-75',
                   'transition-shadow hover:shadow-md'

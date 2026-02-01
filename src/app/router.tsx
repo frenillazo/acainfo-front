@@ -12,12 +12,9 @@ import { StudentDashboardPage } from '@/features/student'
 import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
 import { PaymentsPage } from '@/features/payments'
 import { SubjectsPage, SubjectDetailPage } from '@/features/subjects'
-import { SessionsPage } from '@/features/sessions'
+import { SessionsPage, SessionDetailPage } from '@/features/sessions'
 import { MaterialsPage } from '@/features/materials'
 import {
-  GroupRequestsPage,
-  GroupRequestDetailPage,
-  GroupRequestCreatePage,
   AdminGroupRequestsPage,
   AdminGroupRequestDetailPage,
 } from '@/features/group-requests'
@@ -112,6 +109,10 @@ export const router = createBrowserRouter([
         element: <SessionsPage />,
       },
       {
+        path: 'sessions/:id',
+        element: <SessionDetailPage />,
+      },
+      {
         path: 'payments',
         element: <PaymentsPage />,
       },
@@ -130,18 +131,6 @@ export const router = createBrowserRouter([
       {
         path: 'profile',
         element: <ProfilePage />,
-      },
-      {
-        path: 'group-requests',
-        element: <GroupRequestsPage />,
-      },
-      {
-        path: 'group-requests/new',
-        element: <GroupRequestCreatePage />,
-      },
-      {
-        path: 'group-requests/:id',
-        element: <GroupRequestDetailPage />,
       },
     ],
   },

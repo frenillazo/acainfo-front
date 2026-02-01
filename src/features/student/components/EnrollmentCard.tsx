@@ -10,7 +10,7 @@ interface EnrollmentCardProps {
 
 export function EnrollmentCard({ enrollment }: EnrollmentCardProps) {
   return (
-    <Link to={`/enrollments/${enrollment.enrollmentId}`}>
+    <Link to={`/dashboard/enrollments/${enrollment.enrollmentId}`}>
       <Card variant="interactive" padding="sm">
         <div className="flex items-start justify-between">
           <div>

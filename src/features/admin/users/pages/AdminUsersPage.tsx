@@ -6,11 +6,31 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Pagination } from '@/shared/components/ui/Pagination'
 import { useDebounce } from '@/shared/hooks/useDebounce'
-import { adminApi, type DeactivationResult } from '@/features/auth/services/adminApi'
-import { UserMinus, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
+import { adminApi, type DeactivationResult, type ActivationResult } from '@/features/auth/services/adminApi'
+import { UserMinus, UserPlus, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { UserFilters, UserStatus, RoleType } from '../../types/admin.types'
+
+type BatchMode = 'none' | 'deactivate' | 'activate'
+
+interface BatchResultBase {
+  totalProcessed: number
+  skipped: number
+  errors: string[]
+}
+
+interface DeactivationBatchResult extends BatchResultBase {
+  type: 'deactivate'
+  deactivated: number
+}
+
+interface ActivationBatchResult extends BatchResultBase {
+  type: 'activate'
+  activated: number
+}
+
+type BatchResult = DeactivationBatchResult | ActivationBatchResult
 
 export function AdminUsersPage() {
   const queryClient = useQueryClient()
@@ -23,8 +43,8 @@ export function AdminUsersPage() {
 
   // Selection state for batch operations
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([])
-  const [showBatchMode, setShowBatchMode] = useState(false)
-  const [batchResult, setBatchResult] = useState<DeactivationResult | null>(null)
+  const [batchMode, setBatchMode] = useState<BatchMode>('none')
+  const [batchResult, setBatchResult] = useState<BatchResult | null>(null)
 
   const { dialogProps, confirm } = useConfirmDialog()
   const { data, isLoading, error } = useAdminUsers(filters)
@@ -32,9 +52,17 @@ export function AdminUsersPage() {
   // Batch deactivation mutation
   const deactivateMutation = useMutation({
     mutationFn: adminApi.deactivateBatch,
-    onSuccess: (result) => {
-      setBatchResult(result)
-      // No limpiar selección aquí - mantenerla para contexto hasta cerrar resultado
+    onSuccess: (result: DeactivationResult) => {
+      setBatchResult({ ...result, type: 'deactivate' })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    },
+  })
+
+  // Batch activation mutation
+  const activateMutation = useMutation({
+    mutationFn: adminApi.activateBatch,
+    onSuccess: (result: ActivationResult) => {
+      setBatchResult({ ...result, type: 'activate' })
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
     },
   })
@@ -90,13 +118,33 @@ export function AdminUsersPage() {
     }
   }
 
+  const handleBatchActivate = async () => {
+    if (selectedUserIds.length === 0) return
+
+    const confirmed = await confirm({
+      title: 'Activar usuarios',
+      message: `¿Estás seguro de que quieres activar ${selectedUserIds.length} usuario(s)?\n\nSolo se activarán los usuarios que estén actualmente en estado INACTIVO.`,
+      confirmLabel: 'Sí, activar',
+      cancelLabel: 'Cancelar',
+      variant: 'primary',
+    })
+
+    if (confirmed) {
+      activateMutation.mutate(selectedUserIds)
+    }
+  }
+
   const handleCloseResult = () => {
     setBatchResult(null)
     setSelectedUserIds([])
   }
 
-  const toggleBatchMode = () => {
-    setShowBatchMode(!showBatchMode)
+  const toggleBatchMode = (mode: BatchMode) => {
+    if (batchMode === mode) {
+      setBatchMode('none')
+    } else {
+      setBatchMode(mode)
+    }
     setSelectedUserIds([])
     setBatchResult(null)
   }
@@ -104,6 +152,8 @@ export function AdminUsersPage() {
   if (error) {
     return <ErrorState error={error} title="Error al cargar usuarios" />
   }
+
+  const isPending = deactivateMutation.isPending || activateMutation.isPending
 
   return (
     <div className="space-y-6">
@@ -117,22 +167,36 @@ export function AdminUsersPage() {
             Administra los usuarios del sistema
           </p>
         </div>
-        <button
-          type="button"
-          onClick={toggleBatchMode}
-          className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-            showBatchMode
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          <UserMinus className="h-4 w-4" />
-          {showBatchMode ? 'Cancelar selección' : 'Desactivar por lotes'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => toggleBatchMode('activate')}
+            className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+              batchMode === 'activate'
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <UserPlus className="h-4 w-4" />
+            {batchMode === 'activate' ? 'Cancelar' : 'Activar por lotes'}
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleBatchMode('deactivate')}
+            className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              batchMode === 'deactivate'
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <UserMinus className="h-4 w-4" />
+            {batchMode === 'deactivate' ? 'Cancelar' : 'Desactivar por lotes'}
+          </button>
+        </div>
       </div>
 
-      {/* Batch mode info */}
-      {showBatchMode && (
+      {/* Batch mode info - Deactivate */}
+      {batchMode === 'deactivate' && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
@@ -150,7 +214,7 @@ export function AdminUsersPage() {
                   <button
                     type="button"
                     onClick={handleBatchDeactivate}
-                    disabled={deactivateMutation.isPending}
+                    disabled={isPending}
                     className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50"
                   >
                     {deactivateMutation.isPending ? 'Procesando...' : 'Desactivar seleccionados'}
@@ -162,15 +226,51 @@ export function AdminUsersPage() {
         </div>
       )}
 
+      {/* Batch mode info - Activate */}
+      {batchMode === 'activate' && (
+        <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+          <div className="flex items-start gap-3">
+            <UserPlus className="h-5 w-5 text-green-600 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-medium text-green-800">Modo de activación por lotes</h3>
+              <p className="text-sm text-green-700 mt-1">
+                Selecciona los usuarios que quieres activar. Solo se activarán los usuarios que estén
+                actualmente en estado INACTIVO.
+              </p>
+              {selectedUserIds.length > 0 && (
+                <div className="mt-3 flex items-center gap-3">
+                  <span className="text-sm font-medium text-green-800">
+                    {selectedUserIds.length} usuario(s) seleccionado(s)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleBatchActivate}
+                    disabled={isPending}
+                    className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+                  >
+                    {activateMutation.isPending ? 'Procesando...' : 'Activar seleccionados'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Batch result */}
       {batchResult && (
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-          <h3 className="font-medium text-gray-900 mb-3">Resultado de la desactivación</h3>
+          <h3 className="font-medium text-gray-900 mb-3">
+            Resultado de la {batchResult.type === 'activate' ? 'activación' : 'desactivación'}
+          </h3>
           <div className="grid grid-cols-3 gap-4 mb-3">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
               <span className="text-sm">
-                <span className="font-medium">{batchResult.deactivated}</span> desactivados
+                <span className="font-medium">
+                  {batchResult.type === 'activate' ? batchResult.activated : batchResult.deactivated}
+                </span>{' '}
+                {batchResult.type === 'activate' ? 'activados' : 'desactivados'}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -304,9 +404,10 @@ export function AdminUsersPage() {
           <UserTable
             key={`page-${data.page}`}
             users={data.content}
-            showSelection={showBatchMode}
+            showSelection={batchMode !== 'none'}
             selectedUserIds={selectedUserIds}
             onSelectionChange={setSelectedUserIds}
+            selectionMode={batchMode}
           />
 
           <Pagination
@@ -319,7 +420,7 @@ export function AdminUsersPage() {
         </>
       ) : null}
 
-      <ConfirmDialog {...dialogProps} isLoading={deactivateMutation.isPending} />
+      <ConfirmDialog {...dialogProps} isLoading={isPending} />
     </div>
   )
 }

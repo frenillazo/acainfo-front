@@ -5,6 +5,7 @@ import type {
   AddSupporterRequest,
   ProcessGroupRequestRequest,
   GroupRequestFilters,
+  MarkInterestRequest,
 } from '../types/groupRequest.types'
 
 export const useGroupRequests = (filters: GroupRequestFilters = {}) => {
@@ -89,6 +90,50 @@ export const useRejectGroupRequest = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['group-requests'] })
       queryClient.invalidateQueries({ queryKey: ['group-request', variables.id] })
+    },
+  })
+}
+
+// ==================== "Me Interesa" Hooks ====================
+
+export const useInterestSummary = () => {
+  return useQuery({
+    queryKey: ['interest-summary'],
+    queryFn: () => groupRequestApi.getInterestSummary(),
+  })
+}
+
+export const useCheckInterest = (subjectId: number, studentId: number) => {
+  return useQuery({
+    queryKey: ['interest-check', subjectId, studentId],
+    queryFn: () => groupRequestApi.checkInterest(subjectId, studentId),
+    enabled: !!subjectId && !!studentId,
+  })
+}
+
+export const useMarkInterest = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: MarkInterestRequest) => groupRequestApi.markInterest(data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['group-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['interest-check', variables.subjectId] })
+      queryClient.invalidateQueries({ queryKey: ['interest-summary'] })
+    },
+  })
+}
+
+export const useRemoveInterest = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ subjectId, studentId }: { subjectId: number; studentId: number }) =>
+      groupRequestApi.removeInterest(subjectId, studentId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['group-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['interest-check', variables.subjectId] })
+      queryClient.invalidateQueries({ queryKey: ['interest-summary'] })
     },
   })
 }

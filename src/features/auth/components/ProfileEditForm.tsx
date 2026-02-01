@@ -18,11 +18,13 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
   const [formData, setFormData] = useState<UpdateProfileRequest>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
+    phoneNumber: user?.phoneNumber || '',
   })
 
   const [validationErrors, setValidationErrors] = useState<{
     firstName?: string
     lastName?: string
+    phoneNumber?: string
   }>({})
 
   // Update form when user changes
@@ -31,6 +33,7 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
       setFormData({
         firstName: user.firstName,
         lastName: user.lastName,
+        phoneNumber: user.phoneNumber || '',
       })
     }
   }, [user])
@@ -44,7 +47,7 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
   }, [formData])
 
   const validateForm = (): boolean => {
-    const errors: { firstName?: string; lastName?: string } = {}
+    const errors: { firstName?: string; lastName?: string; phoneNumber?: string } = {}
 
     if (!formData.firstName.trim()) {
       errors.firstName = 'First name is required'
@@ -56,6 +59,10 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
       errors.lastName = 'Last name is required'
     } else if (formData.lastName.length > 50) {
       errors.lastName = 'Last name must not exceed 50 characters'
+    }
+
+    if (formData.phoneNumber && formData.phoneNumber.length > 20) {
+      errors.phoneNumber = 'Phone number must not exceed 20 characters'
     }
 
     setValidationErrors(errors)
@@ -87,7 +94,9 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
   }
 
   const hasChanges =
-    formData.firstName !== user?.firstName || formData.lastName !== user?.lastName
+    formData.firstName !== user?.firstName ||
+    formData.lastName !== user?.lastName ||
+    formData.phoneNumber !== (user?.phoneNumber || '')
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -110,6 +119,17 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
         onChange={(value) => handleChange('lastName', value)}
         maxLength={50}
         error={validationErrors.lastName}
+        disabled={isLoading}
+      />
+
+      <FormFieldControlled
+        label="Phone Number"
+        name="phoneNumber"
+        type="tel"
+        value={formData.phoneNumber || ''}
+        onChange={(value) => handleChange('phoneNumber', value)}
+        maxLength={20}
+        error={validationErrors.phoneNumber}
         disabled={isLoading}
       />
 

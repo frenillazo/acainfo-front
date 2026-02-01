@@ -45,6 +45,15 @@ export const adminApi = {
     return response.data
   },
 
+  // POST /admin/users/activate-batch - Batch activate users
+  activateBatch: async (userIds: number[]): Promise<ActivationResult> => {
+    const response = await apiClient.post<ActivationResult>(
+      '/admin/users/activate-batch',
+      { userIds }
+    )
+    return response.data
+  },
+
   // POST /admin/trigger-status-check - Manually trigger status check job
   triggerStatusCheck: async (): Promise<{ message: string }> => {
     const response = await apiClient.post<{ message: string }>(
@@ -57,6 +66,13 @@ export const adminApi = {
 export interface DeactivationResult {
   totalProcessed: number
   deactivated: number
+  skipped: number
+  errors: string[]
+}
+
+export interface ActivationResult {
+  totalProcessed: number
+  activated: number
   skipped: number
   errors: string[]
 }

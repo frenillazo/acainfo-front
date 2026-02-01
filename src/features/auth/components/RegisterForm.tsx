@@ -23,6 +23,7 @@ const registerSchema = z
           message: 'Solo se permiten emails de @red.ujaen.es o @gmail.com',
         }
       ),
+    phoneNumber: z.string().min(1, 'El teléfono es obligatorio'),
     password: z.string().min(8, 'Mínimo 8 caracteres'),
     confirmPassword: z.string(),
   })
@@ -50,6 +51,7 @@ export function RegisterForm() {
       password: data.password,
       firstName: data.firstName,
       lastName: data.lastName,
+      phoneNumber: data.phoneNumber,
     })
   }
 
@@ -80,6 +82,14 @@ export function RegisterForm() {
         autoComplete="email"
         helperText="Solo se permiten emails de @red.ujaen.es o @gmail.com"
         error={errors.email?.message}
+      />
+
+      <FormField
+        {...register('phoneNumber')}
+        label="Teléfono"
+        type="tel"
+        autoComplete="tel"
+        error={errors.phoneNumber?.message}
       />
 
       <FormField

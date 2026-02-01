@@ -1,4 +1,4 @@
-import { AlertTriangle, AlertCircle, Info } from 'lucide-react'
+import { AlertTriangle, AlertCircle, Info, CheckCircle } from 'lucide-react'
 import { Button, type ButtonVariant } from '../ui/Button'
 
 export interface ConfirmDialogProps {
@@ -7,22 +7,24 @@ export interface ConfirmDialogProps {
   message: string
   confirmLabel?: string
   cancelLabel?: string
-  variant?: 'danger' | 'warning' | 'info'
+  variant?: 'danger' | 'warning' | 'info' | 'primary'
   isLoading?: boolean
   onConfirm: () => void
   onCancel: () => void
 }
 
-const variantToButtonVariant: Record<'danger' | 'warning' | 'info', ButtonVariant> = {
+const variantToButtonVariant: Record<'danger' | 'warning' | 'info' | 'primary', ButtonVariant> = {
   danger: 'danger',
   warning: 'warning',
   info: 'primary',
+  primary: 'primary',
 }
 
 const variantIcons = {
   danger: <AlertTriangle className="h-6 w-6 text-red-600" aria-hidden="true" />,
   warning: <AlertCircle className="h-6 w-6 text-yellow-600" aria-hidden="true" />,
   info: <Info className="h-6 w-6 text-blue-600" aria-hidden="true" />,
+  primary: <CheckCircle className="h-6 w-6 text-green-600" aria-hidden="true" />,
 }
 
 export function ConfirmDialog({

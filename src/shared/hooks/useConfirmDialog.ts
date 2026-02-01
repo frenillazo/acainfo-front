@@ -6,7 +6,7 @@ interface ConfirmDialogState {
   message: string
   confirmLabel?: string
   cancelLabel?: string
-  variant?: 'danger' | 'warning' | 'info'
+  variant?: 'danger' | 'warning' | 'info' | 'primary'
 }
 
 interface ConfirmOptions {
@@ -14,7 +14,7 @@ interface ConfirmOptions {
   message: string
   confirmLabel?: string
   cancelLabel?: string
-  variant?: 'danger' | 'warning' | 'info'
+  variant?: 'danger' | 'warning' | 'info' | 'primary'
 }
 
 export function useConfirmDialog() {

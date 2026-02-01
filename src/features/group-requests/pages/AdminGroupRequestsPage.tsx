@@ -1,50 +1,41 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
+  useInterestSummary,
   useGroupRequests,
-  useApproveGroupRequest,
-  useRejectGroupRequest,
 } from '../hooks/useGroupRequests'
-import { GroupRequestTable } from '../components/GroupRequestTable'
-import { PromptDialog } from '@/shared/components/common/PromptDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-import { usePromptDialog } from '@/shared/hooks/usePromptDialog'
-import type { GroupRequestStatus, GroupRequestFilters } from '../types/groupRequest.types'
-import type { GroupType } from '@/shared/types/api.types'
-import { useAuthStore } from '@/features/auth/store/authStore'
+import type { GroupRequestFilters } from '../types/groupRequest.types'
+import { Heart, Users, Eye, ArrowLeft } from 'lucide-react'
+import { formatDate } from '@/shared/utils/formatters'
 
 export function AdminGroupRequestsPage() {
-  const { user } = useAuthStore()
+  const [view, setView] = useState<'summary' | 'detail'>('summary')
+  const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null)
+  const [selectedSubjectName, setSelectedSubjectName] = useState<string>('')
   const [filters, setFilters] = useState<GroupRequestFilters>({
     page: 0,
-    size: 10,
+    size: 20,
+    status: 'PENDING',
   })
-  const [pendingAction, setPendingAction] = useState<{ type: 'approve' | 'reject'; id: number } | null>(null)
 
-  const { data, isLoading, error } = useGroupRequests(filters)
-  const approveMutation = useApproveGroupRequest()
-  const rejectMutation = useRejectGroupRequest()
-  const { dialogProps, prompt } = usePromptDialog()
+  const { data: summaryData, isLoading: isLoadingSummary, error: summaryError } = useInterestSummary()
+  const { data: detailData, isLoading: isLoadingDetail, error: detailError } = useGroupRequests({
+    ...filters,
+    subjectId: selectedSubjectId ?? undefined,
+  })
 
-  const handleStatusChange = (status: GroupRequestStatus | '') => {
-    setFilters((prev) => ({
-      ...prev,
-      status: status || undefined,
-      page: 0,
-    }))
+  const handleViewDetail = (subjectId: number, subjectName: string) => {
+    setSelectedSubjectId(subjectId)
+    setSelectedSubjectName(subjectName)
+    setView('detail')
   }
 
-  const handleGroupTypeChange = (groupType: GroupType | '') => {
-    setFilters((prev) => ({
-      ...prev,
-      requestedGroupType: groupType || undefined,
-      page: 0,
-    }))
-  }
-
-  const handleSubjectIdChange = (subjectId: string) => {
-    const id = subjectId ? parseInt(subjectId, 10) : undefined
-    setFilters((prev) => ({ ...prev, subjectId: id, page: 0 }))
+  const handleBackToSummary = () => {
+    setSelectedSubjectId(null)
+    setSelectedSubjectName('')
+    setView('summary')
   }
 
   const handlePageChange = (page: number) => {
@@ -53,50 +44,12 @@ export function AdminGroupRequestsPage() {
     }
   }
 
-  const handleApprove = async (id: number) => {
-    setPendingAction({ type: 'approve', id })
-    const response = await prompt({
-      title: 'Aprobar solicitud',
-      message: '¿Aprobar esta solicitud de grupo?',
-      inputLabel: 'Mensaje de aprobacion (opcional)',
-      inputPlaceholder: 'Ingresa un mensaje...',
-      confirmLabel: 'Aprobar',
-    })
-    setPendingAction(null)
-    if (response !== null && user) {
-      approveMutation.mutate({
-        id,
-        data: {
-          adminId: user.id,
-          adminResponse: response || undefined,
-        },
-      })
-    }
+  if (summaryError && view === 'summary') {
+    return <ErrorState error={summaryError} title="Error al cargar resumen de intereses" />
   }
 
-  const handleReject = async (id: number) => {
-    setPendingAction({ type: 'reject', id })
-    const response = await prompt({
-      title: 'Rechazar solicitud',
-      message: '¿Rechazar esta solicitud de grupo?',
-      inputLabel: 'Motivo del rechazo',
-      inputPlaceholder: 'Ingresa el motivo...',
-      confirmLabel: 'Rechazar',
-    })
-    setPendingAction(null)
-    if (response !== null && user) {
-      rejectMutation.mutate({
-        id,
-        data: {
-          adminId: user.id,
-          adminResponse: response || undefined,
-        },
-      })
-    }
-  }
-
-  if (error) {
-    return <ErrorState error={error} title="Error al cargar solicitudes" />
+  if (detailError && view === 'detail') {
+    return <ErrorState error={detailError} title="Error al cargar alumnos interesados" />
   }
 
   return (
@@ -104,135 +57,174 @@ export function AdminGroupRequestsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
-          Solicitudes de Grupo
+          <Heart className="inline-block h-6 w-6 mr-2 text-pink-500" />
+          Alumnos Interesados
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Gestiona las solicitudes de nuevos grupos de los estudiantes
+          Visualiza cuantos alumnos estan interesados en cada asignatura
         </p>
       </div>
 
-      {/* Filters */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Subject ID filter */}
-          <div>
-            <label
-              htmlFor="subjectId"
-              className="block text-sm font-medium text-gray-700"
-            >
-              ID Materia
-            </label>
-            <input
-              type="number"
-              id="subjectId"
-              placeholder="ID de la materia..."
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.subjectId ?? ''}
-              onChange={(e) => handleSubjectIdChange(e.target.value)}
-            />
-          </div>
-
-          {/* Group Type filter */}
-          <div>
-            <label
-              htmlFor="groupType"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Tipo de Grupo
-            </label>
-            <select
-              id="groupType"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.requestedGroupType ?? ''}
-              onChange={(e) => handleGroupTypeChange(e.target.value as GroupType | '')}
-            >
-              <option value="">Todos</option>
-              <option value="REGULAR_Q1">Cuatrimestre 1</option>
-              <option value="REGULAR_Q2">Cuatrimestre 2</option>
-              <option value="INTENSIVE_Q1">Intensivo Enero</option>
-              <option value="INTENSIVE_Q2">Intensivo Junio</option>
-            </select>
-          </div>
-
-          {/* Status filter */}
-          <div>
-            <label
-              htmlFor="status"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Estado
-            </label>
-            <select
-              id="status"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.status ?? ''}
-              onChange={(e) => handleStatusChange(e.target.value as GroupRequestStatus | '')}
-            >
-              <option value="">Todos</option>
-              <option value="PENDING">Pendiente</option>
-              <option value="APPROVED">Aprobada</option>
-              <option value="REJECTED">Rechazada</option>
-              <option value="EXPIRED">Expirada</option>
-            </select>
-          </div>
-
-          {/* Results info */}
-          <div className="flex items-end">
-            <p className="text-sm text-gray-500">
-              {data ? (
-                <>
-                  Mostrando {data.content.length} de {data.totalElements}{' '}
-                  solicitudes
-                </>
-              ) : (
-                'Cargando...'
-              )}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Table */}
-      {isLoading ? (
-        <LoadingState />
-      ) : data ? (
+      {view === 'summary' ? (
+        // SUMMARY VIEW - Interest by subject
         <>
-          <GroupRequestTable
-            key={`page-${data.page}`}
-            groupRequests={data.content}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            isProcessing={approveMutation.isPending || rejectMutation.isPending}
-          />
-
-          {/* Pagination */}
-          {data.totalPages > 1 && (
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
-              <div className="text-sm text-gray-500">
-                Pagina {(data.page ?? 0) + 1} de {data.totalPages}
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handlePageChange((data.page ?? 0) - 1)}
-                  disabled={data.first}
-                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Anterior
-                </button>
-                <button
-                  onClick={() => handlePageChange((data.page ?? 0) + 1)}
-                  disabled={data.last}
-                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Siguiente
-                </button>
-              </div>
+          {isLoadingSummary ? (
+            <LoadingState />
+          ) : summaryData && summaryData.length > 0 ? (
+            <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Asignatura
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Grado
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Interesados
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Acciones
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {summaryData.map((summary) => (
+                    <tr key={summary.subjectId} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {summary.subjectName}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {summary.subjectCode}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {summary.degreeName || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
+                          <Users className="h-4 w-4" />
+                          {summary.interestedCount}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => handleViewDetail(summary.subjectId, summary.subjectName)}
+                          className="inline-flex items-center gap-1 text-pink-600 hover:text-pink-900"
+                        >
+                          <Eye className="h-4 w-4" />
+                          Ver alumnos
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+              <Heart className="mx-auto h-12 w-12 text-gray-300" />
+              <p className="mt-2 text-gray-500">No hay alumnos interesados en ninguna asignatura</p>
             </div>
           )}
         </>
-      ) : null}
+      ) : (
+        // DETAIL VIEW - Students interested in a specific subject
+        <>
+          <button
+            onClick={handleBackToSummary}
+            className="inline-flex items-center text-sm text-pink-600 hover:text-pink-800"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Volver al resumen
+          </button>
 
-      <PromptDialog {...dialogProps} isLoading={approveMutation.isPending || rejectMutation.isPending} />
+          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <h2 className="text-lg font-medium text-gray-900">
+              Alumnos interesados en: {selectedSubjectName}
+            </h2>
+          </div>
+
+          {isLoadingDetail ? (
+            <LoadingState />
+          ) : detailData && detailData.content.length > 0 ? (
+            <>
+              <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Alumno
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Fecha de interes
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acciones
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {detailData.content.map((request) => (
+                      <tr key={request.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {request.requesterName || `Alumno #${request.requesterId}`}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatDate(request.createdAt)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <Link
+                            to={`/admin/users/${request.requesterId}`}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            Ver alumno
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {detailData.totalPages > 1 && (
+                <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
+                  <div className="text-sm text-gray-500">
+                    Pagina {(detailData.page ?? 0) + 1} de {detailData.totalPages}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handlePageChange((detailData.page ?? 0) - 1)}
+                      disabled={detailData.first}
+                      className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Anterior
+                    </button>
+                    <button
+                      onClick={() => handlePageChange((detailData.page ?? 0) + 1)}
+                      disabled={detailData.last}
+                      className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Siguiente
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+              <p className="text-gray-500">No hay alumnos interesados en esta asignatura</p>
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }

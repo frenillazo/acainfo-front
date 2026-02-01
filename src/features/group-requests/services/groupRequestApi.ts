@@ -6,6 +6,8 @@ import type {
   AddSupporterRequest,
   ProcessGroupRequestRequest,
   GroupRequestFilters,
+  SubjectInterestSummary,
+  MarkInterestRequest,
 } from '../types/groupRequest.types'
 
 // Backend returns Spring Page format, we need to transform it
@@ -84,5 +86,35 @@ export const groupRequestApi = {
   reject: async (id: number, data: ProcessGroupRequestRequest): Promise<GroupRequest> => {
     const response = await apiClient.put<GroupRequest>(`/group-requests/${id}/reject`, data)
     return response.data
+  },
+
+  // ==================== "Me Interesa" API ====================
+
+  // GET /group-requests/interest-summary - Get interest summary by subject (admin only)
+  getInterestSummary: async (): Promise<SubjectInterestSummary[]> => {
+    const response = await apiClient.get<SubjectInterestSummary[]>('/group-requests/interest-summary')
+    return response.data
+  },
+
+  // GET /group-requests/interest/{subjectId}/student/{studentId} - Check if student is interested
+  checkInterest: async (subjectId: number, studentId: number): Promise<boolean> => {
+    const response = await apiClient.get<boolean>(`/group-requests/interest/${subjectId}/student/${studentId}`)
+    return response.data
+  },
+
+  // POST /group-requests - Mark interest (reuses create endpoint with simplified data)
+  markInterest: async (data: MarkInterestRequest): Promise<GroupRequest> => {
+    // Use REGULAR_Q1 as default type since we're simplifying the flow
+    const response = await apiClient.post<GroupRequest>('/group-requests', {
+      subjectId: data.subjectId,
+      requesterId: data.requesterId,
+      requestedGroupType: 'REGULAR_Q1',
+    })
+    return response.data
+  },
+
+  // DELETE /group-requests/interest/{subjectId}/student/{studentId} - Remove interest
+  removeInterest: async (subjectId: number, studentId: number): Promise<void> => {
+    await apiClient.delete(`/group-requests/interest/${subjectId}/student/${studentId}`)
   },
 }
