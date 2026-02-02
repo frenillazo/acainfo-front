@@ -15,6 +15,7 @@ import {
   CalendarDays,
   Clock,
   ClipboardList,
+  UserCheck,
   X,
 } from 'lucide-react'
 
@@ -88,6 +89,11 @@ const adminNavigation: NavItem[] = [
     name: 'Inscripciones',
     href: '/admin/enrollments',
     icon: <CheckCircle className={ICON_CLASS} />,
+  },
+  {
+    name: 'Solicitudes Pendientes',
+    href: '/admin/enrollments/pending',
+    icon: <UserCheck className={ICON_CLASS} />,
   },
   {
     name: 'Asignaturas',

@@ -33,6 +33,9 @@ export const ENROLLMENT_STATUS_CONFIG = {
   WAITING_LIST: { label: 'Lista de espera', variant: 'warning' as BadgeVariant },
   WITHDRAWN: { label: 'Retirado', variant: 'default' as BadgeVariant },
   COMPLETED: { label: 'Completada', variant: 'info' as BadgeVariant },
+  PENDING_APPROVAL: { label: 'Pendiente de aprobación', variant: 'warning' as BadgeVariant },
+  REJECTED: { label: 'Rechazada', variant: 'error' as BadgeVariant },
+  EXPIRED: { label: 'Expirada', variant: 'default' as BadgeVariant },
 } as const
 
 // ==================== Session ====================

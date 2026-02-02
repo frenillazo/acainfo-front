@@ -5,6 +5,7 @@ import type {
   EnrollmentDetail,
   EnrollRequest,
   ChangeGroupRequest,
+  RejectEnrollmentRequest,
 } from '../types/enrollment.types'
 
 interface EnrollmentFilters extends PaginationParams {
@@ -54,6 +55,26 @@ export const enrollmentApi = {
   // PUT /enrollments/{id}/change-group
   changeGroup: async (id: number, data: ChangeGroupRequest): Promise<Enrollment> => {
     const response = await apiClient.put<Enrollment>(`/enrollments/${id}/change-group`, data)
+    return response.data
+  },
+
+  // PUT /enrollments/{id}/approve
+  approve: async (id: number): Promise<Enrollment> => {
+    const response = await apiClient.put<Enrollment>(`/enrollments/${id}/approve`)
+    return response.data
+  },
+
+  // PUT /enrollments/{id}/reject
+  reject: async (id: number, data?: RejectEnrollmentRequest): Promise<Enrollment> => {
+    const response = await apiClient.put<Enrollment>(`/enrollments/${id}/reject`, data)
+    return response.data
+  },
+
+  // GET /enrollments?status=PENDING_APPROVAL&groupId={groupId}
+  getPendingApprovalByGroupId: async (groupId: number): Promise<PageResponse<Enrollment>> => {
+    const response = await apiClient.get<PageResponse<Enrollment>>('/enrollments', {
+      params: { groupId, status: 'PENDING_APPROVAL', size: 50 },
+    })
     return response.data
   },
 }

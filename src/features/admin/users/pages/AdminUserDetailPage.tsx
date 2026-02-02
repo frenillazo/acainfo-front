@@ -99,6 +99,12 @@ export function AdminUserDetailPage() {
               <dd className="mt-1 text-sm text-gray-900">{user.email}</dd>
             </div>
             <div>
+              <dt className="text-sm font-medium text-gray-500">Teléfono</dt>
+              <dd className="mt-1 text-sm text-gray-900">
+                {user.phoneNumber || <span className="text-gray-400">No especificado</span>}
+              </dd>
+            </div>
+            <div>
               <dt className="text-sm font-medium text-gray-500">Estado</dt>
               <dd className="mt-1">
                 <UserStatusBadge status={user.status} />

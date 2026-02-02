@@ -1,6 +1,12 @@
-import type { GroupType, GroupStatus } from '@/shared/types/api.types'
+import type { GroupType, GroupStatus, DayOfWeek } from '@/shared/types/api.types'
 
 export type Degree = 'INGENIERIA_INFORMATICA' | 'INGENIERIA_INDUSTRIAL'
+
+export interface ScheduleSummary {
+  dayOfWeek: DayOfWeek
+  startTime: string // Format: "HH:mm"
+  endTime: string // Format: "HH:mm"
+}
 export type SubjectStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'
 
 export interface Subject {
@@ -54,6 +60,8 @@ export interface Group {
   canEnroll: boolean
   isIntensive: boolean
   isRegular: boolean
+  // Schedule summary
+  schedules: ScheduleSummary[]
 }
 
 export interface GroupFilters {

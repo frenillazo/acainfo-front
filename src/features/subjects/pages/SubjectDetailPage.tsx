@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useSubject, useGroupsBySubject } from '../hooks/useSubjects'
-import { useEnroll, useActiveEnrollmentSubjectIds } from '@/features/enrollments/hooks/useEnrollments'
+import { useEnroll, useActiveEnrollmentSubjectIds, usePendingEnrollmentsByStudent } from '@/features/enrollments/hooks/useEnrollments'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { GroupCard } from '../components/GroupCard'
 import type { Group } from '../types/subject.types'
@@ -39,6 +39,9 @@ export function SubjectDetailPage() {
   // Check if student has active enrollment in this subject
   const { hasActiveEnrollment, isLoading: isLoadingEnrollments } = useActiveEnrollmentSubjectIds(userId)
   const canAccessMaterials = hasActiveEnrollment(subjectId)
+
+  // Check pending enrollment requests
+  const { hasPendingEnrollment } = usePendingEnrollmentsByStudent(userId)
 
   // Materials
   const {
@@ -199,6 +202,7 @@ export function SubjectDetailPage() {
                 group={group}
                 onEnroll={handleEnroll}
                 isEnrolling={enrollMutation.isPending}
+                hasPendingRequest={hasPendingEnrollment(group.id)}
               />
             ))}
           </div>

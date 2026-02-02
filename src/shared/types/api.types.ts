@@ -42,3 +42,15 @@ export type SessionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELL
 export type SessionType = 'REGULAR' | 'EXTRA' | 'SCHEDULING'
 export type SessionMode = 'IN_PERSON' | 'ONLINE' | 'DUAL'
 export type Classroom = 'AULA_PORTAL1' | 'AULA_PORTAL2' | 'AULA_VIRTUAL'
+export type DayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY'
+
+// Short labels for days of week (Spanish abbreviations)
+export const DAY_OF_WEEK_SHORT_LABELS: Record<DayOfWeek, string> = {
+  MONDAY: 'L',
+  TUESDAY: 'M',
+  WEDNESDAY: 'X',
+  THURSDAY: 'J',
+  FRIDAY: 'V',
+  SATURDAY: 'S',
+  SUNDAY: 'D',
+}

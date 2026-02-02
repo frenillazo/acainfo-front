@@ -30,6 +30,7 @@ import {
   AdminEnrollmentDetailPage,
   AdminEnrollmentCreatePage,
   AdminEnrollmentChangeGroupPage,
+  AdminPendingEnrollmentsPage,
   AdminGroupsPage,
   AdminGroupDetailPage,
   AdminGroupCreatePage,
@@ -187,6 +188,10 @@ export const router = createBrowserRouter([
       {
         path: 'enrollments/:id/change-group',
         element: <AdminEnrollmentChangeGroupPage />,
+      },
+      {
+        path: 'enrollments/pending',
+        element: <AdminPendingEnrollmentsPage />,
       },
       {
         path: 'groups',

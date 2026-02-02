@@ -1,15 +1,28 @@
-import type { Group } from '../types/subject.types'
+import type { Group, ScheduleSummary } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
-import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
+import { GROUP_TYPE_LABELS, DAY_OF_WEEK_SHORT_LABELS } from '@/shared/types/api.types'
 import { Card } from '@/shared/components/ui'
+import { Clock } from 'lucide-react'
+
+function formatScheduleSummary(schedules: ScheduleSummary[]): string[] {
+  if (!schedules || schedules.length === 0) {
+    return ['Por determinar']
+  }
+
+  return schedules.map(schedule => {
+    const dayLabel = DAY_OF_WEEK_SHORT_LABELS[schedule.dayOfWeek] || schedule.dayOfWeek
+    return `${dayLabel} ${schedule.startTime} - ${schedule.endTime}`
+  })
+}
 
 interface GroupCardProps {
   group: Group
   onEnroll?: (group: Group) => void
   isEnrolling?: boolean
+  hasPendingRequest?: boolean
 }
 
-export function GroupCard({ group, onEnroll, isEnrolling }: GroupCardProps) {
+export function GroupCard({ group, onEnroll, isEnrolling, hasPendingRequest }: GroupCardProps) {
   const isFull = group.availableSeats !== null && group.availableSeats <= 0
 
   return (
@@ -89,9 +102,35 @@ export function GroupCard({ group, onEnroll, isEnrolling }: GroupCardProps) {
             {group.availableSeats !== 1 ? 's' : ''}
           </p>
         )}
+
+        <div className="flex items-start gap-2 text-sm">
+          <svg
+            className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <div className="text-gray-600">
+            {formatScheduleSummary(group.schedules).map((line, index) => (
+              <div key={index}>{line}</div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {onEnroll && group.canEnroll && (
+      {hasPendingRequest ? (
+        <div className="mt-4 flex items-center justify-center gap-2 rounded-md bg-amber-50 border border-amber-200 px-4 py-2 text-sm font-medium text-amber-700">
+          <Clock className="h-4 w-4" />
+          Solicitud pendiente de aprobación
+        </div>
+      ) : onEnroll && group.canEnroll ? (
         <button
           onClick={() => onEnroll(group)}
           disabled={isEnrolling || isFull}
@@ -104,13 +143,11 @@ export function GroupCard({ group, onEnroll, isEnrolling }: GroupCardProps) {
         >
           {isEnrolling ? 'Inscribiendo...' : isFull ? 'Sin plazas' : 'Inscribirse'}
         </button>
-      )}
-
-      {!group.isOpen && (
+      ) : !group.isOpen ? (
         <p className="mt-4 text-center text-sm text-gray-500">
           Inscripciones cerradas
         </p>
-      )}
+      ) : null}
     </Card>
   )
 }
