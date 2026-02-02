@@ -10,7 +10,7 @@ import { adminApi, type DeactivationResult, type ActivationResult } from '@/feat
 import { UserMinus, UserPlus, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
-import type { UserFilters, UserStatus, RoleType } from '../../types/admin.types'
+import type { UserFilters, UserStatus, Degree } from '../../types/admin.types'
 
 type BatchMode = 'none' | 'deactivate' | 'activate'
 
@@ -37,6 +37,7 @@ export function AdminUsersPage() {
   const [filters, setFilters] = useState<UserFilters>({
     page: 0,
     size: 10,
+    roleType: 'STUDENT',
   })
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 300)
@@ -88,10 +89,10 @@ export function AdminUsersPage() {
     }))
   }
 
-  const handleRoleChange = (roleType: RoleType | '') => {
+  const handleDegreeChange = (degree: Degree | '') => {
     setFilters((prev) => ({
       ...prev,
-      roleType: roleType || undefined,
+      degree: degree || undefined,
       page: 0,
     }))
   }
@@ -161,10 +162,10 @@ export function AdminUsersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Gestión de Usuarios
+            Gestión de Estudiantes
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Administra los usuarios del sistema
+            Administra los estudiantes del sistema
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -357,26 +358,25 @@ export function AdminUsersPage() {
             </select>
           </div>
 
-          {/* Role filter */}
+          {/* Degree filter */}
           <div>
             <label
-              htmlFor="role"
+              htmlFor="degree"
               className="block text-sm font-medium text-gray-700"
             >
-              Rol
+              Carrera
             </label>
             <select
-              id="role"
+              id="degree"
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              value={filters.roleType ?? ''}
+              value={filters.degree ?? ''}
               onChange={(e) =>
-                handleRoleChange(e.target.value as RoleType | '')
+                handleDegreeChange(e.target.value as Degree | '')
               }
             >
-              <option value="">Todos</option>
-              <option value="ADMIN">Admin</option>
-              <option value="TEACHER">Profesor</option>
-              <option value="STUDENT">Estudiante</option>
+              <option value="">Todas</option>
+              <option value="INGENIERIA_INFORMATICA">Ingeniería Informática</option>
+              <option value="INGENIERIA_INDUSTRIAL">Ingeniería Industrial</option>
             </select>
           </div>
 
@@ -386,7 +386,7 @@ export function AdminUsersPage() {
               {data ? (
                 <>
                   Mostrando {data.content.length} de {data.totalElements}{' '}
-                  usuarios
+                  estudiantes
                 </>
               ) : (
                 'Cargando...'

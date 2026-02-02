@@ -10,7 +10,10 @@ export interface RegisterRequest {
   firstName: string
   lastName: string
   phoneNumber: string
+  degree: Degree
 }
+
+export type Degree = 'INGENIERIA_INFORMATICA' | 'INGENIERIA_INDUSTRIAL'
 
 export interface UpdateProfileRequest {
   firstName: string
@@ -62,6 +65,7 @@ export interface User {
   fullName: string
   phoneNumber: string
   status: UserStatus
+  degree: Degree | null // Only for STUDENT role, null for others
   roles: RoleType[] // Backend returns roles as string array: ["ADMIN", "STUDENT"]
   createdAt: string
   updatedAt: string

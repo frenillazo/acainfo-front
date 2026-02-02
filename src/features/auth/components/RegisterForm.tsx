@@ -4,8 +4,14 @@ import { z } from 'zod'
 import { useAuth } from '../hooks/useAuth'
 import { FormField } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
+import type { Degree } from '../types/auth.types'
 
 const ALLOWED_DOMAINS = ['red.ujaen.es', 'gmail.com']
+
+const degreeOptions: { value: Degree; label: string }[] = [
+  { value: 'INGENIERIA_INFORMATICA', label: 'Ingeniería Informática' },
+  { value: 'INGENIERIA_INDUSTRIAL', label: 'Ingeniería Industrial' },
+]
 
 const registerSchema = z
   .object({
@@ -24,6 +30,9 @@ const registerSchema = z
         }
       ),
     phoneNumber: z.string().min(1, 'El teléfono es obligatorio'),
+    degree: z.enum(['INGENIERIA_INFORMATICA', 'INGENIERIA_INDUSTRIAL'], {
+      message: 'Selecciona tu carrera',
+    }),
     password: z.string().min(8, 'Mínimo 8 caracteres'),
     confirmPassword: z.string(),
   })
@@ -52,6 +61,7 @@ export function RegisterForm() {
       firstName: data.firstName,
       lastName: data.lastName,
       phoneNumber: data.phoneNumber,
+      degree: data.degree,
     })
   }
 
@@ -91,6 +101,27 @@ export function RegisterForm() {
         autoComplete="tel"
         error={errors.phoneNumber?.message}
       />
+
+      <div className="space-y-1">
+        <label htmlFor="degree" className="block text-sm font-medium text-gray-700">
+          Carrera
+        </label>
+        <select
+          id="degree"
+          {...register('degree')}
+          className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          <option value="">Selecciona tu carrera</option>
+          {degreeOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        {errors.degree && (
+          <p className="text-sm text-red-500">{errors.degree.message}</p>
+        )}
+      </div>
 
       <FormField
         {...register('password')}

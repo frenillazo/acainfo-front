@@ -10,7 +10,9 @@ export interface User {
   firstName: string
   lastName: string
   fullName: string
+  phoneNumber: string
   status: UserStatus
+  degree: Degree | null
   roles: string[]
   createdAt: string
   updatedAt: string
@@ -44,6 +46,7 @@ export interface UserFilters {
   searchTerm?: string
   status?: UserStatus
   roleType?: RoleType
+  degree?: Degree
   page?: number
   size?: number
   sortBy?: string

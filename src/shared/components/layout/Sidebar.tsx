@@ -75,7 +75,7 @@ const adminNavigation: NavItem[] = [
     icon: <Home className={ICON_CLASS} />,
   },
   {
-    name: 'Usuarios',
+    name: 'Estudiantes',
     href: '/admin/users',
     icon: <Users className={ICON_CLASS} />,
   },

@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useSubjects } from '../hooks/useSubjects'
 import { SubjectCard } from '../components/SubjectCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import type { Degree, SubjectFilters } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
+import { useActiveEnrollmentSubjectIds } from '@/features/enrollments/hooks/useEnrollments'
+import { useAuthStore } from '@/features/auth/store/authStore'
 
 const degreeOptions: { value: Degree | ''; label: string }[] = [
   { value: '', label: 'Todas las carreras' },
@@ -25,6 +27,11 @@ export function SubjectsPage() {
   const [selectedDegree, setSelectedDegree] = useState<Degree | ''>('')
   const [selectedYear, setSelectedYear] = useState<number | ''>('')
 
+  const user = useAuthStore((state) => state.user)
+  const { activeSubjectIds, isLoading: isLoadingEnrollments } = useActiveEnrollmentSubjectIds(
+    user?.id ?? 0
+  )
+
   const filters: SubjectFilters = {
     searchTerm: searchTerm || undefined,
     degree: selectedDegree || undefined,
@@ -37,15 +44,18 @@ export function SubjectsPage() {
 
   const { data, isLoading, error } = useSubjects(filters)
 
-  if (isLoading) {
+  const subjects = useMemo(() => {
+    const allSubjects = data?.content ?? []
+    return allSubjects.filter((subject) => !activeSubjectIds.has(subject.id))
+  }, [data?.content, activeSubjectIds])
+
+  if (isLoading || isLoadingEnrollments) {
     return <LoadingState />
   }
 
   if (error) {
     return <ErrorState error={error} title="Error al cargar las asignaturas" />
   }
-
-  const subjects = data?.content ?? []
 
   return (
     <div className="space-y-6">
