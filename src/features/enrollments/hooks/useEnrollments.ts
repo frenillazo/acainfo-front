@@ -130,13 +130,24 @@ export const usePendingEnrollmentsByStudent = (studentId: number) => {
     return new Map(pending.map((e) => [e.groupId, e]))
   }, [enrollments])
 
+  const pendingSubjectIds = useMemo(() => {
+    if (!enrollments) return new Set<number>()
+    return new Set(
+      enrollments
+        .filter((e) => e.status === 'PENDING_APPROVAL')
+        .map((e) => e.subjectId)
+    )
+  }, [enrollments])
+
   const hasPendingEnrollment = (groupId: number) => pendingByGroupId.has(groupId)
   const getPendingEnrollment = (groupId: number) => pendingByGroupId.get(groupId)
+  const hasPendingEnrollmentForSubject = (subjectId: number) => pendingSubjectIds.has(subjectId)
 
   return {
     pendingByGroupId,
     hasPendingEnrollment,
     getPendingEnrollment,
+    hasPendingEnrollmentForSubject,
     isLoading,
     error,
   }

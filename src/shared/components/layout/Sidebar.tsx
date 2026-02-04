@@ -29,6 +29,7 @@ interface NavItem {
   href: string
   icon: React.ReactNode
   roles?: string[]
+  end?: boolean // If true, only match exact path (for parent routes like Dashboard)
 }
 
 const ICON_CLASS = 'h-5 w-5'
@@ -39,6 +40,7 @@ const studentNavigation: NavItem[] = [
     name: 'Dashboard',
     href: '/dashboard',
     icon: <Home className={ICON_CLASS} />,
+    end: true, // Only match exact /dashboard path
   },
   {
     name: 'Mis Inscripciones',
@@ -74,6 +76,7 @@ const adminNavigation: NavItem[] = [
     name: 'Dashboard',
     href: '/admin',
     icon: <Home className={ICON_CLASS} />,
+    end: true, // Only match exact /admin path
   },
   {
     name: 'Estudiantes',
@@ -183,6 +186,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               <li key={item.name}>
                 <NavLink
                   to={item.href}
+                  end={item.end}
                   onClick={onClose}
                   className={({ isActive }) =>
                     cn(

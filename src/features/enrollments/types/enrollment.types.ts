@@ -35,7 +35,11 @@ export interface Enrollment {
   subjectName: string
   subjectCode: string
   groupType: GroupType
+  groupName: string
   teacherName: string
+  scheduleSummary: string
+  groupCapacity: number
+  currentEnrollmentCount: number
 }
 
 export type EnrollmentStatus =

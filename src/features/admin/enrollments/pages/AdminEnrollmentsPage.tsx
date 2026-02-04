@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { CreditCard } from 'lucide-react'
 import {
   useAdminEnrollments,
   useWithdrawEnrollment,
   type AdminEnrollmentFilters,
 } from '../hooks/useAdminEnrollments'
 import { EnrollmentTable } from '../components/EnrollmentTable'
+import { GenerateGroupPaymentsDialog } from '@/features/admin/payments/components/GenerateGroupPaymentsDialog'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
@@ -15,16 +17,25 @@ import { useDebounce } from '@/shared/hooks/useDebounce'
 import type { EnrollmentStatus } from '@/features/enrollments/types/enrollment.types'
 
 export function AdminEnrollmentsPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const groupIdParam = searchParams.get('groupId')
+
   const [filters, setFilters] = useState<AdminEnrollmentFilters>({
     page: 0,
     size: 10,
+    groupId: groupIdParam ? parseInt(groupIdParam, 10) : undefined,
   })
   const [studentEmailInput, setStudentEmailInput] = useState('')
   const debouncedStudentEmail = useDebounce(studentEmailInput, 300)
+  const [showPaymentsDialog, setShowPaymentsDialog] = useState(false)
 
   const { data, isLoading, error } = useAdminEnrollments(filters)
   const withdrawMutation = useWithdrawEnrollment()
   const { dialogProps, confirm } = useConfirmDialog()
+
+  const handlePaymentsSuccess = (count: number) => {
+    alert(`Se generaron ${count} pagos correctamente`)
+  }
 
   useEffect(() => {
     setFilters((prev) => ({ ...prev, studentEmail: debouncedStudentEmail || undefined, page: 0 }))
@@ -40,6 +51,11 @@ export function AdminEnrollmentsPage() {
       status: status || undefined,
       page: 0,
     }))
+  }
+
+  const handleClearGroupFilter = () => {
+    setSearchParams({})
+    setFilters((prev) => ({ ...prev, groupId: undefined, page: 0 }))
   }
 
   const handlePageChange = (page: number) => {
@@ -70,18 +86,43 @@ export function AdminEnrollmentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Gestión de Inscripciones
+            {filters.groupId
+              ? `Inscripciones del Grupo #${filters.groupId}`
+              : 'Gestión de Inscripciones'}
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Administra las inscripciones del sistema
+            {filters.groupId ? (
+              <span className="flex items-center gap-2">
+                Filtrando por grupo
+                <button
+                  onClick={handleClearGroupFilter}
+                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  Ver todas
+                </button>
+              </span>
+            ) : (
+              'Administra las inscripciones del sistema'
+            )}
           </p>
         </div>
-        <Link
-          to="/admin/enrollments/new"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Nueva inscripción
-        </Link>
+        <div className="flex items-center gap-3">
+          {filters.groupId && (
+            <button
+              onClick={() => setShowPaymentsDialog(true)}
+              className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            >
+              <CreditCard className="h-4 w-4" />
+              Generar Pagos
+            </button>
+          )}
+          <Link
+            to="/admin/enrollments/new"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Nueva inscripción
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
@@ -168,6 +209,16 @@ export function AdminEnrollmentsPage() {
       ) : null}
 
       <ConfirmDialog {...dialogProps} isLoading={withdrawMutation.isPending} />
+
+      {/* Generate Payments Dialog */}
+      {filters.groupId && (
+        <GenerateGroupPaymentsDialog
+          isOpen={showPaymentsDialog}
+          groupId={filters.groupId}
+          onClose={() => setShowPaymentsDialog(false)}
+          onSuccess={handlePaymentsSuccess}
+        />
+      )}
     </div>
   )
 }

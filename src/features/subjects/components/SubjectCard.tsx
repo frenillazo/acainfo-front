@@ -59,7 +59,7 @@ export function SubjectCard({ subject }: SubjectCardProps) {
                   : 'bg-yellow-100 text-yellow-700'
             )}
           >
-            {subject.active ? 'Activa' : subject.archived ? 'Archivada' : 'Inactiva'}
+            {subject.active ? 'Disponible' : subject.archived ? 'Archivada' : 'Inactiva'}
           </span>
         </div>
 

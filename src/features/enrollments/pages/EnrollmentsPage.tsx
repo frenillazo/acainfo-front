@@ -3,9 +3,51 @@ import { EnrollmentStatusBadge } from '../components/EnrollmentStatusBadge'
 import { useAuthStore } from '@/features/auth'
 import { Link } from 'react-router-dom'
 import { cn } from '@/shared/utils/cn'
-import { formatDate } from '@/shared/utils/formatters'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { User, Users, Clock } from 'lucide-react'
+import type { Enrollment } from '../types/enrollment.types'
+
+function EnrollmentCard({ enrollment, className }: { enrollment: Enrollment; className?: string }) {
+  return (
+    <Link
+      to={`/dashboard/enrollments/${enrollment.id}`}
+      className={cn(
+        'rounded-lg border bg-white p-4 shadow-sm transition-shadow hover:shadow-md',
+        className
+      )}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-medium text-gray-900">{enrollment.groupName}</h3>
+        </div>
+        <EnrollmentStatusBadge
+          status={enrollment.status}
+          waitingPosition={enrollment.waitingListPosition}
+        />
+      </div>
+
+      <div className="mt-3 space-y-2">
+        <div className="flex items-center gap-2 text-sm">
+          <User className="h-4 w-4 text-gray-400" />
+          <span className="text-gray-700">{enrollment.teacherName}</span>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm">
+          <Users className="h-4 w-4 text-gray-400" />
+          <span className="text-gray-700">
+            {enrollment.currentEnrollmentCount} / {enrollment.groupCapacity} inscritos
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm">
+          <Clock className="h-4 w-4 text-gray-400" />
+          <span className="text-gray-600">{enrollment.scheduleSummary}</span>
+        </div>
+      </div>
+    </Link>
+  )
+}
 
 export function EnrollmentsPage() {
   const { user } = useAuthStore()
@@ -48,26 +90,11 @@ export function EnrollmentsPage() {
         {activeEnrollments.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {activeEnrollments.map((enrollment) => (
-              <Link
+              <EnrollmentCard
                 key={enrollment.id}
-                to={`/dashboard/enrollments/${enrollment.id}`}
-                className={cn(
-                  'rounded-lg border border-gray-200 bg-white p-4 shadow-sm',
-                  'transition-shadow hover:shadow-md'
-                )}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      Grupo #{enrollment.groupId}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Inscrito: {formatDate(enrollment.enrolledAt)}
-                    </p>
-                  </div>
-                  <EnrollmentStatusBadge status={enrollment.status} />
-                </div>
-              </Link>
+                enrollment={enrollment}
+                className="border-gray-200"
+              />
             ))}
           </div>
         ) : (
@@ -85,29 +112,11 @@ export function EnrollmentsPage() {
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {waitingEnrollments.map((enrollment) => (
-              <Link
+              <EnrollmentCard
                 key={enrollment.id}
-                to={`/dashboard/enrollments/${enrollment.id}`}
-                className={cn(
-                  'rounded-lg border border-yellow-200 bg-yellow-50 p-4',
-                  'transition-shadow hover:shadow-md'
-                )}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      Grupo #{enrollment.groupId}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Inscrito: {formatDate(enrollment.enrolledAt)}
-                    </p>
-                  </div>
-                  <EnrollmentStatusBadge
-                    status={enrollment.status}
-                    waitingPosition={enrollment.waitingListPosition}
-                  />
-                </div>
-              </Link>
+                enrollment={enrollment}
+                className="border-yellow-200 bg-yellow-50"
+              />
             ))}
           </div>
         </section>
@@ -121,26 +130,11 @@ export function EnrollmentsPage() {
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {otherEnrollments.map((enrollment) => (
-              <Link
+              <EnrollmentCard
                 key={enrollment.id}
-                to={`/dashboard/enrollments/${enrollment.id}`}
-                className={cn(
-                  'rounded-lg border border-gray-200 bg-white p-4 opacity-75',
-                  'transition-shadow hover:shadow-md'
-                )}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      Grupo #{enrollment.groupId}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Inscrito: {formatDate(enrollment.enrolledAt)}
-                    </p>
-                  </div>
-                  <EnrollmentStatusBadge status={enrollment.status} />
-                </div>
-              </Link>
+                enrollment={enrollment}
+                className="border-gray-200 opacity-75"
+              />
             ))}
           </div>
         </section>

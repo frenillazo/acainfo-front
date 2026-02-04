@@ -56,6 +56,34 @@ export interface GenerateMonthlyPaymentsRequest {
   billingYear: number
 }
 
+export interface GenerateGroupPaymentsRequest {
+  groupId: number
+  billingMonth: number
+  billingYear: number
+  customAmount?: number | null
+}
+
+export interface EnrollmentPaymentPreview {
+  enrollmentId: number
+  studentId: number
+  studentName: string
+  studentEmail: string
+  individualAmount: number
+}
+
+export interface GroupPaymentPreviewResponse {
+  groupId: number
+  groupName: string
+  subjectName: string
+  pricePerHour: number
+  totalHours: number
+  suggestedAmount: number
+  paymentType: PaymentType
+  billingMonth: number
+  billingYear: number
+  enrollments: EnrollmentPaymentPreview[]
+}
+
 export interface MarkPaymentPaidRequest {
   stripePaymentIntentId?: string | null
 }

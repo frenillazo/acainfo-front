@@ -94,6 +94,12 @@ export function AdminGroupDetailPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link
+              to={`/admin/enrollments?groupId=${group.id}`}
+              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Inscripciones
+            </Link>
+            <Link
               to={`/admin/groups/${group.id}/schedules`}
               className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >

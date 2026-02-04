@@ -40,8 +40,9 @@ export function SubjectDetailPage() {
   const { hasActiveEnrollment, isLoading: isLoadingEnrollments } = useActiveEnrollmentSubjectIds(userId)
   const canAccessMaterials = hasActiveEnrollment(subjectId)
 
-  // Check pending enrollment requests
-  const { hasPendingEnrollment } = usePendingEnrollmentsByStudent(userId)
+  // Check pending enrollment requests (at subject level - any group)
+  const { hasPendingEnrollmentForSubject } = usePendingEnrollmentsByStudent(userId)
+  const subjectHasPendingRequest = hasPendingEnrollmentForSubject(subjectId)
 
   // Materials
   const {
@@ -139,7 +140,7 @@ export function SubjectDetailPage() {
                   : 'bg-gray-100 text-gray-600'
               )}
             >
-              {subject.active ? 'Activa' : 'Inactiva'}
+              {subject.active ? 'Disponible' : 'Inactiva'}
             </span>
           </div>
         </div>
@@ -202,7 +203,7 @@ export function SubjectDetailPage() {
                 group={group}
                 onEnroll={handleEnroll}
                 isEnrolling={enrollMutation.isPending}
-                hasPendingRequest={hasPendingEnrollment(group.id)}
+                hasPendingRequest={subjectHasPendingRequest}
               />
             ))}
           </div>

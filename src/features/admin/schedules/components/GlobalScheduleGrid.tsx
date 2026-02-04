@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import type { EnrichedSchedule, DayOfWeek, Classroom } from '../../types/admin.types'
 import { cn } from '@/shared/utils/cn'
@@ -16,11 +17,35 @@ const DAYS: { key: DayOfWeek; label: string; shortLabel: string }[] = [
   { key: 'SATURDAY', label: 'Sábado', shortLabel: 'Sáb' },
 ]
 
-const CLASSROOMS: { key: Classroom; label: string; color: string; bgColor: string }[] = [
-  { key: 'AULA_PORTAL1', label: 'Aula Portal 1', color: 'bg-blue-500', bgColor: 'bg-blue-50' },
-  { key: 'AULA_PORTAL2', label: 'Aula Portal 2', color: 'bg-green-500', bgColor: 'bg-green-50' },
-  { key: 'AULA_VIRTUAL', label: 'Aula Virtual', color: 'bg-purple-500', bgColor: 'bg-purple-50' },
+const CLASSROOMS: { key: Classroom; label: string }[] = [
+  { key: 'AULA_PORTAL1', label: 'Aula Portal 1' },
+  { key: 'AULA_PORTAL2', label: 'Aula Portal 2' },
+  { key: 'AULA_VIRTUAL', label: 'Aula Virtual' },
 ]
+
+// Color palette for subjects - visually distinct colors
+const SUBJECT_COLORS = [
+  'bg-blue-500',
+  'bg-emerald-500',
+  'bg-violet-500',
+  'bg-amber-500',
+  'bg-rose-500',
+  'bg-cyan-500',
+  'bg-fuchsia-500',
+  'bg-lime-500',
+  'bg-orange-500',
+  'bg-indigo-500',
+  'bg-teal-500',
+  'bg-pink-500',
+]
+
+/**
+ * Generate a consistent color for a subject based on its ID.
+ * Uses modulo to cycle through the palette for many subjects.
+ */
+function getSubjectColor(subjectId: number): string {
+  return SUBJECT_COLORS[subjectId % SUBJECT_COLORS.length]
+}
 
 // Hours from 8:00 to 22:00
 const HOURS = Array.from({ length: 15 }, (_, i) => i + 8)
@@ -39,8 +64,8 @@ function getSchedulePosition(schedule: EnrichedSchedule) {
   return { top, height }
 }
 
-function getClassroomConfig(classroom: Classroom) {
-  return CLASSROOMS.find(c => c.key === classroom) ?? CLASSROOMS[0]
+function getClassroomLabel(classroom: Classroom) {
+  return CLASSROOMS.find(c => c.key === classroom)?.label ?? classroom
 }
 
 interface ScheduleBlockProps {
@@ -49,19 +74,20 @@ interface ScheduleBlockProps {
 
 function ScheduleBlock({ schedule }: ScheduleBlockProps) {
   const { top, height } = getSchedulePosition(schedule)
-  const classroomConfig = getClassroomConfig(schedule.classroom)
+  const subjectColor = getSubjectColor(schedule.subjectId)
 
   return (
     <Link
       to={`/admin/groups/${schedule.groupId}`}
       className={cn(
         'absolute left-1 right-1 rounded-md px-2 py-1 text-white text-xs overflow-hidden transition-transform hover:scale-[1.02] hover:z-10',
-        classroomConfig.color
+        subjectColor
       )}
       style={{ top: `${top}px`, height: `${height}px`, minHeight: '30px' }}
+      title={`${schedule.subjectName} - ${getClassroomLabel(schedule.classroom)}`}
     >
       <div className="flex flex-col h-full">
-        <div className="font-medium truncate">{schedule.subjectCode}</div>
+        <div className="font-medium truncate">{schedule.subjectName}</div>
         <div className="opacity-90 truncate text-[10px]">{schedule.startTime} - {schedule.endTime}</div>
         {height >= 50 && (
           <div className="opacity-80 truncate text-[10px] mt-auto">{schedule.teacherName}</div>
@@ -98,17 +124,35 @@ export function GlobalScheduleGrid({ schedules, selectedClassroom }: GlobalSched
     ? CLASSROOMS.filter(c => c.key === selectedClassroom)
     : CLASSROOMS
 
+  // Build legend: unique subjects with their assigned colors
+  const subjectLegend = useMemo(() => {
+    const subjectMap = new Map<number, { id: number; name: string; color: string }>()
+    filteredSchedules.forEach(schedule => {
+      if (!subjectMap.has(schedule.subjectId)) {
+        subjectMap.set(schedule.subjectId, {
+          id: schedule.subjectId,
+          name: schedule.subjectName,
+          color: getSubjectColor(schedule.subjectId),
+        })
+      }
+    })
+    // Sort by name for consistent ordering
+    return Array.from(subjectMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+  }, [filteredSchedules])
+
   return (
     <div className="overflow-x-auto">
-      {/* Legend */}
-      <div className="mb-4 flex flex-wrap gap-4">
-        {CLASSROOMS.map((c) => (
-          <div key={c.key} className="flex items-center gap-2">
-            <div className={cn('h-4 w-4 rounded', c.color)} />
-            <span className="text-sm text-gray-600">{c.label}</span>
-          </div>
-        ))}
-      </div>
+      {/* Subject Legend */}
+      {subjectLegend.length > 0 && (
+        <div className="mb-4 flex flex-wrap gap-4">
+          {subjectLegend.map((subject) => (
+            <div key={subject.id} className="flex items-center gap-2">
+              <div className={cn('h-4 w-4 rounded', subject.color)} />
+              <span className="text-sm text-gray-600">{subject.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className={cn(
         'rounded-lg border border-gray-200 bg-white',
@@ -126,13 +170,12 @@ export function GlobalScheduleGrid({ schedules, selectedClassroom }: GlobalSched
             <div key={day.key} className="border-l border-gray-200 p-2 text-center">
               <div className="font-medium text-gray-900">{day.label}</div>
               {!selectedClassroom && classroomsToShow.length > 1 && (
-                <div className="flex gap-1 mt-1 justify-center">
-                  {classroomsToShow.map(c => (
-                    <div
-                      key={c.key}
-                      className={cn('w-2 h-2 rounded-full', c.color)}
-                      title={c.label}
-                    />
+                <div className="flex gap-1 mt-1 justify-center text-[10px] text-gray-500">
+                  {classroomsToShow.map((c, idx) => (
+                    <span key={c.key}>
+                      {idx > 0 && ' | '}
+                      {c.label.replace('Aula ', '')}
+                    </span>
                   ))}
                 </div>
               )}

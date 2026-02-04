@@ -19,6 +19,7 @@ export interface Session {
   // Enriched data
   subjectName: string
   subjectCode: string
+  groupName: string
   groupType: string
   teacherName: string
   // Date and time
@@ -61,4 +62,16 @@ export interface SessionFilters {
   size?: number
   sortBy?: string
   sortDirection?: 'ASC' | 'DESC'
+}
+
+/**
+ * Extended session type for student view that includes
+ * information about whether this is the student's own session
+ * or an alternative session from another group of the same subject.
+ */
+export interface StudentSession extends Session {
+  /** True if this session belongs to a group the student is enrolled in */
+  isOwnSession: boolean
+  /** True if this is an alternative session from another group of the same subject */
+  isAlternative: boolean
 }

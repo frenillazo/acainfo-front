@@ -39,6 +39,8 @@ import type {
   PaymentFilters,
   GeneratePaymentRequest,
   GenerateMonthlyPaymentsRequest,
+  GenerateGroupPaymentsRequest,
+  GroupPaymentPreviewResponse,
   CancelPaymentRequest,
   MarkPaymentPaidRequest,
 } from '@/features/payments/types/payment.types'
@@ -327,6 +329,23 @@ export const adminApi = {
 
   generateMonthlyPayments: async (data: GenerateMonthlyPaymentsRequest): Promise<Payment[]> => {
     const response = await apiClient.post<Payment[]>('/admin/payments/generate-monthly', data)
+    return response.data
+  },
+
+  previewGroupPayments: async (
+    groupId: number,
+    billingMonth: number,
+    billingYear: number
+  ): Promise<GroupPaymentPreviewResponse> => {
+    const response = await apiClient.get<GroupPaymentPreviewResponse>(
+      `/admin/payments/group/${groupId}/preview`,
+      { params: { billingMonth, billingYear } }
+    )
+    return response.data
+  },
+
+  generateGroupPayments: async (data: GenerateGroupPaymentsRequest): Promise<Payment[]> => {
+    const response = await apiClient.post<Payment[]>('/admin/payments/generate-by-group', data)
     return response.data
   },
 

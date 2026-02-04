@@ -1,13 +1,19 @@
-import type { Session } from '../types/session.types'
+import type { Session, StudentSession } from '../types/session.types'
 import { SessionStatusBadge } from './SessionStatusBadge'
 import { SessionModeBadge } from './SessionModeBadge'
 import { Card } from '@/shared/components/ui'
+import { cn } from '@/shared/utils/cn'
 
 interface SessionCardProps {
-  session: Session
+  session: Session | StudentSession
+}
+
+function isStudentSession(session: Session | StudentSession): session is StudentSession {
+  return 'isAlternative' in session
 }
 
 export function SessionCard({ session }: SessionCardProps) {
+  const isAlternative = isStudentSession(session) && session.isAlternative
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('es-ES', {
@@ -41,12 +47,28 @@ export function SessionCard({ session }: SessionCardProps) {
     <Card
       variant="interactive"
       padding="sm"
-      className={isUpcoming ? 'border-blue-200 bg-blue-50' : ''}
+      className={cn(
+        isUpcoming && !isAlternative && 'border-blue-200 bg-blue-50',
+        isAlternative && [
+          'border-dashed border-purple-200 bg-purple-50/50 opacity-75',
+          'hover:opacity-100 hover:bg-purple-50',
+        ]
+      )}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="mb-2">
-            <h3 className="text-lg font-semibold text-gray-900">{session.subjectName}</h3>
+          <div className="mb-2 flex items-center gap-2">
+            <h3 className={cn(
+              'text-lg font-semibold',
+              isAlternative ? 'text-purple-900' : 'text-gray-900'
+            )}>
+              {session.subjectName}
+            </h3>
+            {isAlternative && (
+              <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
+                Alternativa
+              </span>
+            )}
           </div>
 
           <div className="space-y-2 text-sm">

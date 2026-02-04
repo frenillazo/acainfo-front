@@ -1,14 +1,14 @@
 import { useState, useMemo } from 'react'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useEnrollments } from '@/features/enrollments/hooks/useEnrollments'
-import { useSessions } from '../hooks/useSessions'
+import { useStudentSessions } from '../hooks/useStudentSessions'
 import { SessionCard } from '../components/SessionCard'
 import { StudentWeeklyScheduleGrid } from '../components/StudentWeeklyScheduleGrid'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-import { ChevronLeft, ChevronRight, Calendar, List } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Calendar, List, Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
-import type { SessionFilters } from '../types/session.types'
+import type { StudentSession } from '../types/session.types'
 
 type ViewMode = 'calendar' | 'list'
 
@@ -41,14 +41,7 @@ export function SessionsPage() {
   const { data: enrollments } = useEnrollments(studentId ?? 0)
   const [viewMode, setViewMode] = useState<ViewMode>('calendar')
   const [currentWeekStart, setCurrentWeekStart] = useState(() => getWeekStart(new Date()))
-  const [filters] = useState<SessionFilters>({
-    page: 0,
-    size: 100,
-    sortBy: 'date',
-    sortDirection: 'ASC',
-  })
-
-  const { data, isLoading, error } = useSessions(filters)
+  const [showAlternatives, setShowAlternatives] = useState(false)
 
   // Get all group IDs from active enrollments
   const activeEnrollments = useMemo(() => {
@@ -56,16 +49,21 @@ export function SessionsPage() {
     return enrollments.filter((e) => e.isActive || e.isOnWaitingList)
   }, [enrollments])
 
-  // Filter sessions by student's enrolled groups
-  const mySessions = useMemo(() => {
-    if (!data?.content || !activeEnrollments.length) return []
+  // Use the new hook that handles alternatives
+  const { sessions: allSessions, isLoading, error } = useStudentSessions(enrollments, {
+    includeAlternatives: showAlternatives,
+  })
 
-    const enrolledGroupIds = new Set(activeEnrollments.map((e) => e.groupId))
-    return data.content.filter((session) => enrolledGroupIds.has(session.groupId))
-  }, [data?.content, activeEnrollments])
+  // Filter to only show sessions based on toggle (own sessions always, alternatives only if toggled)
+  const mySessions = useMemo(() => {
+    if (!showAlternatives) {
+      return allSessions.filter((s) => s.isOwnSession)
+    }
+    return allSessions
+  }, [allSessions, showAlternatives])
 
   // Filter sessions for the current week (calendar view)
-  const weekSessions = useMemo(() => {
+  const weekSessions = useMemo((): StudentSession[] => {
     const weekEnd = getWeekEnd(currentWeekStart)
     return mySessions.filter((s) => {
       const sessionDate = new Date(s.date)
@@ -74,14 +72,14 @@ export function SessionsPage() {
   }, [mySessions, currentWeekStart])
 
   // Separate sessions for list view
-  const upcomingSessions = useMemo(() => {
+  const upcomingSessions = useMemo((): StudentSession[] => {
     const now = new Date()
     return mySessions.filter(
       (s) => s.status === 'SCHEDULED' && new Date(s.date) >= now
     )
   }, [mySessions])
 
-  const pastSessions = useMemo(() => {
+  const pastSessions = useMemo((): StudentSession[] => {
     const now = new Date()
     return mySessions.filter(
       (s) =>
@@ -90,8 +88,17 @@ export function SessionsPage() {
     )
   }, [mySessions])
 
-  const cancelledSessions = useMemo(() => {
+  const cancelledSessions = useMemo((): StudentSession[] => {
     return mySessions.filter((s) => s.status === 'CANCELLED' || s.status === 'POSTPONED')
+  }, [mySessions])
+
+  // Count own vs alternative sessions for display
+  const ownSessionsCount = useMemo(() => {
+    return mySessions.filter((s) => s.isOwnSession).length
+  }, [mySessions])
+
+  const alternativeSessionsCount = useMemo(() => {
+    return mySessions.filter((s) => s.isAlternative).length
   }, [mySessions])
 
   const goToPreviousWeek = () => {
@@ -109,15 +116,6 @@ export function SessionsPage() {
       return newDate
     })
   }
-
-  const goToCurrentWeek = () => {
-    setCurrentWeekStart(getWeekStart(new Date()))
-  }
-
-  const isCurrentWeek = useMemo(() => {
-    const today = getWeekStart(new Date())
-    return currentWeekStart.getTime() === today.getTime()
-  }, [currentWeekStart])
 
   if (error) {
     return <ErrorState error={error} title="Error al cargar las sesiones" />
@@ -184,24 +182,50 @@ export function SessionsPage() {
         </div>
       </div>
 
+      {/* Alternatives info banner */}
+      {showAlternatives && alternativeSessionsCount > 0 && (
+        <div className="flex items-center gap-3 rounded-lg border border-purple-200 bg-purple-50 p-4">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100">
+            <Eye className="h-4 w-4 text-purple-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-purple-800">
+              Mostrando sesiones alternativas
+            </p>
+            <p className="text-xs text-purple-600">
+              Las sesiones con borde punteado y colores apagados son de otros grupos de tus mismas asignaturas.
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm font-semibold text-purple-800">{ownSessionsCount} propias</p>
+            <p className="text-xs text-purple-600">{alternativeSessionsCount} alternativas</p>
+          </div>
+        </div>
+      )}
+
       {/* Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <div className="text-sm font-medium text-gray-500">Próximas sesiones</div>
           <div className="mt-1 text-2xl font-semibold text-blue-600">
-            {upcomingSessions.length}
+            {upcomingSessions.filter(s => s.isOwnSession).length}
+            {showAlternatives && alternativeSessionsCount > 0 && (
+              <span className="ml-2 text-sm font-normal text-purple-500">
+                +{upcomingSessions.filter(s => s.isAlternative).length} alt.
+              </span>
+            )}
           </div>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <div className="text-sm font-medium text-gray-500">Completadas</div>
           <div className="mt-1 text-2xl font-semibold text-green-600">
-            {pastSessions.length}
+            {pastSessions.filter(s => s.isOwnSession).length}
           </div>
         </div>
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <div className="text-sm font-medium text-gray-500">Canceladas/Pospuestas</div>
           <div className="mt-1 text-2xl font-semibold text-yellow-600">
-            {cancelledSessions.length}
+            {cancelledSessions.filter(s => s.isOwnSession).length}
           </div>
         </div>
       </div>
@@ -211,7 +235,29 @@ export function SessionsPage() {
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           {/* Week navigation */}
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Horario Semanal</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold text-gray-900">Horario Semanal</h2>
+              {/* Alternatives toggle - next to the title */}
+              {activeEnrollments.length > 0 && (
+                <button
+                  onClick={() => setShowAlternatives(!showAlternatives)}
+                  className={cn(
+                    'flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors',
+                    showAlternatives
+                      ? 'border-purple-300 bg-purple-50 text-purple-700'
+                      : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                  )}
+                  title={showAlternatives ? 'Ocultar sesiones alternativas' : 'Mostrar sesiones de otros grupos de mis asignaturas'}
+                >
+                  {showAlternatives ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                  {showAlternatives ? 'Ocultar alternativas' : 'Ver alternativas'}
+                </button>
+              )}
+            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={goToPreviousWeek}
@@ -219,18 +265,6 @@ export function SessionsPage() {
                 title="Semana anterior"
               >
                 <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button
-                onClick={goToCurrentWeek}
-                disabled={isCurrentWeek}
-                className={cn(
-                  'rounded-md px-3 py-1.5 text-sm font-medium',
-                  isCurrentWeek
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100'
-                )}
-              >
-                Hoy
               </button>
               <button
                 onClick={goToNextWeek}

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { UpcomingSessionSummary } from '../types/student.types'
-import { formatDate } from '@/shared/utils/formatters'
+import { formatDate, formatTime } from '@/shared/utils/formatters'
 import { Card } from '@/shared/components/ui'
 
 interface UpcomingSessionCardProps {
@@ -32,7 +32,7 @@ export function UpcomingSessionCard({ session }: UpcomingSessionCardProps) {
             <span className="font-medium">Fecha:</span> {formatDate(session.date)}
           </div>
           <div>
-            <span className="font-medium">Hora:</span> {session.startTime} - {session.endTime}
+            <span className="font-medium">Hora:</span> {formatTime(session.startTime)} - {formatTime(session.endTime)}
           </div>
           <div className="col-span-2">
             <span className="font-medium">Aula:</span>{' '}

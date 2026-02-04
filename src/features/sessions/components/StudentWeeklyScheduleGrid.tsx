@@ -1,11 +1,15 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import type { Session } from '../types/session.types'
+import type { Session, StudentSession } from '../types/session.types'
 import { cn } from '@/shared/utils/cn'
 
 interface StudentWeeklyScheduleGridProps {
-  sessions: Session[]
+  sessions: (Session | StudentSession)[]
   weekStart: Date
+}
+
+function isStudentSession(session: Session | StudentSession): session is StudentSession {
+  return 'isAlternative' in session
 }
 
 const DAYS = [
@@ -66,7 +70,7 @@ function formatDayDate(date: Date): string {
 }
 
 interface SessionBlockProps {
-  session: Session
+  session: Session | StudentSession
 }
 
 function SessionBlock({ session }: SessionBlockProps) {
@@ -74,6 +78,7 @@ function SessionBlock({ session }: SessionBlockProps) {
   const classroomConfig = getClassroomConfig(session.classroom)
   const isUpcoming = session.status === 'SCHEDULED'
   const isCancelled = session.status === 'CANCELLED' || session.status === 'POSTPONED'
+  const isAlternative = isStudentSession(session) && session.isAlternative
 
   return (
     <Link
@@ -81,12 +86,29 @@ function SessionBlock({ session }: SessionBlockProps) {
       className={cn(
         'absolute left-1 right-1 rounded-md px-2 py-1 text-white text-xs overflow-hidden transition-transform hover:scale-[1.02] hover:z-10',
         isCancelled ? 'bg-gray-400 line-through opacity-60' : classroomConfig.color,
-        !isUpcoming && !isCancelled && 'opacity-75'
+        !isUpcoming && !isCancelled && 'opacity-75',
+        // Alternative session styles: desaturated, dashed border, lower opacity
+        isAlternative && [
+          'opacity-50',
+          'saturate-[0.4]',
+          'border-2 border-dashed border-white/60',
+          'hover:opacity-70',
+        ]
       )}
-      style={{ top: `${top}px`, height: `${height}px`, minHeight: '30px' }}
+      style={{
+        top: `${top}px`,
+        height: `${height}px`,
+        minHeight: '30px',
+        // Lower z-index for alternatives so own sessions appear on top when overlapping
+        zIndex: isAlternative ? 1 : 2,
+      }}
+      title={isAlternative ? `Sesión alternativa - ${session.subjectName}` : undefined}
     >
       <div className="flex flex-col h-full">
-        <div className="font-medium truncate">{session.subjectCode || session.subjectName}</div>
+        <div className="font-medium truncate">
+          {isAlternative && <span className="mr-1">◇</span>}
+          {session.groupName || session.subjectName}
+        </div>
         <div className="opacity-90 truncate text-[10px]">
           {formatTime(session.startTime)} - {formatTime(session.endTime)}
         </div>
@@ -130,17 +152,31 @@ export function StudentWeeklyScheduleGrid({ sessions, weekStart }: StudentWeekly
     }))
   }, [sessions])
 
+  // Check if there are any alternative sessions to show in legend
+  const hasAlternatives = useMemo(() => {
+    return sessions.some(s => isStudentSession(s) && s.isAlternative)
+  }, [sessions])
+
   return (
     <div className="overflow-x-auto">
       {/* Legend */}
-      {uniqueClassrooms.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-4">
+      {(uniqueClassrooms.length > 0 || hasAlternatives) && (
+        <div className="mb-4 flex flex-wrap items-center gap-4">
           {uniqueClassrooms.map((c) => (
             <div key={c.key} className="flex items-center gap-2">
               <div className={cn('h-4 w-4 rounded', c.color)} />
               <span className="text-sm text-gray-600">{c.label}</span>
             </div>
           ))}
+          {hasAlternatives && (
+            <>
+              <div className="h-4 w-px bg-gray-300" />
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 rounded border-2 border-dashed border-purple-400 bg-purple-200 opacity-50" />
+                <span className="text-sm text-gray-600">Sesión alternativa</span>
+              </div>
+            </>
+          )}
         </div>
       )}
 

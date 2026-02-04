@@ -4,6 +4,7 @@ import type {
   PaymentFilters,
   GeneratePaymentRequest,
   GenerateMonthlyPaymentsRequest,
+  GenerateGroupPaymentsRequest,
   CancelPaymentRequest,
   MarkPaymentPaidRequest,
 } from '@/features/payments/types/payment.types'
@@ -19,6 +20,8 @@ export const paymentKeys = {
   pendingByStudent: (studentId: number) => [...paymentKeys.all, 'student', studentId, 'pending'] as const,
   overdueByStudent: (studentId: number) => [...paymentKeys.all, 'student', studentId, 'overdue'] as const,
   allOverdue: () => [...paymentKeys.all, 'overdue'] as const,
+  groupPreview: (groupId: number, billingMonth: number, billingYear: number) =>
+    [...paymentKeys.all, 'group-preview', groupId, billingMonth, billingYear] as const,
 }
 
 export function useAdminPayments(filters: PaymentFilters = {}) {
@@ -93,6 +96,30 @@ export function useGenerateMonthlyPayments() {
     mutationFn: (data: GenerateMonthlyPaymentsRequest) => adminApi.generateMonthlyPayments(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: paymentKeys.all })
+    },
+  })
+}
+
+export function useGroupPaymentPreview(
+  groupId: number,
+  billingMonth: number,
+  billingYear: number
+) {
+  return useQuery({
+    queryKey: paymentKeys.groupPreview(groupId, billingMonth, billingYear),
+    queryFn: () => adminApi.previewGroupPayments(groupId, billingMonth, billingYear),
+    enabled: !!groupId && !!billingMonth && !!billingYear,
+  })
+}
+
+export function useGenerateGroupPayments() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: GenerateGroupPaymentsRequest) => adminApi.generateGroupPayments(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: paymentKeys.all })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'enrollments'] })
     },
   })
 }

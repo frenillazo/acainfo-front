@@ -10,7 +10,13 @@ export const formatDateTime = (dateStr: string): string =>
 export const formatDateLong = (dateStr: string): string =>
   format(parseISO(dateStr), "d 'de' MMMM 'de' yyyy", { locale: es })
 
-export const formatTime = (timeStr: string): string => timeStr
+export const formatTime = (timeStr: string): string => {
+  // Remove seconds from time string (e.g., "08:30:00" -> "08:30")
+  if (timeStr && timeStr.length >= 5) {
+    return timeStr.substring(0, 5)
+  }
+  return timeStr
+}
 
 export const formatCurrency = (amount: number): string =>
   new Intl.NumberFormat('es-ES', {
