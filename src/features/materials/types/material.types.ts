@@ -124,3 +124,60 @@ export function getFileIcon(extension: string): string {
       return '📁'
   }
 }
+
+// ============================================
+// Material Viewer Types
+// ============================================
+
+export type ViewerType = 'pdf' | 'code' | 'image' | 'unsupported'
+
+export interface ViewerState {
+  isOpen: boolean
+  material: Material | null
+  content: Blob | string | null
+  isLoading: boolean
+  error: string | null
+}
+
+// Mapeo extensión → lenguaje shiki
+export const CODE_LANGUAGE_MAP: Record<string, string> = {
+  js: 'javascript',
+  jsx: 'jsx',
+  ts: 'typescript',
+  tsx: 'tsx',
+  py: 'python',
+  java: 'java',
+  cpp: 'cpp',
+  c: 'c',
+  cs: 'csharp',
+  go: 'go',
+  rs: 'rust',
+  php: 'php',
+  rb: 'ruby',
+  swift: 'swift',
+  kt: 'kotlin',
+  sql: 'sql',
+  json: 'json',
+  xml: 'xml',
+  html: 'html',
+  css: 'css',
+  md: 'markdown',
+  yaml: 'yaml',
+  yml: 'yaml',
+  sh: 'bash',
+  bash: 'bash',
+  txt: 'text',
+}
+
+// Helper para determinar tipo de viewer
+export function getViewerType(extension: string): ViewerType {
+  const ext = extension.toLowerCase()
+
+  if (ext === 'pdf') return 'pdf'
+  if (FILE_CATEGORIES.CODE.includes(ext as (typeof FILE_CATEGORIES.CODE)[number])) return 'code'
+  if (FILE_CATEGORIES.IMAGE.includes(ext as (typeof FILE_CATEGORIES.IMAGE)[number])) return 'image'
+  // txt y md también se pueden ver como código
+  if (ext === 'txt' || ext === 'md') return 'code'
+
+  return 'unsupported'
+}

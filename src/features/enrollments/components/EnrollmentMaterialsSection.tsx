@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { FileText, Download, FolderOpen } from 'lucide-react'
+import { FileText, Download, FolderOpen, Eye } from 'lucide-react'
 import { materialApi } from '@/features/materials/services/materialApi'
+import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
+import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
 import type { Material, MaterialCategory } from '@/features/materials/types/material.types'
 import { formatDate } from '@/shared/utils/formatters'
 import { Spinner } from '@/shared/components/ui/Spinner'
@@ -29,12 +31,29 @@ export function EnrollmentMaterialsSection({ subjectId, subjectName }: Enrollmen
     queryFn: () => materialApi.getBySubjectId(subjectId),
   })
 
+  const {
+    isOpen: viewerOpen,
+    material: viewerMaterial,
+    content: viewerContent,
+    viewerType,
+    isLoading: viewerLoading,
+    error: viewerError,
+    openViewer,
+    closeViewer,
+  } = useMaterialViewer()
+
   const handleDownload = async (material: Material) => {
     setDownloadingId(material.id)
     try {
       await materialApi.download(material.id, material.originalFilename)
     } finally {
       setDownloadingId(null)
+    }
+  }
+
+  const handleViewerDownload = () => {
+    if (viewerMaterial) {
+      handleDownload(viewerMaterial)
     }
   }
 
@@ -135,6 +154,14 @@ export function EnrollmentMaterialsSection({ subjectId, subjectName }: Enrollmen
                       </p>
                     </div>
                     <button
+                      onClick={() => openViewer(material)}
+                      className="flex-shrink-0 rounded-md bg-green-50 p-2 text-green-600 transition-colors hover:bg-green-100"
+                      title="Ver"
+                      aria-label={`Ver ${material.name}`}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+                    <button
                       onClick={() => handleDownload(material)}
                       disabled={downloadingId === material.id}
                       className="flex-shrink-0 rounded-md bg-blue-50 p-2 text-blue-600 transition-colors hover:bg-blue-100 disabled:opacity-50"
@@ -154,6 +181,17 @@ export function EnrollmentMaterialsSection({ subjectId, subjectName }: Enrollmen
           )
         })}
       </div>
+
+      <MaterialViewerModal
+        isOpen={viewerOpen}
+        material={viewerMaterial}
+        content={viewerContent}
+        viewerType={viewerType}
+        isLoading={viewerLoading}
+        error={viewerError}
+        onClose={closeViewer}
+        onDownload={handleViewerDownload}
+      />
     </div>
   )
 }

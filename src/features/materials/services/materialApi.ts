@@ -56,6 +56,14 @@ export const materialApi = {
     window.URL.revokeObjectURL(url)
   },
 
+  // GET /materials/{id}/download - Get content as Blob (for viewer)
+  getContent: async (id: number): Promise<Blob> => {
+    const response = await apiClient.get(`/materials/${id}/download`, {
+      responseType: 'blob',
+    })
+    return new Blob([response.data])
+  },
+
   // DELETE /materials/{id} - Delete a material
   delete: async (id: number): Promise<void> => {
     await apiClient.delete(`/materials/${id}`)

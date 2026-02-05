@@ -8,15 +8,17 @@ import {
 import { SubjectStatusBadge } from '../components/SubjectStatusBadge'
 import { DegreeBadge } from '../components/DegreeBadge'
 import { useMaterials } from '@/features/materials/hooks/useMaterials'
+import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { MaterialUploadForm } from '@/features/materials/components/MaterialUploadForm'
 import { MaterialsGroupedByCategory } from '@/features/materials/components/MaterialsGroupedByCategory'
+import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
-import type { UploadMaterialRequest } from '@/features/materials/types/material.types'
+import type { Material, UploadMaterialRequest } from '@/features/materials/types/material.types'
 
 export function AdminSubjectDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -41,6 +43,17 @@ export function AdminSubjectDetailPage() {
     upload,
     getBySubjectId,
   } = useMaterials()
+
+  const {
+    isOpen: viewerOpen,
+    material: viewerMaterial,
+    content: viewerContent,
+    viewerType,
+    isLoading: viewerLoading,
+    error: viewerError,
+    openViewer,
+    closeViewer,
+  } = useMaterialViewer()
 
   // Load materials when subject is loaded
   useEffect(() => {
@@ -99,6 +112,16 @@ export function AdminSubjectDetailPage() {
         // Reload materials
         getBySubjectId(subjectId)
       }
+    }
+  }
+
+  const handleView = (material: Material) => {
+    openViewer(material)
+  }
+
+  const handleViewerDownload = () => {
+    if (viewerMaterial) {
+      download(viewerMaterial.id, viewerMaterial.originalFilename)
     }
   }
 
@@ -367,6 +390,7 @@ export function AdminSubjectDetailPage() {
           viewMode === 'grouped' ? (
             <MaterialsGroupedByCategory
               materials={materials}
+              onView={handleView}
               onDownload={download}
               onDelete={handleDeleteMaterial}
               canDelete={true}
@@ -378,6 +402,7 @@ export function AdminSubjectDetailPage() {
                 <MaterialCard
                   key={material.id}
                   material={material}
+                  onView={handleView}
                   onDownload={download}
                   onDelete={handleDeleteMaterial}
                   canDelete={true}
@@ -402,6 +427,17 @@ export function AdminSubjectDetailPage() {
           </div>
         )}
       </section>
+
+      <MaterialViewerModal
+        isOpen={viewerOpen}
+        material={viewerMaterial}
+        content={viewerContent}
+        viewerType={viewerType}
+        isLoading={viewerLoading}
+        error={viewerError}
+        onClose={closeViewer}
+        onDownload={handleViewerDownload}
+      />
 
       <ConfirmDialog {...dialogProps} isLoading={archiveMutation.isPending || deleteMutation.isPending} />
     </div>

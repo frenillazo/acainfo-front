@@ -5,6 +5,7 @@ import { MaterialCard } from './MaterialCard'
 
 interface MaterialsGroupedByCategoryProps {
   materials: Material[]
+  onView?: (material: Material) => void
   onDownload?: (id: number, filename: string) => void
   onDelete?: (materialId: number) => void
   canDelete?: boolean
@@ -13,6 +14,7 @@ interface MaterialsGroupedByCategoryProps {
 
 export function MaterialsGroupedByCategory({
   materials,
+  onView,
   onDownload,
   onDelete,
   canDelete = false,
@@ -75,6 +77,7 @@ export function MaterialsGroupedByCategory({
                 <MaterialCard
                   key={material.id}
                   material={material}
+                  onView={onView}
                   onDownload={onDownload}
                   onDelete={onDelete}
                   canDelete={canDelete}

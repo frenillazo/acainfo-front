@@ -3,9 +3,11 @@ import type { Material } from '../types/material.types'
 import { getFileIcon, CATEGORY_ICONS } from '../types/material.types'
 import { cn } from '@/shared/utils/cn'
 import { Card } from '@/shared/components/ui'
+import { Eye } from 'lucide-react'
 
 interface MaterialCardProps {
   material: Material
+  onView?: (material: Material) => void
   onDownload?: (id: number, filename: string) => void
   onDelete?: (id: number) => void
   canDelete?: boolean
@@ -14,12 +16,17 @@ interface MaterialCardProps {
 
 export function MaterialCard({
   material,
+  onView,
   onDownload,
   onDelete,
   canDelete = false,
   isDownloading = false,
 }: MaterialCardProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+
+  const handleView = () => {
+    onView?.(material)
+  }
 
   const handleDownload = () => {
     onDownload?.(material.id, material.originalFilename)
@@ -69,13 +76,20 @@ export function MaterialCard({
         {/* Actions */}
         <div className="flex flex-col gap-2">
           <button
+            onClick={handleView}
+            className="rounded-md p-2 text-green-600 hover:bg-green-50"
+            title="Ver"
+          >
+            <Eye className="h-5 w-5" />
+          </button>
+          <button
             onClick={handleDownload}
             disabled={isDownloading}
             className={cn(
               'rounded-md p-2 text-blue-600 hover:bg-blue-50',
               'disabled:cursor-not-allowed disabled:opacity-50'
             )}
-            title="Download"
+            title="Descargar"
           >
             <svg
               className="h-5 w-5"

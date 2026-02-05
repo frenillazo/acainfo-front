@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/features/auth'
 import { useMaterials } from '../hooks/useMaterials'
+import { useMaterialViewer } from '../hooks/useMaterialViewer'
 import { MaterialCard } from '../components/MaterialCard'
 import { MaterialUploadForm } from '../components/MaterialUploadForm'
-import type { UploadMaterialRequest } from '../types/material.types'
+import { MaterialViewerModal } from '../components/MaterialViewer'
+import type { Material, UploadMaterialRequest } from '../types/material.types'
 
 export function MaterialsPage() {
   const user = useAuthStore((state) => state.user)
@@ -22,6 +24,17 @@ export function MaterialsPage() {
     deleteMaterial,
     getAll,
   } = useMaterials()
+
+  const {
+    isOpen: viewerOpen,
+    material: viewerMaterial,
+    content: viewerContent,
+    viewerType,
+    isLoading: viewerLoading,
+    error: viewerError,
+    openViewer,
+    closeViewer,
+  } = useMaterialViewer()
 
   const [showUploadForm, setShowUploadForm] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
@@ -51,6 +64,16 @@ export function MaterialsPage() {
       setShowUploadForm(false)
       // Reload to show new material
       loadMaterials()
+    }
+  }
+
+  const handleView = (material: Material) => {
+    openViewer(material)
+  }
+
+  const handleViewerDownload = () => {
+    if (viewerMaterial) {
+      download(viewerMaterial.id, viewerMaterial.originalFilename)
     }
   }
 
@@ -227,6 +250,7 @@ export function MaterialsPage() {
               <MaterialCard
                 key={material.id}
                 material={material}
+                onView={handleView}
                 onDownload={handleDownload}
                 onDelete={handleDelete}
                 canDelete={isAdminOrTeacher}
@@ -294,6 +318,18 @@ export function MaterialsPage() {
           )}
         </>
       )}
+
+      {/* Material Viewer Modal */}
+      <MaterialViewerModal
+        isOpen={viewerOpen}
+        material={viewerMaterial}
+        content={viewerContent}
+        viewerType={viewerType}
+        isLoading={viewerLoading}
+        error={viewerError}
+        onClose={closeViewer}
+        onDownload={handleViewerDownload}
+      />
     </div>
   )
 }
