@@ -62,7 +62,7 @@ export function EnrolledSubjectCard({ subject, enrollment }: EnrolledSubjectCard
       <div className="mt-3 flex gap-2">
         <Link
           to={`/dashboard/enrollments/${enrollment.id}`}
-          className="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
+          className="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-indigo-100"
         >
           <BookOpen className="h-3 w-3" />
           Ver materiales
