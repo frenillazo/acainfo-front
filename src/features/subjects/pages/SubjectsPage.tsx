@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react'
 import { useSubjects } from '../hooks/useSubjects'
 import { SubjectCard } from '../components/SubjectCard'
+import { EnrolledSubjectCard } from '../components/EnrolledSubjectCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import type { Degree, SubjectFilters } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
-import { useActiveEnrollmentSubjectIds } from '@/features/enrollments/hooks/useEnrollments'
+import { useEnrolledSubjectIds } from '@/features/enrollments/hooks/useEnrollments'
 import { useAuthStore } from '@/features/auth/store/authStore'
 
 const degreeOptions: { value: Degree | ''; label: string }[] = [
@@ -23,14 +24,17 @@ const yearOptions: { value: number | ''; label: string }[] = [
 ]
 
 export function SubjectsPage() {
+  const user = useAuthStore((state) => state.user)
+
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedDegree, setSelectedDegree] = useState<Degree | ''>('')
+  const [selectedDegree, setSelectedDegree] = useState<Degree | ''>(user?.degree ?? '')
   const [selectedYear, setSelectedYear] = useState<number | ''>('')
 
-  const user = useAuthStore((state) => state.user)
-  const { activeSubjectIds, isLoading: isLoadingEnrollments } = useActiveEnrollmentSubjectIds(
-    user?.id ?? 0
-  )
+  const {
+    enrolledSubjectIds,
+    enrollmentsBySubjectId,
+    isLoading: isLoadingEnrollments,
+  } = useEnrolledSubjectIds(user?.id ?? 0)
 
   const filters: SubjectFilters = {
     searchTerm: searchTerm || undefined,
@@ -44,10 +48,13 @@ export function SubjectsPage() {
 
   const { data, isLoading, error } = useSubjects(filters)
 
-  const subjects = useMemo(() => {
+  const { enrolledSubjects, availableSubjects } = useMemo(() => {
     const allSubjects = data?.content ?? []
-    return allSubjects.filter((subject) => !activeSubjectIds.has(subject.id))
-  }, [data?.content, activeSubjectIds])
+    return {
+      enrolledSubjects: allSubjects.filter((s) => enrolledSubjectIds.has(s.id)),
+      availableSubjects: allSubjects.filter((s) => !enrolledSubjectIds.has(s.id)),
+    }
+  }, [data?.content, enrolledSubjectIds])
 
   if (isLoading || isLoadingEnrollments) {
     return <LoadingState />
@@ -57,13 +64,15 @@ export function SubjectsPage() {
     return <ErrorState error={error} title="Error al cargar las asignaturas" />
   }
 
+  const hasFilters = !!(searchTerm || selectedDegree || selectedYear)
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Asignaturas Disponibles</h1>
-        <span className="text-sm text-gray-500">{subjects.length} asignaturas</span>
+        <h1 className="text-2xl font-bold text-gray-900">Asignaturas</h1>
       </div>
 
+      {/* Filters */}
       <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
           <input
@@ -122,21 +131,60 @@ export function SubjectsPage() {
         </select>
       </div>
 
-      {subjects.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {subjects.map((subject) => (
-            <SubjectCard key={subject.id} subject={subject} />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-          <p className="text-gray-500">
-            {searchTerm || selectedDegree || selectedYear
-              ? 'No se encontraron asignaturas con los filtros aplicados'
-              : 'No hay asignaturas disponibles'}
-          </p>
+      {/* Enrolled subjects section */}
+      {enrolledSubjects.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-800">Mis Asignaturas</h2>
+            <span className="text-sm text-gray-500">
+              {enrolledSubjects.length} asignatura{enrolledSubjects.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {enrolledSubjects.map((subject) => {
+              const enrollment = enrollmentsBySubjectId.get(subject.id)
+              return enrollment ? (
+                <EnrolledSubjectCard
+                  key={subject.id}
+                  subject={subject}
+                  enrollment={enrollment}
+                />
+              ) : null
+            })}
+          </div>
         </div>
       )}
+
+      {/* Separator when both sections have content */}
+      {enrolledSubjects.length > 0 && availableSubjects.length > 0 && (
+        <hr className="border-gray-200" />
+      )}
+
+      {/* Available subjects section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-800">Asignaturas Disponibles</h2>
+          <span className="text-sm text-gray-500">
+            {availableSubjects.length} asignatura{availableSubjects.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+
+        {availableSubjects.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {availableSubjects.map((subject) => (
+              <SubjectCard key={subject.id} subject={subject} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
+            <p className="text-gray-500">
+              {hasFilters
+                ? 'No se encontraron asignaturas disponibles con los filtros aplicados'
+                : 'No hay asignaturas disponibles'}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -92,6 +92,11 @@ export const usePendingEnrollmentsByGroupId = (groupId: number) => {
 }
 
 /**
+ * Enrollment statuses that count as "enrolled" (student has a relationship with the subject).
+ */
+const ENROLLED_STATUSES: readonly string[] = ['ACTIVE', 'PENDING_APPROVAL', 'WAITING_LIST']
+
+/**
  * Hook to get the set of subject IDs where the student has an active enrollment.
  * Useful for checking if a student can access materials for a specific subject.
  */
@@ -112,6 +117,44 @@ export const useActiveEnrollmentSubjectIds = (studentId: number) => {
   return {
     activeSubjectIds,
     hasActiveEnrollment,
+    isLoading,
+    error,
+  }
+}
+
+/**
+ * Hook to get the set of subject IDs where the student is enrolled (ACTIVE, PENDING_APPROVAL, WAITING_LIST).
+ * Also returns a map of subjectId -> Enrollment for enriching subject cards.
+ */
+export const useEnrolledSubjectIds = (studentId: number) => {
+  const { data: enrollments, isLoading, error } = useEnrollments(studentId)
+
+  const enrolledSubjectIds = useMemo(() => {
+    if (!enrollments) return new Set<number>()
+    return new Set(
+      enrollments
+        .filter((e) => ENROLLED_STATUSES.includes(e.status))
+        .map((e) => e.subjectId)
+    )
+  }, [enrollments])
+
+  const enrollmentsBySubjectId = useMemo(() => {
+    if (!enrollments) return new Map<number, typeof enrollments[0]>()
+    return new Map(
+      enrollments
+        .filter((e) => ENROLLED_STATUSES.includes(e.status))
+        .map((e) => [e.subjectId, e])
+    )
+  }, [enrollments])
+
+  const hasEnrollment = (subjectId: number) => enrolledSubjectIds.has(subjectId)
+  const getEnrollment = (subjectId: number) => enrollmentsBySubjectId.get(subjectId)
+
+  return {
+    enrolledSubjectIds,
+    enrollmentsBySubjectId,
+    hasEnrollment,
+    getEnrollment,
     isLoading,
     error,
   }

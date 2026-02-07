@@ -6,14 +6,18 @@ import {
   useDeleteSubject,
 } from '../hooks/useAdminSubjects'
 import { SubjectTable } from '../components/SubjectTable'
+import { AdminSubjectCards } from '../components/AdminSubjectCard'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Pagination } from '@/shared/components/ui/Pagination'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { LayoutGrid, List } from 'lucide-react'
+import { cn } from '@/shared/utils/cn'
 import type { SubjectFilters, SubjectStatus, Degree } from '../../types/admin.types'
 
 export function AdminSubjectsPage() {
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards')
   const [filters, setFilters] = useState<SubjectFilters>({
     page: 0,
     size: 10,
@@ -103,12 +107,40 @@ export function AdminSubjectsPage() {
             Administra las asignaturas del sistema
           </p>
         </div>
-        <Link
-          to="/admin/subjects/new"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Crear asignatura
-        </Link>
+        <div className="flex items-center gap-3">
+          <div className="flex rounded-md border border-gray-300 bg-white">
+            <button
+              onClick={() => setViewMode('cards')}
+              className={cn(
+                'inline-flex items-center rounded-l-md px-2.5 py-2 text-sm',
+                viewMode === 'cards'
+                  ? 'bg-gray-100 text-gray-900'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+              title="Vista cards"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={cn(
+                'inline-flex items-center rounded-r-md px-2.5 py-2 text-sm',
+                viewMode === 'table'
+                  ? 'bg-gray-100 text-gray-900'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+              title="Vista tabla"
+            >
+              <List className="h-4 w-4" />
+            </button>
+          </div>
+          <Link
+            to="/admin/subjects/new"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Crear asignatura
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
@@ -221,19 +253,29 @@ export function AdminSubjectsPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Content */}
       {isLoading ? (
         <LoadingState />
       ) : data ? (
         <>
-          <SubjectTable
-            key={`page-${data.page}`}
-            subjects={data.content}
-            onArchive={handleArchive}
-            onDelete={handleDelete}
-            isArchiving={archiveMutation.isPending}
-            isDeleting={deleteMutation.isPending}
-          />
+          {viewMode === 'table' ? (
+            <SubjectTable
+              key={`page-${data.page}`}
+              subjects={data.content}
+              onArchive={handleArchive}
+              onDelete={handleDelete}
+              isArchiving={archiveMutation.isPending}
+              isDeleting={deleteMutation.isPending}
+            />
+          ) : (
+            <AdminSubjectCards
+              subjects={data.content}
+              onArchive={handleArchive}
+              onDelete={handleDelete}
+              isArchiving={archiveMutation.isPending}
+              isDeleting={deleteMutation.isPending}
+            />
+          )}
 
           <Pagination
             currentPage={data.page ?? 0}

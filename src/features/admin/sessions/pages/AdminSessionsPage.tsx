@@ -1,10 +1,23 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAdminSessions } from '../hooks/useAdminSessions'
+import {
+  useAdminSessions,
+  useStartSession,
+  useCompleteSession,
+  useCancelSession,
+  useDeleteSession,
+} from '../hooks/useAdminSessions'
 import { useAdminGroups } from '../../groups/hooks/useAdminGroups'
 import { useAdminSubjects } from '../../subjects/hooks/useAdminSubjects'
 import { SessionTable } from '../components/SessionTable'
+import { AdminWeeklyScheduleGrid } from '../components/AdminWeeklyScheduleGrid'
+import { PostponeModal } from '../components/PostponeModal'
+import { AttendanceModal } from '../components/AttendanceModal'
 import { Pagination } from '@/shared/components/ui/Pagination'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react'
+import { cn } from '@/shared/utils/cn'
 import type { SessionStatus, SessionType, SessionMode, SessionFilters } from '../../types/admin.types'
 
 const SESSION_STATUSES: { key: SessionStatus | ''; label: string }[] = [
@@ -30,7 +43,34 @@ const SESSION_MODES: { key: SessionMode | ''; label: string }[] = [
   { key: 'DUAL', label: 'Dual' },
 ]
 
+function getWeekStart(date: Date): Date {
+  const d = new Date(date)
+  const day = d.getDay()
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+  d.setDate(diff)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+function getWeekEnd(weekStart: Date): Date {
+  const d = new Date(weekStart)
+  d.setDate(d.getDate() + 6)
+  return d
+}
+
+function formatLocalDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function formatWeekRange(weekStart: Date): string {
+  const weekEnd = getWeekEnd(weekStart)
+  const startStr = weekStart.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+  const endStr = weekEnd.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+  return `${startStr} - ${endStr}`
+}
+
 export function AdminSessionsPage() {
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
   const [page, setPage] = useState(0)
   const [selectedStatus, setSelectedStatus] = useState<SessionStatus | ''>('')
   const [selectedType, setSelectedType] = useState<SessionType | ''>('')
@@ -39,20 +79,45 @@ export function AdminSessionsPage() {
   const [selectedSubjectId, setSelectedSubjectId] = useState<number | ''>('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
+  const [weekStart, setWeekStart] = useState(() => getWeekStart(new Date()))
+  const [postponeSessionId, setPostponeSessionId] = useState<number | null>(null)
+  const [attendanceSessionId, setAttendanceSessionId] = useState<number | null>(null)
 
-  const filters: SessionFilters = {
-    page,
-    size: 20,
-    sortBy: 'date',
-    sortDirection: 'DESC',
-    ...(selectedStatus && { status: selectedStatus }),
-    ...(selectedType && { type: selectedType }),
-    ...(selectedMode && { mode: selectedMode }),
-    ...(selectedGroupId && { groupId: selectedGroupId }),
-    ...(selectedSubjectId && { subjectId: selectedSubjectId }),
-    ...(dateFrom && { dateFrom }),
-    ...(dateTo && { dateTo }),
-  }
+  const startMutation = useStartSession()
+  const completeMutation = useCompleteSession()
+  const cancelMutation = useCancelSession()
+  const deleteMutation = useDeleteSession()
+  const { dialogProps, confirm } = useConfirmDialog()
+
+  const isGridMode = viewMode === 'grid'
+
+  const filters: SessionFilters = isGridMode
+    ? {
+        page: 0,
+        size: 200,
+        sortBy: 'date',
+        sortDirection: 'ASC',
+        dateFrom: formatLocalDate(weekStart),
+        dateTo: formatLocalDate(getWeekEnd(weekStart)),
+        ...(selectedStatus && { status: selectedStatus }),
+        ...(selectedType && { type: selectedType }),
+        ...(selectedMode && { mode: selectedMode }),
+        ...(selectedGroupId && { groupId: selectedGroupId }),
+        ...(selectedSubjectId && { subjectId: selectedSubjectId }),
+      }
+    : {
+        page,
+        size: 20,
+        sortBy: 'date',
+        sortDirection: 'DESC',
+        ...(selectedStatus && { status: selectedStatus }),
+        ...(selectedType && { type: selectedType }),
+        ...(selectedMode && { mode: selectedMode }),
+        ...(selectedGroupId && { groupId: selectedGroupId }),
+        ...(selectedSubjectId && { subjectId: selectedSubjectId }),
+        ...(dateFrom && { dateFrom }),
+        ...(dateTo && { dateTo }),
+      }
 
   const { data: sessionsData, isLoading, error } = useAdminSessions(filters)
   const { data: groupsData } = useAdminGroups({ size: 100 })
@@ -74,6 +139,67 @@ export function AdminSessionsPage() {
     setDateFrom('')
     setDateTo('')
     setPage(0)
+    if (isGridMode) setWeekStart(getWeekStart(new Date()))
+  }
+
+  const handleStart = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Iniciar sesión',
+      message: '¿Iniciar esta sesión?',
+      confirmLabel: 'Sí, iniciar',
+      variant: 'info',
+    })
+    if (confirmed) startMutation.mutate(id)
+  }
+
+  const handleComplete = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Completar sesión',
+      message: '¿Marcar esta sesión como completada?',
+      confirmLabel: 'Sí, completar',
+      variant: 'info',
+    })
+    if (confirmed) completeMutation.mutate(id)
+  }
+
+  const handleCancel = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Cancelar sesión',
+      message: '¿Cancelar esta sesión?',
+      confirmLabel: 'Sí, cancelar',
+      variant: 'warning',
+    })
+    if (confirmed) cancelMutation.mutate(id)
+  }
+
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirm({
+      title: 'Eliminar sesión',
+      message: '¿Eliminar esta sesión? Esta acción no se puede deshacer.',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) deleteMutation.mutate(id)
+  }
+
+  const goToPreviousWeek = () => {
+    setWeekStart((prev) => {
+      const d = new Date(prev)
+      d.setDate(d.getDate() - 7)
+      return d
+    })
+  }
+
+  const goToNextWeek = () => {
+    setWeekStart((prev) => {
+      const d = new Date(prev)
+      d.setDate(d.getDate() + 7)
+      return d
+    })
+  }
+
+  const goToToday = () => {
+    setWeekStart(getWeekStart(new Date()))
   }
 
   return (
@@ -86,7 +212,34 @@ export function AdminSessionsPage() {
             Gestiona las sesiones de clase
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
+          {/* View toggle */}
+          <div className="flex items-center rounded-lg border border-gray-200 bg-white p-1">
+            <button
+              onClick={() => { setViewMode('table'); setPage(0) }}
+              className={cn(
+                'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                viewMode === 'table'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              )}
+            >
+              <List className="h-4 w-4" />
+              Tabla
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={cn(
+                'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                viewMode === 'grid'
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              )}
+            >
+              <LayoutGrid className="h-4 w-4" />
+              Semanal
+            </button>
+          </div>
           <Link
             to="/admin/sessions/generate"
             className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -228,37 +381,42 @@ export function AdminSessionsPage() {
             </select>
           </div>
 
-          <div>
-            <label htmlFor="dateFrom" className="block text-sm font-medium text-gray-700">
-              Desde
-            </label>
-            <input
-              type="date"
-              id="dateFrom"
-              value={dateFrom}
-              onChange={(e) => {
-                setDateFrom(e.target.value)
-                setPage(0)
-              }}
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+          {/* Date filters only in table mode */}
+          {!isGridMode && (
+            <>
+              <div>
+                <label htmlFor="dateFrom" className="block text-sm font-medium text-gray-700">
+                  Desde
+                </label>
+                <input
+                  type="date"
+                  id="dateFrom"
+                  value={dateFrom}
+                  onChange={(e) => {
+                    setDateFrom(e.target.value)
+                    setPage(0)
+                  }}
+                  className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="dateTo" className="block text-sm font-medium text-gray-700">
-              Hasta
-            </label>
-            <input
-              type="date"
-              id="dateTo"
-              value={dateTo}
-              onChange={(e) => {
-                setDateTo(e.target.value)
-                setPage(0)
-              }}
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+              <div>
+                <label htmlFor="dateTo" className="block text-sm font-medium text-gray-700">
+                  Hasta
+                </label>
+                <input
+                  type="date"
+                  id="dateTo"
+                  value={dateTo}
+                  onChange={(e) => {
+                    setDateTo(e.target.value)
+                    setPage(0)
+                  }}
+                  className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </>
+          )}
 
           <div className="flex items-end">
             <button
@@ -271,24 +429,104 @@ export function AdminSessionsPage() {
         </div>
       </div>
 
-      {/* Sessions Table */}
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-        {error ? (
-          <div className="p-4 text-red-600">
-            Error al cargar las sesiones. Por favor, intenta de nuevo.
+      {/* Content */}
+      {isGridMode ? (
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          {/* Week navigation */}
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">Horario Semanal</h2>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={goToPreviousWeek}
+                className="rounded-md p-2 text-gray-600 hover:bg-gray-100"
+                title="Semana anterior"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <span className="min-w-[200px] text-center text-sm font-medium text-gray-700">
+                {formatWeekRange(weekStart)}
+              </span>
+              <button
+                onClick={goToNextWeek}
+                className="rounded-md p-2 text-gray-600 hover:bg-gray-100"
+                title="Semana siguiente"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+              <button
+                onClick={goToToday}
+                className="ml-2 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Hoy
+              </button>
+            </div>
           </div>
-        ) : (
-          <SessionTable sessions={sessions} isLoading={isLoading} />
-        )}
-      </div>
 
-      <Pagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-        isFirst={page === 0}
-        isLast={page >= totalPages - 1}
-      />
+          {isLoading ? (
+            <div className="flex h-64 items-center justify-center text-gray-500">
+              Cargando sesiones...
+            </div>
+          ) : error ? (
+            <div className="p-4 text-red-600">
+              Error al cargar las sesiones. Por favor, intenta de nuevo.
+            </div>
+          ) : sessions.length > 0 ? (
+            <AdminWeeklyScheduleGrid
+              sessions={sessions}
+              weekStart={weekStart}
+              onStart={handleStart}
+              onComplete={handleComplete}
+              onCancel={handleCancel}
+              onPostpone={(id) => setPostponeSessionId(id)}
+              onDelete={handleDelete}
+              onAttendance={(id) => setAttendanceSessionId(id)}
+            />
+          ) : (
+            <div className="flex h-64 items-center justify-center text-gray-500">
+              No hay sesiones para esta semana.
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+            {error ? (
+              <div className="p-4 text-red-600">
+                Error al cargar las sesiones. Por favor, intenta de nuevo.
+              </div>
+            ) : (
+              <SessionTable sessions={sessions} isLoading={isLoading} />
+            )}
+          </div>
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            isFirst={page === 0}
+            isLast={page >= totalPages - 1}
+          />
+        </>
+      )}
+
+      {/* Modals */}
+      <ConfirmDialog {...dialogProps} />
+
+      {postponeSessionId !== null && (
+        <PostponeModal
+          sessionId={postponeSessionId}
+          isOpen
+          onClose={() => setPostponeSessionId(null)}
+        />
+      )}
+
+      {attendanceSessionId !== null && (
+        <AttendanceModal
+          sessionId={attendanceSessionId}
+          isOpen
+          onClose={() => setAttendanceSessionId(null)}
+        />
+      )}
     </div>
   )
 }
