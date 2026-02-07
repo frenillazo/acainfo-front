@@ -6,6 +6,8 @@ import {
   ProfilePage,
   VerificationPendingPage,
   VerifyEmailPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
 } from '@/features/auth'
 import { LandingPage } from '@/features/landing'
 import { StudentDashboardPage } from '@/features/student'
@@ -82,6 +84,14 @@ export const router = createBrowserRouter([
   {
     path: '/verify-email',
     element: <VerifyEmailPage />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
   },
 
   // Protected routes (student)

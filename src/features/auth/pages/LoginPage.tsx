@@ -27,7 +27,16 @@ export function LoginPage() {
         <div className="rounded-lg bg-white p-8 shadow">
           <LoginForm />
 
-          <div className="mt-6 text-center text-sm">
+          <div className="mt-4 text-center">
+            <Link
+              to="/forgot-password"
+              className="text-sm font-medium text-blue-600 hover:text-blue-500"
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
+
+          <div className="mt-4 text-center text-sm">
             <span className="text-gray-600">¿No tienes cuenta? </span>
             <Link
               to="/register"

@@ -13,6 +13,8 @@ export { RegisterPage } from './pages/RegisterPage'
 export { ProfilePage } from './pages/ProfilePage'
 export { VerificationPendingPage } from './pages/VerificationPendingPage'
 export { VerifyEmailPage } from './pages/VerifyEmailPage'
+export { ForgotPasswordPage } from './pages/ForgotPasswordPage'
+export { ResetPasswordPage } from './pages/ResetPasswordPage'
 
 // Hooks
 export { useAuth } from './hooks/useAuth'
