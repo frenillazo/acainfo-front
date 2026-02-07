@@ -17,6 +17,7 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { AttendanceModal } from '../components/AttendanceModal'
 import type { PostponeSessionRequest, Classroom, SessionMode } from '../../types/admin.types'
 
 const CLASSROOMS: { key: Classroom; label: string }[] = [
@@ -37,6 +38,7 @@ export function AdminSessionDetailPage() {
   const sessionId = id ? parseInt(id, 10) : 0
 
   const [showPostponeModal, setShowPostponeModal] = useState(false)
+  const [showAttendanceModal, setShowAttendanceModal] = useState(false)
   const [postponeData, setPostponeData] = useState<PostponeSessionRequest>({
     newDate: '',
     newStartTime: '',
@@ -204,12 +206,28 @@ export function AdminSessionDetailPage() {
               </>
             )}
             {session.isInProgress && (
+              <>
+                <button
+                  onClick={handleComplete}
+                  disabled={completeMutation.isPending}
+                  className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+                >
+                  {completeMutation.isPending ? 'Completando...' : 'Completar'}
+                </button>
+                <button
+                  onClick={() => setShowAttendanceModal(true)}
+                  className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+                >
+                  Pasar Lista
+                </button>
+              </>
+            )}
+            {session.isCompleted && (
               <button
-                onClick={handleComplete}
-                disabled={completeMutation.isPending}
-                className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+                onClick={() => setShowAttendanceModal(true)}
+                className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
               >
-                {completeMutation.isPending ? 'Completando...' : 'Completar'}
+                Pasar Lista
               </button>
             )}
           </div>
@@ -333,6 +351,12 @@ export function AdminSessionDetailPage() {
       </div>
 
       <ConfirmDialog {...dialogProps} />
+
+      <AttendanceModal
+        sessionId={sessionId}
+        isOpen={showAttendanceModal}
+        onClose={() => setShowAttendanceModal(false)}
+      />
 
       {/* Postpone Modal */}
       {showPostponeModal && (

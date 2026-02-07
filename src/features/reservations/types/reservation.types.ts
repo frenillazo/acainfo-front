@@ -57,6 +57,8 @@ export enum OnlineRequestStatus {
 export interface Reservation {
   id: number
   studentId: number
+  studentName: string
+  studentEmail: string
   sessionId: number
   enrollmentId: number
 
