@@ -27,7 +27,8 @@ export function SubjectsPage() {
   const user = useAuthStore((state) => state.user)
 
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedDegree, setSelectedDegree] = useState<Degree | ''>(user?.degree ?? '')
+  const studentDegree = user?.degree ?? null
+  const [selectedDegree, setSelectedDegree] = useState<Degree | ''>(studentDegree ?? '')
   const [selectedYear, setSelectedYear] = useState<number | ''>('')
 
   const {
@@ -38,7 +39,7 @@ export function SubjectsPage() {
 
   const filters: SubjectFilters = {
     searchTerm: searchTerm || undefined,
-    degree: selectedDegree || undefined,
+    degree: (studentDegree ?? selectedDegree) || undefined,
     year: selectedYear || undefined,
     status: 'ACTIVE',
     size: 50,
@@ -64,7 +65,7 @@ export function SubjectsPage() {
     return <ErrorState error={error} title="Error al cargar las asignaturas" />
   }
 
-  const hasFilters = !!(searchTerm || selectedDegree || selectedYear)
+  const hasFilters = !!(searchTerm || (!studentDegree && selectedDegree) || selectedYear)
 
   return (
     <div className="space-y-6">
@@ -100,20 +101,26 @@ export function SubjectsPage() {
           </svg>
         </div>
 
-        <select
-          value={selectedDegree}
-          onChange={(e) => setSelectedDegree(e.target.value as Degree | '')}
-          className={cn(
-            'rounded-lg border border-gray-300 px-4 py-2',
-            'focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
-          )}
-        >
-          {degreeOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        {studentDegree ? (
+          <span className="flex items-center rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-gray-600">
+            {degreeOptions.find((o) => o.value === studentDegree)?.label ?? studentDegree}
+          </span>
+        ) : (
+          <select
+            value={selectedDegree}
+            onChange={(e) => setSelectedDegree(e.target.value as Degree | '')}
+            className={cn(
+              'rounded-lg border border-gray-300 px-4 py-2',
+              'focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500'
+            )}
+          >
+            {degreeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        )}
 
         <select
           value={selectedYear}
