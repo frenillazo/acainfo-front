@@ -2,6 +2,7 @@ import { apiClient } from '@/shared/services/apiClient'
 import type { PageResponse } from '@/shared/types/api.types'
 import type {
   Reservation,
+  EnrichedReservation,
   CreateReservationRequest,
   SwitchSessionRequest,
   ReservationFilters,
@@ -105,6 +106,17 @@ export const reservationApi = {
       {
         params: { studentId },
       }
+    )
+    return response.data
+  },
+
+  /**
+   * Get enriched reservations for a student (with session details).
+   * GET /api/reservations/student/{studentId}/enriched
+   */
+  getEnrichedByStudentId: async (studentId: number): Promise<EnrichedReservation[]> => {
+    const response = await apiClient.get<EnrichedReservation[]>(
+      `/reservations/student/${studentId}/enriched`
     )
     return response.data
   },

@@ -15,6 +15,7 @@ import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
 import { PaymentsPage } from '@/features/payments'
 import { SubjectsPage, SubjectDetailPage } from '@/features/subjects'
 import { SessionsPage, SessionDetailPage } from '@/features/sessions'
+import { AttendanceHistoryPage } from '@/features/reservations'
 import { MaterialsPage } from '@/features/materials'
 import {
   AdminGroupRequestsPage,
@@ -122,6 +123,10 @@ export const router = createBrowserRouter([
       {
         path: 'sessions/:id',
         element: <SessionDetailPage />,
+      },
+      {
+        path: 'attendance',
+        element: <AttendanceHistoryPage />,
       },
       {
         path: 'payments',

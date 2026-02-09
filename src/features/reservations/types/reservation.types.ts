@@ -138,6 +138,23 @@ export interface ReservationFilters {
 }
 
 /**
+ * Enriched reservation with session details.
+ * Backend: EnrichedReservationResponse.java
+ * GET /api/reservations/student/{studentId}/enriched
+ */
+export interface EnrichedReservation extends Reservation {
+  sessionDate: string
+  sessionStartTime: string
+  sessionEndTime: string
+  sessionStatus: string
+  classroom: string
+  subjectName: string
+  subjectCode: string
+  groupType: string
+  teacherName: string
+}
+
+/**
  * Request to process (approve/reject) an online attendance request.
  * Backend: ProcessOnlineRequestRequest.java
  */

@@ -5,6 +5,10 @@ import { SessionModeBadge } from '../components/SessionModeBadge'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
+import { ReservationSection } from '@/features/reservations/components/ReservationSection'
+import { useAuthStore } from '@/features/auth/store/authStore'
+import { useAuth } from '@/features/auth'
+import { useEnrollments } from '@/features/enrollments/hooks/useEnrollments'
 import { ArrowLeft, Calendar, Clock, MapPin, User, BookOpen } from 'lucide-react'
 
 const CLASSROOM_LABELS: Record<string, string> = {
@@ -23,6 +27,10 @@ const CLASSROOM_LABELS: Record<string, string> = {
 export function SessionDetailPage() {
   const { id } = useParams<{ id: string }>()
   const sessionId = id ? parseInt(id, 10) : 0
+  const user = useAuthStore((state) => state.user)
+  const { hasRole } = useAuth()
+  const isStudent = hasRole('STUDENT')
+  const { data: enrollments } = useEnrollments(user?.id ?? 0)
 
   const { data: session, isLoading, error } = useSession(sessionId)
 
@@ -187,6 +195,15 @@ export function SessionDetailPage() {
           </dl>
         </div>
       </div>
+
+      {/* Reservation Section (students only) */}
+      {isStudent && user && (
+        <ReservationSection
+          session={session}
+          studentId={user.id}
+          enrollments={enrollments ?? []}
+        />
+      )}
 
       {/* Back link */}
       <div className="pt-4">

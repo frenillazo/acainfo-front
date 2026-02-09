@@ -15,6 +15,7 @@ import {
   CalendarDays,
   Clock,
   ClipboardList,
+  ClipboardCheck,
   UserCheck,
   X,
 } from 'lucide-react'
@@ -51,6 +52,11 @@ const studentNavigation: NavItem[] = [
     name: 'Sesiones',
     href: '/dashboard/sessions',
     icon: <Calendar className={ICON_CLASS} />,
+  },
+  {
+    name: 'Mi Asistencia',
+    href: '/dashboard/attendance',
+    icon: <ClipboardCheck className={ICON_CLASS} />,
   },
   {
     name: 'Pagos',
