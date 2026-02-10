@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import type { Session, StudentSession } from '../types/session.types'
 import { cn } from '@/shared/utils/cn'
+import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
 
 interface StudentWeeklyScheduleGridProps {
   sessions: (Session | StudentSession)[]
@@ -76,8 +77,10 @@ interface SessionBlockProps {
 function SessionBlock({ session }: SessionBlockProps) {
   const { top, height } = getSessionPosition(session)
   const classroomConfig = getClassroomConfig(session.classroom)
-  const isUpcoming = session.status === 'SCHEDULED'
-  const isCancelled = session.status === 'CANCELLED' || session.status === 'POSTPONED'
+  const visualStatus = getVisualSessionStatus(session)
+  const isUpcoming = visualStatus === 'scheduled'
+  const isInProgress = visualStatus === 'in_progress'
+  const isCancelled = visualStatus === 'cancelled' || visualStatus === 'postponed'
   const isAlternative = isStudentSession(session) && session.isAlternative
 
   return (
@@ -86,7 +89,8 @@ function SessionBlock({ session }: SessionBlockProps) {
       className={cn(
         'absolute left-1 right-1 rounded-md px-2 py-1 text-white text-xs overflow-hidden transition-transform hover:scale-[1.02] hover:z-10',
         isCancelled ? 'bg-gray-400 line-through opacity-60' : classroomConfig.color,
-        !isUpcoming && !isCancelled && 'opacity-75',
+        isInProgress && 'ring-2 ring-yellow-400 ring-offset-1',
+        !isUpcoming && !isInProgress && !isCancelled && 'opacity-75',
         // Alternative session styles: desaturated, dashed border, lower opacity
         isAlternative && [
           'opacity-50',

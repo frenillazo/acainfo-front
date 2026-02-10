@@ -23,6 +23,7 @@ export interface EnrollmentSummary {
 export interface UpcomingSessionSummary {
   sessionId: number
   groupId: number
+  enrollmentId: number
   subjectName: string
   subjectCode: string
   groupType: GroupType

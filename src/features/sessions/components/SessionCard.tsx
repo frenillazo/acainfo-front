@@ -3,6 +3,7 @@ import { SessionStatusBadge } from './SessionStatusBadge'
 import { SessionModeBadge } from './SessionModeBadge'
 import { Card } from '@/shared/components/ui'
 import { cn } from '@/shared/utils/cn'
+import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
 
 interface SessionCardProps {
   session: Session | StudentSession
@@ -41,7 +42,9 @@ export function SessionCard({ session }: SessionCardProps) {
     return labels[classroom] || classroom
   }
 
-  const isUpcoming = session.status === 'SCHEDULED' && new Date(session.date) >= new Date()
+  const visualStatus = getVisualSessionStatus(session)
+  const isUpcoming = visualStatus === 'scheduled'
+  const isInProgress = visualStatus === 'in_progress'
 
   return (
     <Card
@@ -49,6 +52,7 @@ export function SessionCard({ session }: SessionCardProps) {
       padding="sm"
       className={cn(
         isUpcoming && !isAlternative && 'border-blue-200 bg-blue-50',
+        isInProgress && !isAlternative && 'border-yellow-200 bg-yellow-50',
         isAlternative && [
           'border-dashed border-purple-200 bg-purple-50/50 opacity-75',
           'hover:opacity-100 hover:bg-purple-50',
@@ -67,6 +71,12 @@ export function SessionCard({ session }: SessionCardProps) {
             {isAlternative && (
               <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
                 Alternativa
+              </span>
+            )}
+            {isInProgress && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-yellow-500" />
+                En curso
               </span>
             )}
           </div>

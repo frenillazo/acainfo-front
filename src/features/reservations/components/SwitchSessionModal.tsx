@@ -41,13 +41,12 @@ export function SwitchSessionModal({
 
   const { data: subjectSessions } = useSessionsBySubject(currentSession.subjectId)
 
-  // Filter to future scheduled sessions excluding current
-  const now = new Date()
+  // Filter to same-day scheduled sessions excluding current (alternatives = other groups, same day)
   const alternativeSessions = (subjectSessions ?? []).filter(
     (s) =>
       s.id !== currentSession.id &&
       s.status === 'SCHEDULED' &&
-      new Date(s.date) >= now
+      s.date === currentSession.date
   )
 
   const handleConfirm = () => {

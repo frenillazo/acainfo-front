@@ -10,6 +10,7 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { useAuth } from '@/features/auth'
 import { useEnrollments } from '@/features/enrollments/hooks/useEnrollments'
 import { ArrowLeft, Calendar, Clock, MapPin, User, BookOpen } from 'lucide-react'
+import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
 
 const CLASSROOM_LABELS: Record<string, string> = {
   AULA_PORTAL1: 'Aula Portal 1',
@@ -65,7 +66,9 @@ export function SessionDetailPage() {
 
   const formatTime = (time: string) => time.substring(0, 5)
 
-  const isUpcoming = session.status === 'SCHEDULED' && new Date(session.date) >= new Date()
+  const visualStatus = getVisualSessionStatus(session)
+  const isUpcoming = visualStatus === 'scheduled'
+  const isInProgress = visualStatus === 'in_progress'
 
   return (
     <div className="space-y-6">
@@ -88,6 +91,12 @@ export function SessionDetailPage() {
               </h1>
               <SessionStatusBadge status={session.status} />
               <SessionModeBadge mode={session.mode} />
+              {isInProgress && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-yellow-500" />
+                  En curso
+                </span>
+              )}
             </div>
             <p className="mt-1 text-gray-500">
               {session.subjectCode}
@@ -100,6 +109,15 @@ export function SessionDetailPage() {
           <div className="mt-4 rounded-md bg-blue-50 border border-blue-200 p-3">
             <p className="text-sm text-blue-700">
               Esta sesión está programada próximamente
+            </p>
+          </div>
+        )}
+
+        {/* In-progress indicator */}
+        {isInProgress && (
+          <div className="mt-4 rounded-md bg-yellow-50 border border-yellow-200 p-3">
+            <p className="text-sm text-yellow-700">
+              Esta sesión está en curso ahora mismo
             </p>
           </div>
         )}

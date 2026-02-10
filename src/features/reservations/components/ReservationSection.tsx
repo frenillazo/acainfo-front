@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import type { Session } from '@/features/sessions/types/session.types'
 import type { Enrollment } from '@/features/enrollments/types/enrollment.types'
 import { useSessionReservations } from '../hooks/useReservations'
+import { useEnrichedReservations } from '../hooks/useEnrichedReservations'
 import { useCancelReservation, useRequestOnline } from '../hooks/useReservationMutations'
 import { ReservationModeBadge } from './ReservationModeBadge'
 import { OnlineRequestBadge } from './OnlineRequestBadge'
@@ -10,7 +11,8 @@ import { SwitchSessionModal } from './SwitchSessionModal'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { Badge } from '@/shared/components/ui/Badge'
 import { Button } from '@/shared/components/ui/Button'
-import { CalendarCheck, Users, ArrowRightLeft, Wifi, X as XIcon } from 'lucide-react'
+import { CalendarCheck, Users, ArrowRightLeft, Wifi } from 'lucide-react'
+import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
 
 interface ReservationSectionProps {
   session: Session
@@ -46,9 +48,30 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
     [enrollments, session.subjectId]
   )
 
-  const isUpcoming = session.status === 'SCHEDULED' && new Date(session.date) >= new Date()
-  const isPast = session.status === 'COMPLETED' || (session.status === 'SCHEDULED' && new Date(session.date) < new Date())
-  const isCancelledOrPostponed = session.status === 'CANCELLED' || session.status === 'POSTPONED'
+  // Check if student already has a confirmed reservation in another session of the same subject
+  const { data: enrichedReservations } = useEnrichedReservations(studentId)
+  const existingSubjectReservation = useMemo(
+    () =>
+      (enrichedReservations ?? []).find(
+        (r) =>
+          r.isConfirmed &&
+          r.subjectCode === session.subjectCode &&
+          r.sessionId !== session.id
+      ),
+    [enrichedReservations, session.subjectCode, session.id]
+  )
+
+  const visualStatus = getVisualSessionStatus(session)
+  const isUpcoming = visualStatus === 'scheduled'
+  const isPast = visualStatus === 'completed' || visualStatus === 'in_progress'
+  const isCancelledOrPostponed = visualStatus === 'cancelled' || visualStatus === 'postponed'
+
+  // Switch session only allowed until the day before
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const sessionDate = new Date(session.date)
+  sessionDate.setHours(0, 0, 0, 0)
+  const canSwitchSession = isUpcoming && sessionDate > today
 
   // Check if online request is allowed (regular groups only, not intensive)
   const isRegularGroup = session.groupType && !session.groupType.startsWith('INTENSIVE')
@@ -118,18 +141,7 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
           </div>
 
           {/* Actions */}
-          <div className="flex flex-wrap gap-2 border-t border-gray-100 pt-3">
-            {myReservation.canBeCancelled && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowCancelConfirm(true)}
-              >
-                <XIcon className="mr-1 h-3.5 w-3.5" />
-                Cancelar reserva
-              </Button>
-            )}
-
+          <div className="flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3">
             {myReservation.canRequestOnline && isRegularGroup && (
               <Button
                 variant="secondary"
@@ -141,18 +153,38 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
               </Button>
             )}
 
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setShowSwitchModal(true)}
-            >
-              <ArrowRightLeft className="mr-1 h-3.5 w-3.5" />
-              Cambiar sesion
-            </Button>
+            {canSwitchSession && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowSwitchModal(true)}
+              >
+                <ArrowRightLeft className="mr-1 h-3.5 w-3.5" />
+                Cambiar sesion
+              </Button>
+            )}
+
+            {myReservation.canBeCancelled && (
+              <button
+                type="button"
+                className="ml-auto text-xs text-gray-400 hover:text-red-500 transition-colors"
+                onClick={() => setShowCancelConfirm(true)}
+              >
+                Cancelar reserva
+              </button>
+            )}
+          </div>
+        </div>
+      ) : matchingEnrollment && existingSubjectReservation ? (
+        // Has reservation in another session of the same subject
+        <div className="space-y-3">
+          <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-700">
+            Ya tienes una reserva confirmada en otra sesion de esta asignatura.
+            Usa &quot;Cambiar sesion&quot; desde tu reserva actual si deseas asistir a esta sesion.
           </div>
         </div>
       ) : matchingEnrollment ? (
-        // No reservation but enrolled - can create
+        // No reservation and no duplicate - can create
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Users className="h-4 w-4" />
