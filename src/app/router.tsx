@@ -10,6 +10,7 @@ import {
   ResetPasswordPage,
 } from '@/features/auth'
 import { LandingPage } from '@/features/landing'
+import { TermsPage } from '@/features/legal'
 import { StudentDashboardPage } from '@/features/student'
 import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
 import { PaymentsPage } from '@/features/payments'
@@ -93,6 +94,10 @@ export const router = createBrowserRouter([
   {
     path: '/reset-password',
     element: <ResetPasswordPage />,
+  },
+  {
+    path: '/terminos',
+    element: <TermsPage />,
   },
 
   // Protected routes (student)

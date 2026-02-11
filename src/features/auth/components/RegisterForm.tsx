@@ -150,7 +150,7 @@ export function RegisterForm() {
           <span className="text-sm text-gray-700">
             He leído y acepto los{' '}
             <a
-              href="/docs/terminos-y-condiciones"
+              href="/terminos"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 underline hover:text-blue-800"

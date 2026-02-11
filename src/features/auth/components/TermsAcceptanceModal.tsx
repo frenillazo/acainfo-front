@@ -31,7 +31,7 @@ export function TermsAcceptanceModal() {
 
         <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
           <a
-            href="/docs/terminos-y-condiciones"
+            href="/terminos"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline hover:text-blue-800"
