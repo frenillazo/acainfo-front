@@ -6,10 +6,12 @@ interface AuthStore {
   user: User | null
   accessToken: string | null
   refreshToken: string | null
+  termsAccepted: boolean | null
 
   // Actions
   setAuth: (response: AuthResponse, user?: User) => void
   setUser: (user: User) => void
+  setTermsAccepted: (accepted: boolean) => void
   clearAuth: () => void
 
   // Getters
@@ -23,6 +25,7 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       accessToken: null,
       refreshToken: null,
+      termsAccepted: null,
 
       setAuth: (response, user) => {
         localStorage.setItem('accessToken', response.accessToken)
@@ -30,11 +33,14 @@ export const useAuthStore = create<AuthStore>()(
         set({
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
+          termsAccepted: response.termsAccepted,
           user: user ?? get().user,
         })
       },
 
       setUser: (user) => set({ user }),
+
+      setTermsAccepted: (accepted) => set({ termsAccepted: accepted }),
 
       clearAuth: () => {
         localStorage.removeItem('accessToken')
@@ -43,6 +49,7 @@ export const useAuthStore = create<AuthStore>()(
           user: null,
           accessToken: null,
           refreshToken: null,
+          termsAccepted: null,
         })
       },
 
@@ -60,6 +67,7 @@ export const useAuthStore = create<AuthStore>()(
         user: state.user,
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
+        termsAccepted: state.termsAccepted,
       }),
     }
   )

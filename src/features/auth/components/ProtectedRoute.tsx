@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { RestrictedAccountBanner } from './RestrictedAccountBanner'
+import { TermsAcceptanceModal } from './TermsAcceptanceModal'
 import type { RoleType } from '../types/auth.types'
 
 interface ProtectedRouteProps {
@@ -12,7 +13,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ roles, children, allowRestricted = false }: ProtectedRouteProps) {
   const location = useLocation()
-  const { isAuthenticated, hasRole, user } = useAuthStore()
+  const { isAuthenticated, hasRole, user, termsAccepted } = useAuthStore()
 
   if (!isAuthenticated()) {
     return <Navigate to="/login" state={{ from: location }} replace />
@@ -22,6 +23,16 @@ export function ProtectedRoute({ roles, children, allowRestricted = false }: Pro
   // Solo mostrar banner si no está en una ruta permitida
   if (!allowRestricted && user && (user.status === 'INACTIVE' || user.status === 'BLOCKED')) {
     return <RestrictedAccountBanner status={user.status} />
+  }
+
+  // Verificar si el usuario ha aceptado los términos y condiciones vigentes
+  if (termsAccepted === false) {
+    return (
+      <>
+        <TermsAcceptanceModal />
+        {children ? <>{children}</> : <Outlet />}
+      </>
+    )
   }
 
   if (roles && roles.length > 0) {

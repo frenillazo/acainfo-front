@@ -54,6 +54,7 @@ export interface AuthResponse {
   tokenType: 'Bearer'
   expiresIn: number
   user: User
+  termsAccepted: boolean
 }
 
 // User types

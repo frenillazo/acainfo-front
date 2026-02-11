@@ -19,6 +19,7 @@ export { ResetPasswordPage } from './pages/ResetPasswordPage'
 // Hooks
 export { useAuth } from './hooks/useAuth'
 export { useProfile } from './hooks/useProfile'
+export { useTerms } from './hooks/useTerms'
 
 // Store
 export { useAuthStore } from './store/authStore'
@@ -26,6 +27,7 @@ export { useAuthStore } from './store/authStore'
 // Services
 export { authApi } from './services/authApi'
 export { adminApi } from './services/adminApi'
+export { termsApi } from './services/termsApi'
 
 // Types
 export type {

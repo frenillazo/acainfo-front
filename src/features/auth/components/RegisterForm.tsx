@@ -35,6 +35,9 @@ const registerSchema = z
     }),
     password: z.string().min(8, 'Mínimo 8 caracteres'),
     confirmPassword: z.string(),
+    termsAccepted: z.literal(true, {
+      errorMap: () => ({ message: 'Debes aceptar los términos y condiciones' }),
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Las contraseñas no coinciden',
@@ -138,6 +141,31 @@ export function RegisterForm() {
         autoComplete="new-password"
         error={errors.confirmPassword?.message}
       />
+
+      <div className="space-y-1">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            {...register('termsAccepted')}
+            className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-700">
+            He leído y acepto los{' '}
+            <a
+              href="/docs/terminos-y-condiciones"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              Términos y Condiciones, Política de Privacidad y Política de Cookies
+            </a>
+            . Entiendo que mis datos serán tratados conforme a lo descrito en dicho documento.
+          </span>
+        </label>
+        {errors.termsAccepted && (
+          <p className="text-sm text-red-500">{errors.termsAccepted.message}</p>
+        )}
+      </div>
 
       {registerError && (
         <Alert
