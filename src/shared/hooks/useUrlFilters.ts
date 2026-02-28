@@ -12,7 +12,7 @@ type FilterValue = string | number | boolean | undefined
  * Usage:
  *   const [filters, setFilters] = useUrlFilters({ page: 0, size: 10, status: undefined })
  */
-export function useUrlFilters<T extends Record<string, FilterValue>>(
+export function useUrlFilters<T extends object>(
   defaults: T,
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -20,20 +20,21 @@ export function useUrlFilters<T extends Record<string, FilterValue>>(
 
   const [filters, setFiltersState] = useState<T>(() => {
     const initial = { ...defaults }
+    const defs = defaults as Record<string, FilterValue>
     for (const key of Object.keys(defaults)) {
       const urlValue = searchParams.get(key)
       if (urlValue === null) continue
-      ;(initial as Record<string, FilterValue>)[key] = parseUrlValue(urlValue, defaults[key])
+      ;(initial as Record<string, FilterValue>)[key] = parseUrlValue(urlValue, defs[key])
     }
     return initial
   })
 
   // Sync filters → URL on every change (skip defaults and empty values)
   useEffect(() => {
-    const defs = defaultsRef.current
+    const defs = defaultsRef.current as Record<string, FilterValue>
     const params = new URLSearchParams()
 
-    for (const [key, value] of Object.entries(filters)) {
+    for (const [key, value] of Object.entries(filters as Record<string, FilterValue>)) {
       if (value === undefined || value === null || value === '') continue
       // Skip if value matches the non-undefined default
       if (key in defs && defs[key] !== undefined && value === defs[key]) continue
