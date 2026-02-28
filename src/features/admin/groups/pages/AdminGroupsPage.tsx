@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
 import {
   useAdminGroups,
   useCancelGroup,
@@ -12,16 +13,23 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Pagination } from '@/shared/components/ui/Pagination'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { useDebounce } from '@/shared/hooks/useDebounce'
 import { LayoutGrid, List } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 import type { GroupFilters, GroupStatus, GroupType } from '../../types/admin.types'
 
 export function AdminGroupsPage() {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards')
-  const [filters, setFilters] = useState<GroupFilters>({
+  const [filters, setFilters] = useUrlFilters<GroupFilters>({
     page: 0,
     size: 10,
   })
+  const [searchInput, setSearchInput] = useState(filters.searchTerm ?? '')
+  const debouncedSearch = useDebounce(searchInput, 300)
+
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, searchTerm: debouncedSearch || undefined, page: 0 }))
+  }, [debouncedSearch])
 
   const { data, isLoading, error } = useAdminGroups(filters)
   const cancelMutation = useCancelGroup()
@@ -174,8 +182,23 @@ export function AdminGroupsPage() {
             </select>
           </div>
 
-          {/* Spacer */}
-          <div />
+          {/* Search */}
+          <div>
+            <label
+              htmlFor="search"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Buscar
+            </label>
+            <input
+              type="text"
+              id="search"
+              placeholder="Nombre del grupo..."
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
 
           {/* Results info */}
           <div className="flex items-end">

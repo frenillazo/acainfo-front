@@ -11,47 +11,6 @@ import {
 } from '@/features/auth'
 import { LandingPage } from '@/features/landing'
 import { TermsPage } from '@/features/legal'
-import { StudentDashboardPage } from '@/features/student'
-import { EnrollmentsPage, EnrollmentDetailPage } from '@/features/enrollments'
-import { PaymentsPage } from '@/features/payments'
-import { SubjectsPage, SubjectDetailPage } from '@/features/subjects'
-import { SessionsPage, SessionDetailPage } from '@/features/sessions'
-import { AttendanceHistoryPage } from '@/features/reservations'
-import { MaterialsPage } from '@/features/materials'
-import {
-  AdminGroupRequestsPage,
-  AdminGroupRequestDetailPage,
-} from '@/features/group-requests'
-import {
-  AdminDashboardPage,
-  AdminUsersPage,
-  AdminUserDetailPage,
-  AdminTeachersPage,
-  AdminTeacherDetailPage,
-  AdminTeacherCreatePage,
-  AdminTeacherEditPage,
-  AdminEnrollmentsPage,
-  AdminEnrollmentDetailPage,
-  AdminEnrollmentCreatePage,
-  AdminEnrollmentChangeGroupPage,
-  AdminPendingEnrollmentsPage,
-  AdminGroupsPage,
-  AdminGroupDetailPage,
-  AdminGroupCreatePage,
-  AdminGroupEditPage,
-  AdminSubjectsPage,
-  AdminSubjectDetailPage,
-  AdminSubjectCreatePage,
-  AdminSubjectEditPage,
-  AdminGroupSchedulesPage,
-  AdminSchedulesPage,
-  AdminSessionsPage,
-  AdminSessionDetailPage,
-  AdminSessionGeneratePage,
-  AdminPaymentsPage,
-  AdminPaymentDetailPage,
-  AdminPaymentGeneratePage,
-} from '@/features/admin'
 import { MainLayout } from '@/shared/components/layout'
 
 function NotFoundPage() {
@@ -65,8 +24,18 @@ function NotFoundPage() {
   )
 }
 
+/**
+ * Helper to create a lazy route from a module with a named export.
+ * Uses React Router's built-in `lazy` for automatic code splitting.
+ */
+function lazyPage(importFn: () => Promise<Record<string, unknown>>, exportName: string) {
+  return {
+    lazy: () => importFn().then((m) => ({ Component: m[exportName] as React.ComponentType })),
+  }
+}
+
 export const router = createBrowserRouter([
-  // Public routes
+  // Public routes (eagerly loaded — needed immediately)
   {
     path: '/',
     element: <LandingPage />,
@@ -100,7 +69,7 @@ export const router = createBrowserRouter([
     element: <TermsPage />,
   },
 
-  // Protected routes (student)
+  // Protected routes (student) — lazy loaded
   {
     path: '/dashboard',
     element: (
@@ -111,43 +80,43 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <StudentDashboardPage />,
+        ...lazyPage(() => import('@/features/student'), 'StudentDashboardPage'),
       },
       {
         path: 'enrollments',
-        element: <EnrollmentsPage />,
+        ...lazyPage(() => import('@/features/enrollments'), 'EnrollmentsPage'),
       },
       {
         path: 'enrollments/:id',
-        element: <EnrollmentDetailPage />,
+        ...lazyPage(() => import('@/features/enrollments'), 'EnrollmentDetailPage'),
       },
       {
         path: 'sessions',
-        element: <SessionsPage />,
+        ...lazyPage(() => import('@/features/sessions'), 'SessionsPage'),
       },
       {
         path: 'sessions/:id',
-        element: <SessionDetailPage />,
+        ...lazyPage(() => import('@/features/sessions'), 'SessionDetailPage'),
       },
       {
         path: 'attendance',
-        element: <AttendanceHistoryPage />,
+        ...lazyPage(() => import('@/features/reservations'), 'AttendanceHistoryPage'),
       },
       {
         path: 'payments',
-        element: <PaymentsPage />,
+        ...lazyPage(() => import('@/features/payments'), 'PaymentsPage'),
       },
       {
         path: 'materials',
-        element: <MaterialsPage />,
+        ...lazyPage(() => import('@/features/materials'), 'MaterialsPage'),
       },
       {
         path: 'subjects',
-        element: <SubjectsPage />,
+        ...lazyPage(() => import('@/features/subjects'), 'SubjectsPage'),
       },
       {
         path: 'subjects/:id',
-        element: <SubjectDetailPage />,
+        ...lazyPage(() => import('@/features/subjects'), 'SubjectDetailPage'),
       },
       {
         path: 'profile',
@@ -156,7 +125,7 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Admin routes
+  // Admin routes — lazy loaded
   {
     path: '/admin',
     element: (
@@ -167,123 +136,123 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <AdminDashboardPage />,
+        ...lazyPage(() => import('@/features/admin/pages/AdminDashboardPage'), 'AdminDashboardPage'),
       },
       {
         path: 'users',
-        element: <AdminUsersPage />,
+        ...lazyPage(() => import('@/features/admin/users/pages/AdminUsersPage'), 'AdminUsersPage'),
       },
       {
         path: 'users/:id',
-        element: <AdminUserDetailPage />,
+        ...lazyPage(() => import('@/features/admin/users/pages/AdminUserDetailPage'), 'AdminUserDetailPage'),
       },
       {
         path: 'teachers',
-        element: <AdminTeachersPage />,
+        ...lazyPage(() => import('@/features/admin/teachers/pages/AdminTeachersPage'), 'AdminTeachersPage'),
       },
       {
         path: 'teachers/new',
-        element: <AdminTeacherCreatePage />,
+        ...lazyPage(() => import('@/features/admin/teachers/pages/AdminTeacherCreatePage'), 'AdminTeacherCreatePage'),
       },
       {
         path: 'teachers/:id',
-        element: <AdminTeacherDetailPage />,
+        ...lazyPage(() => import('@/features/admin/teachers/pages/AdminTeacherDetailPage'), 'AdminTeacherDetailPage'),
       },
       {
         path: 'teachers/:id/edit',
-        element: <AdminTeacherEditPage />,
+        ...lazyPage(() => import('@/features/admin/teachers/pages/AdminTeacherEditPage'), 'AdminTeacherEditPage'),
       },
       {
         path: 'enrollments',
-        element: <AdminEnrollmentsPage />,
+        ...lazyPage(() => import('@/features/admin/enrollments/pages/AdminEnrollmentsPage'), 'AdminEnrollmentsPage'),
       },
       {
         path: 'enrollments/new',
-        element: <AdminEnrollmentCreatePage />,
+        ...lazyPage(() => import('@/features/admin/enrollments/pages/AdminEnrollmentCreatePage'), 'AdminEnrollmentCreatePage'),
       },
       {
         path: 'enrollments/:id',
-        element: <AdminEnrollmentDetailPage />,
+        ...lazyPage(() => import('@/features/admin/enrollments/pages/AdminEnrollmentDetailPage'), 'AdminEnrollmentDetailPage'),
       },
       {
         path: 'enrollments/:id/change-group',
-        element: <AdminEnrollmentChangeGroupPage />,
+        ...lazyPage(() => import('@/features/admin/enrollments/pages/AdminEnrollmentChangeGroupPage'), 'AdminEnrollmentChangeGroupPage'),
       },
       {
         path: 'enrollments/pending',
-        element: <AdminPendingEnrollmentsPage />,
+        ...lazyPage(() => import('@/features/admin/enrollments/pages/AdminPendingEnrollmentsPage'), 'AdminPendingEnrollmentsPage'),
       },
       {
         path: 'groups',
-        element: <AdminGroupsPage />,
+        ...lazyPage(() => import('@/features/admin/groups/pages/AdminGroupsPage'), 'AdminGroupsPage'),
       },
       {
         path: 'groups/new',
-        element: <AdminGroupCreatePage />,
+        ...lazyPage(() => import('@/features/admin/groups/pages/AdminGroupCreatePage'), 'AdminGroupCreatePage'),
       },
       {
         path: 'groups/:id',
-        element: <AdminGroupDetailPage />,
+        ...lazyPage(() => import('@/features/admin/groups/pages/AdminGroupDetailPage'), 'AdminGroupDetailPage'),
       },
       {
         path: 'groups/:id/edit',
-        element: <AdminGroupEditPage />,
+        ...lazyPage(() => import('@/features/admin/groups/pages/AdminGroupEditPage'), 'AdminGroupEditPage'),
       },
       {
         path: 'groups/:groupId/schedules',
-        element: <AdminGroupSchedulesPage />,
+        ...lazyPage(() => import('@/features/admin/schedules/pages/AdminGroupSchedulesPage'), 'AdminGroupSchedulesPage'),
       },
       {
         path: 'schedules',
-        element: <AdminSchedulesPage />,
+        ...lazyPage(() => import('@/features/admin/schedules/pages/AdminSchedulesPage'), 'AdminSchedulesPage'),
       },
       {
         path: 'sessions',
-        element: <AdminSessionsPage />,
+        ...lazyPage(() => import('@/features/admin/sessions/pages/AdminSessionsPage'), 'AdminSessionsPage'),
       },
       {
         path: 'sessions/generate',
-        element: <AdminSessionGeneratePage />,
+        ...lazyPage(() => import('@/features/admin/sessions/pages/AdminSessionGeneratePage'), 'AdminSessionGeneratePage'),
       },
       {
         path: 'sessions/:id',
-        element: <AdminSessionDetailPage />,
+        ...lazyPage(() => import('@/features/admin/sessions/pages/AdminSessionDetailPage'), 'AdminSessionDetailPage'),
       },
       {
         path: 'subjects',
-        element: <AdminSubjectsPage />,
+        ...lazyPage(() => import('@/features/admin/subjects/pages/AdminSubjectsPage'), 'AdminSubjectsPage'),
       },
       {
         path: 'subjects/new',
-        element: <AdminSubjectCreatePage />,
+        ...lazyPage(() => import('@/features/admin/subjects/pages/AdminSubjectCreatePage'), 'AdminSubjectCreatePage'),
       },
       {
         path: 'subjects/:id',
-        element: <AdminSubjectDetailPage />,
+        ...lazyPage(() => import('@/features/admin/subjects/pages/AdminSubjectDetailPage'), 'AdminSubjectDetailPage'),
       },
       {
         path: 'subjects/:id/edit',
-        element: <AdminSubjectEditPage />,
+        ...lazyPage(() => import('@/features/admin/subjects/pages/AdminSubjectEditPage'), 'AdminSubjectEditPage'),
       },
       {
         path: 'payments',
-        element: <AdminPaymentsPage />,
+        ...lazyPage(() => import('@/features/admin/payments/pages/AdminPaymentsPage'), 'AdminPaymentsPage'),
       },
       {
         path: 'payments/generate',
-        element: <AdminPaymentGeneratePage />,
+        ...lazyPage(() => import('@/features/admin/payments/pages/AdminPaymentGeneratePage'), 'AdminPaymentGeneratePage'),
       },
       {
         path: 'payments/:id',
-        element: <AdminPaymentDetailPage />,
+        ...lazyPage(() => import('@/features/admin/payments/pages/AdminPaymentDetailPage'), 'AdminPaymentDetailPage'),
       },
       {
         path: 'group-requests',
-        element: <AdminGroupRequestsPage />,
+        ...lazyPage(() => import('@/features/group-requests/pages/AdminGroupRequestsPage'), 'AdminGroupRequestsPage'),
       },
       {
         path: 'group-requests/:id',
-        element: <AdminGroupRequestDetailPage />,
+        ...lazyPage(() => import('@/features/group-requests/pages/AdminGroupRequestDetailPage'), 'AdminGroupRequestDetailPage'),
       },
       {
         path: 'profile',

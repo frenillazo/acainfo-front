@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
 import { useAdminUsers } from '../hooks/useAdminUsers'
 import { UserTable } from '../components/UserTable'
 import { LoadingState } from '@/shared/components/common/LoadingState'
@@ -34,12 +35,12 @@ type BatchResult = DeactivationBatchResult | ActivationBatchResult
 
 export function AdminUsersPage() {
   const queryClient = useQueryClient()
-  const [filters, setFilters] = useState<UserFilters>({
+  const [filters, setFilters] = useUrlFilters<UserFilters>({
     page: 0,
     size: 10,
     roleType: 'STUDENT',
   })
-  const [searchInput, setSearchInput] = useState('')
+  const [searchInput, setSearchInput] = useState(filters.searchTerm ?? '')
   const debouncedSearch = useDebounce(searchInput, 300)
 
   // Selection state for batch operations

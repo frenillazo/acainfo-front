@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
 import {
   useInterestSummary,
   useGroupRequests,
@@ -14,7 +15,7 @@ export function AdminGroupRequestsPage() {
   const [view, setView] = useState<'summary' | 'detail'>('summary')
   const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null)
   const [selectedSubjectName, setSelectedSubjectName] = useState<string>('')
-  const [filters, setFilters] = useState<GroupRequestFilters>({
+  const [filters, setFilters] = useUrlFilters<GroupRequestFilters>({
     page: 0,
     size: 20,
     status: 'PENDING',

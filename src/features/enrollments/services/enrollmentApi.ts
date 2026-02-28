@@ -10,6 +10,7 @@ import type {
 
 interface EnrollmentFilters extends PaginationParams {
   studentId?: number
+  studentEmail?: string
   groupId?: number
   status?: string
 }

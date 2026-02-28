@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
 import {
   useAdminSubjects,
   useArchiveSubject,
@@ -18,7 +19,7 @@ import type { SubjectFilters, SubjectStatus, Degree } from '../../types/admin.ty
 
 export function AdminSubjectsPage() {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards')
-  const [filters, setFilters] = useState<SubjectFilters>({
+  const [filters, setFilters] = useUrlFilters<SubjectFilters>({
     page: 0,
     size: 10,
   })

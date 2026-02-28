@@ -1,13 +1,21 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useGeneratePayment, useGenerateMonthlyPayments } from '../hooks/useAdminPayments'
+import { useAdminEnrollments } from '@/features/admin/enrollments/hooks/useAdminEnrollments'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { useDebounce } from '@/shared/hooks/useDebounce'
+import { toast } from '@/shared/hooks/useToast'
 import type { PaymentType } from '@/features/payments/types/payment.types'
 
 export function AdminPaymentGeneratePage() {
   const [mode, setMode] = useState<'single' | 'monthly'>('single')
+
+  // Student-subject selector state
+  const [studentEmailInput, setStudentEmailInput] = useState('')
+  const debouncedEmail = useDebounce(studentEmailInput, 400)
   const [enrollmentId, setEnrollmentId] = useState('')
+
   const [paymentType, setPaymentType] = useState<PaymentType>('MONTHLY')
   const [billingMonth, setBillingMonth] = useState('')
   const [billingYear, setBillingYear] = useState('')
@@ -16,14 +24,28 @@ export function AdminPaymentGeneratePage() {
   const generateMonthlyMutation = useGenerateMonthlyPayments()
   const { dialogProps, confirm } = useConfirmDialog()
 
+  // Fetch active enrollments when email has enough characters
+  const shouldSearch = debouncedEmail.length >= 3
+  const { data: enrollmentsData, isLoading: isLoadingEnrollments } = useAdminEnrollments({
+    studentEmail: shouldSearch ? debouncedEmail : undefined,
+    status: 'ACTIVE',
+    size: 50,
+  })
+  const enrollments = shouldSearch ? (enrollmentsData?.content ?? []) : []
+
   const currentYear = new Date().getFullYear()
-  const currentMonth = new Date().getMonth() + 1
+
+  const handleStudentEmailChange = (value: string) => {
+    setStudentEmailInput(value)
+    // Reset enrollment selection when email changes
+    setEnrollmentId('')
+  }
 
   const handleGenerateSingle = (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!enrollmentId || !billingMonth || !billingYear) {
-      alert('Por favor completa todos los campos')
+      toast.warning('Por favor completa todos los campos')
       return
     }
 
@@ -36,13 +58,14 @@ export function AdminPaymentGeneratePage() {
       },
       {
         onSuccess: () => {
-          alert('Pago generado exitosamente')
+          toast.success('Pago generado exitosamente')
+          setStudentEmailInput('')
           setEnrollmentId('')
           setBillingMonth('')
           setBillingYear('')
         },
         onError: (error: any) => {
-          alert(`Error: ${error.response?.data?.message || 'No se pudo generar el pago'}`)
+          toast.error(error.response?.data?.message || 'No se pudo generar el pago')
         },
       }
     )
@@ -52,7 +75,7 @@ export function AdminPaymentGeneratePage() {
     e.preventDefault()
 
     if (!billingMonth || !billingYear) {
-      alert('Por favor completa todos los campos')
+      toast.warning('Por favor completa todos los campos')
       return
     }
 
@@ -74,12 +97,12 @@ export function AdminPaymentGeneratePage() {
       },
       {
         onSuccess: (payments) => {
-          alert(`${payments.length} pagos generados exitosamente`)
+          toast.success(`${payments.length} pagos generados exitosamente`)
           setBillingMonth('')
           setBillingYear('')
         },
         onError: (error: any) => {
-          alert(`Error: ${error.response?.data?.message || 'No se pudieron generar los pagos'}`)
+          toast.error(error.response?.data?.message || 'No se pudieron generar los pagos')
         },
       }
     )
@@ -158,22 +181,69 @@ export function AdminPaymentGeneratePage() {
           </p>
 
           <form onSubmit={handleGenerateSingle} className="space-y-4">
+            {/* Step 1: Student email */}
             <div>
               <label
-                htmlFor="enrollmentId"
+                htmlFor="studentEmail"
                 className="block text-sm font-medium text-gray-700"
               >
-                ID de Inscripción *
+                Email del Estudiante *
               </label>
               <input
-                type="number"
-                id="enrollmentId"
+                type="text"
+                id="studentEmail"
+                value={studentEmailInput}
+                onChange={(e) => handleStudentEmailChange(e.target.value)}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                placeholder="Escribe el email del estudiante..."
+              />
+              {studentEmailInput.length > 0 && studentEmailInput.length < 3 && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Escribe al menos 3 caracteres para buscar
+                </p>
+              )}
+              {isLoadingEnrollments && shouldSearch && (
+                <p className="mt-1 text-xs text-blue-600">Buscando inscripciones...</p>
+              )}
+              {shouldSearch && !isLoadingEnrollments && enrollments.length === 0 && (
+                <p className="mt-1 text-xs text-amber-600">
+                  No se encontraron inscripciones activas para este email
+                </p>
+              )}
+            </div>
+
+            {/* Step 2: Enrollment selector */}
+            <div>
+              <label
+                htmlFor="enrollmentSelect"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Inscripción (Asignatura - Grupo) *
+              </label>
+              <select
+                id="enrollmentSelect"
                 value={enrollmentId}
                 onChange={(e) => setEnrollmentId(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                placeholder="Ej: 123"
+                disabled={enrollments.length === 0}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
                 required
-              />
+              >
+                <option value="">
+                  {enrollments.length === 0
+                    ? 'Primero busca un estudiante por email'
+                    : 'Selecciona una inscripción'}
+                </option>
+                {enrollments.map((enrollment) => (
+                  <option key={enrollment.id} value={enrollment.id}>
+                    {enrollment.subjectName} - {enrollment.groupName}
+                  </option>
+                ))}
+              </select>
+              {enrollmentId && enrollments.length > 0 && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Estudiante: {enrollments.find((e) => e.id === parseInt(enrollmentId, 10))?.studentName}
+                </p>
+              )}
             </div>
 
             <div>

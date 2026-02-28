@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
 import { useAdminPayments, useMarkPaymentAsPaid, useCancelPayment } from '../hooks/useAdminPayments'
 import { PaymentTable } from '../components/PaymentTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
@@ -13,13 +14,13 @@ import { useDebounce } from '@/shared/hooks/useDebounce'
 import type { PaymentFilters, PaymentStatus, PaymentType } from '@/features/payments/types/payment.types'
 
 export function AdminPaymentsPage() {
-  const [filters, setFilters] = useState<PaymentFilters>({
+  const [filters, setFilters] = useUrlFilters<PaymentFilters>({
     page: 0,
     size: 20,
     sortBy: 'dueDate',
     sortDirection: 'ASC',
   })
-  const [studentEmailInput, setStudentEmailInput] = useState('')
+  const [studentEmailInput, setStudentEmailInput] = useState(filters.studentEmail ?? '')
   const debouncedStudentEmail = useDebounce(studentEmailInput, 300)
 
   const { data, isLoading, error } = useAdminPayments(filters)

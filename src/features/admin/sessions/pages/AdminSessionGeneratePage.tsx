@@ -5,6 +5,7 @@ import { useGenerateSessions, usePreviewGenerateSessions } from '../hooks/useAdm
 import { SessionTable } from '../components/SessionTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { toast } from '@/shared/hooks/useToast'
 import type { GenerateSessionsRequest, Session } from '../../types/admin.types'
 
 export function AdminSessionGeneratePage() {
@@ -61,7 +62,7 @@ export function AdminSessionGeneratePage() {
 
     generateMutation.mutate(request, {
       onSuccess: (sessions) => {
-        alert(`Se han generado ${sessions.length} sesiones correctamente.`)
+        toast.success(`Se han generado ${sessions.length} sesiones correctamente.`)
         navigate('/admin/sessions')
       },
     })

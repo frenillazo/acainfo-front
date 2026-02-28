@@ -110,6 +110,7 @@ export interface GroupFilters {
   teacherId?: number
   type?: GroupType
   status?: GroupStatus
+  searchTerm?: string
   page?: number
   size?: number
   sortBy?: string

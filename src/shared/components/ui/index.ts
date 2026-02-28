@@ -35,3 +35,4 @@ export {
 export { Modal, ModalFooter, modalVariants, type ModalSize } from './Modal'
 export { Pagination } from './Pagination'
 export { Spinner } from './Spinner'
+export { ToastContainer } from './ToastContainer'

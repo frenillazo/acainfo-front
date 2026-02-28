@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
 import { CreditCard } from 'lucide-react'
 import {
   useAdminEnrollments,
@@ -14,18 +15,15 @@ import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Pagination } from '@/shared/components/ui/Pagination'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { useDebounce } from '@/shared/hooks/useDebounce'
+import { toast } from '@/shared/hooks/useToast'
 import type { EnrollmentStatus } from '@/features/enrollments/types/enrollment.types'
 
 export function AdminEnrollmentsPage() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const groupIdParam = searchParams.get('groupId')
-
-  const [filters, setFilters] = useState<AdminEnrollmentFilters>({
+  const [filters, setFilters] = useUrlFilters<AdminEnrollmentFilters>({
     page: 0,
     size: 10,
-    groupId: groupIdParam ? parseInt(groupIdParam, 10) : undefined,
   })
-  const [studentEmailInput, setStudentEmailInput] = useState('')
+  const [studentEmailInput, setStudentEmailInput] = useState(filters.studentEmail ?? '')
   const debouncedStudentEmail = useDebounce(studentEmailInput, 300)
   const [showPaymentsDialog, setShowPaymentsDialog] = useState(false)
 
@@ -34,7 +32,7 @@ export function AdminEnrollmentsPage() {
   const { dialogProps, confirm } = useConfirmDialog()
 
   const handlePaymentsSuccess = (count: number) => {
-    alert(`Se generaron ${count} pagos correctamente`)
+    toast.success(`Se generaron ${count} pagos correctamente`)
   }
 
   useEffect(() => {
@@ -54,7 +52,6 @@ export function AdminEnrollmentsPage() {
   }
 
   const handleClearGroupFilter = () => {
-    setSearchParams({})
     setFilters((prev) => ({ ...prev, groupId: undefined, page: 0 }))
   }
 

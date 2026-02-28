@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
 import { useAdminTeachers, useDeleteTeacher } from '../hooks/useAdminTeachers'
 import { TeacherTable } from '../components/TeacherTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
@@ -11,11 +12,11 @@ import { useDebounce } from '@/shared/hooks/useDebounce'
 import type { TeacherFilters, UserStatus } from '../../types/admin.types'
 
 export function AdminTeachersPage() {
-  const [filters, setFilters] = useState<TeacherFilters>({
+  const [filters, setFilters] = useUrlFilters<TeacherFilters>({
     page: 0,
     size: 10,
   })
-  const [searchInput, setSearchInput] = useState('')
+  const [searchInput, setSearchInput] = useState(filters.searchTerm ?? '')
   const debouncedSearch = useDebounce(searchInput, 300)
 
   const { data, isLoading, error } = useAdminTeachers(filters)
