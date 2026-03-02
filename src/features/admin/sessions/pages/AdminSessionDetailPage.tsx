@@ -7,9 +7,8 @@ import {
   useCancelSession,
   useDeleteSession,
 } from '../hooks/useAdminSessions'
-import { SessionStatusBadge } from '../components/SessionStatusBadge'
-import { SessionTypeBadge } from '../components/SessionTypeBadge'
-import { SessionModeBadge } from '../components/SessionModeBadge'
+import { ConfigBadge } from '@/shared/components/ui'
+import { SESSION_STATUS_CONFIG, SESSION_TYPE_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { ClassroomBadge } from '../../schedules/components/ClassroomBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
@@ -132,9 +131,9 @@ export function AdminSessionDetailPage() {
               <h1 className="text-2xl font-bold text-gray-900">
                 Sesion #{session.id}
               </h1>
-              <SessionTypeBadge type={session.type} />
-              <SessionModeBadge mode={session.mode} />
-              <SessionStatusBadge status={session.status} />
+              <ConfigBadge config={SESSION_TYPE_CONFIG} value={session.type} />
+              <ConfigBadge config={SESSION_MODE_CONFIG} value={session.mode} />
+              <ConfigBadge config={SESSION_STATUS_CONFIG} value={session.status} />
             </div>
             <p className="mt-1 text-gray-500">
               {session.subjectCode} - {session.subjectName}
@@ -229,7 +228,7 @@ export function AdminSessionDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Modalidad</dt>
               <dd className="mt-1">
-                <SessionModeBadge mode={session.mode} />
+                <ConfigBadge config={SESSION_MODE_CONFIG} value={session.mode} />
               </dd>
             </div>
             {session.isPostponed && session.postponedToDate && (
@@ -293,13 +292,13 @@ export function AdminSessionDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Tipo</dt>
               <dd className="mt-1">
-                <SessionTypeBadge type={session.type} />
+                <ConfigBadge config={SESSION_TYPE_CONFIG} value={session.type} />
               </dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Estado</dt>
               <dd className="mt-1">
-                <SessionStatusBadge status={session.status} />
+                <ConfigBadge config={SESSION_STATUS_CONFIG} value={session.status} />
               </dd>
             </div>
             <div>

@@ -1,6 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAdminTeacher, useDeleteTeacher } from '../hooks/useAdminTeachers'
-import { UserStatusBadge } from '../../users/components/UserStatusBadge'
+import { ConfigBadge } from '@/shared/components/ui'
+import { USER_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
@@ -77,7 +78,7 @@ export function AdminTeacherDetailPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <UserStatusBadge status={teacher.status} />
+            <ConfigBadge config={USER_STATUS_CONFIG} value={teacher.status} fallback="PENDING_ACTIVATION" />
             <Link
               to={`/admin/teachers/${teacher.id}/edit`}
               className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
@@ -122,7 +123,7 @@ export function AdminTeacherDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Estado</dt>
               <dd className="mt-1">
-                <UserStatusBadge status={teacher.status} />
+                <ConfigBadge config={USER_STATUS_CONFIG} value={teacher.status} fallback="PENDING_ACTIVATION" />
               </dd>
             </div>
           </dl>

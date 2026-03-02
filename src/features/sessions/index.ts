@@ -4,8 +4,6 @@ export { SessionDetailPage } from './pages/SessionDetailPage'
 
 // Components
 export { SessionCard } from './components/SessionCard'
-export { SessionStatusBadge } from './components/SessionStatusBadge'
-export { SessionModeBadge } from './components/SessionModeBadge'
 export { StudentWeeklyScheduleGrid } from './components/StudentWeeklyScheduleGrid'
 
 // Hooks

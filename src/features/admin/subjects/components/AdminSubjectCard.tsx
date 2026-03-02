@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Subject } from '../../types/admin.types'
-import { SubjectStatusBadge } from './SubjectStatusBadge'
-import { DegreeBadge } from './DegreeBadge'
-import { Card } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
+import { SUBJECT_STATUS_CONFIG, DEGREE_CONFIG } from '@/shared/config/badgeConfig'
 import { Eye, Pencil, Archive, Trash2 } from 'lucide-react'
 
 interface AdminSubjectCardProps {
@@ -65,12 +64,12 @@ function AdminSubjectCard({
           <span className="font-mono text-xs font-medium text-gray-500">{subject.code}</span>
           <h3 className="mt-0.5 truncate font-medium text-gray-900">{subject.name}</h3>
         </div>
-        <SubjectStatusBadge status={subject.status} />
+        <ConfigBadge config={SUBJECT_STATUS_CONFIG} value={subject.status} />
       </div>
 
       {/* Info: degree, year, groups */}
       <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-        <DegreeBadge degree={subject.degree} />
+        <ConfigBadge config={DEGREE_CONFIG} value={subject.degree} />
         {subject.year && (
           <span className="text-xs text-gray-500">{subject.year}º Curso</span>
         )}

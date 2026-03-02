@@ -4,13 +4,14 @@ import type { Enrollment } from '@/features/enrollments/types/enrollment.types'
 import { useSessionReservations } from '../hooks/useReservations'
 import { useEnrichedReservations } from '../hooks/useEnrichedReservations'
 import { useCancelReservation, useRequestOnline } from '../hooks/useReservationMutations'
-import { ReservationModeBadge } from './ReservationModeBadge'
 import { OnlineRequestBadge } from './OnlineRequestBadge'
 import { CreateReservationModal } from './CreateReservationModal'
 import { SwitchSessionModal } from './SwitchSessionModal'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { Badge } from '@/shared/components/ui/Badge'
 import { Button } from '@/shared/components/ui/Button'
+import { ConfigBadge } from '@/shared/components/ui'
+import { RESERVATION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { CalendarCheck, Users, ArrowRightLeft, Wifi } from 'lucide-react'
 import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
 
@@ -93,7 +94,7 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Asistencia</h2>
         <div className="flex items-center gap-3">
-          <ReservationModeBadge mode={myReservation.mode} />
+          <ConfigBadge config={RESERVATION_MODE_CONFIG} value={myReservation.mode} />
           {myReservation.hasAttendanceRecorded ? (
             <Badge variant={myReservation.wasPresent ? 'success' : 'error'}>
               {myReservation.wasPresent ? 'Presente' : 'Ausente'}
@@ -130,7 +131,7 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
         // Has reservation - show status and actions
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <ReservationModeBadge mode={myReservation.mode} />
+            <ConfigBadge config={RESERVATION_MODE_CONFIG} value={myReservation.mode} />
             <Badge variant="success">Confirmada</Badge>
             <OnlineRequestBadge status={myReservation.onlineRequestStatus} />
           </div>

@@ -4,7 +4,6 @@ export { AdminUserDetailPage } from './pages/AdminUserDetailPage'
 
 // Components
 export { UserTable } from './components/UserTable'
-export { UserStatusBadge } from './components/UserStatusBadge'
 export { RoleBadge } from './components/RoleBadge'
 
 // Hooks

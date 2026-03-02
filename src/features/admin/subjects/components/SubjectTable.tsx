@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
 import type { Subject } from '../../types/admin.types'
-import { SubjectStatusBadge } from './SubjectStatusBadge'
-import { DegreeBadge } from './DegreeBadge'
 import {
   DataTable,
   ActionsCell,
   ActionButton,
+  ConfigBadge,
   type Column,
 } from '@/shared/components/ui'
+import { SUBJECT_STATUS_CONFIG, DEGREE_CONFIG } from '@/shared/config/badgeConfig'
 
 interface SubjectTableProps {
   subjects: Subject[]
@@ -44,7 +44,7 @@ export function SubjectTable({
     {
       key: 'degree',
       header: 'Grado',
-      render: (subject) => <DegreeBadge degree={subject.degree} />,
+      render: (subject) => <ConfigBadge config={DEGREE_CONFIG} value={subject.degree} />,
     },
     {
       key: 'groups',
@@ -56,7 +56,7 @@ export function SubjectTable({
     {
       key: 'status',
       header: 'Estado',
-      render: (subject) => <SubjectStatusBadge status={subject.status} />,
+      render: (subject) => <ConfigBadge config={SUBJECT_STATUS_CONFIG} value={subject.status} />,
     },
     {
       key: 'actions',

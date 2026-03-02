@@ -7,9 +7,9 @@ import {
   useDeleteSchedule,
 } from '../hooks/useAdminSchedules'
 import { WeeklyScheduleGrid } from '../components/WeeklyScheduleGrid'
-import { GroupStatusBadge } from '../../groups/components/GroupStatusBadge'
-import { GroupTypeBadge } from '../../groups/components/GroupTypeBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { ConfigBadge } from '@/shared/components/ui'
+import { GROUP_STATUS_CONFIG, GROUP_TYPE_CONFIG } from '@/shared/config/badgeConfig'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
@@ -86,8 +86,8 @@ export function AdminGroupSchedulesPage() {
               <h1 className="text-2xl font-bold text-gray-900">
                 Horarios de {group.subjectName}
               </h1>
-              <GroupTypeBadge type={group.type} />
-              <GroupStatusBadge status={group.status} />
+              <ConfigBadge config={GROUP_TYPE_CONFIG} value={group.type} />
+              <ConfigBadge config={GROUP_STATUS_CONFIG} value={group.status} />
             </div>
             <p className="mt-1 text-gray-500">
               {group.subjectCode} · Profesor: {group.teacherName}

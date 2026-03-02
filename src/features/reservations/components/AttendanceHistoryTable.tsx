@@ -1,6 +1,7 @@
 import type { EnrichedReservation } from '../types/reservation.types'
-import { ReservationModeBadge } from './ReservationModeBadge'
 import { Badge } from '@/shared/components/ui/Badge'
+import { ConfigBadge } from '@/shared/components/ui'
+import { RESERVATION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 
 interface AttendanceHistoryTableProps {
   reservations: EnrichedReservation[]
@@ -59,7 +60,7 @@ export function AttendanceHistoryTable({ reservations }: AttendanceHistoryTableP
                 {CLASSROOM_LABELS[r.classroom] || r.classroom}
               </td>
               <td className="px-4 py-3">
-                <ReservationModeBadge mode={r.mode} />
+                <ConfigBadge config={RESERVATION_MODE_CONFIG} value={r.mode} />
               </td>
               <td className="px-4 py-3 text-center">
                 {r.hasAttendanceRecorded ? (

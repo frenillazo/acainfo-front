@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useSession } from '../hooks/useSessions'
-import { SessionStatusBadge } from '../components/SessionStatusBadge'
-import { SessionModeBadge } from '../components/SessionModeBadge'
+import { ConfigBadge } from '@/shared/components/ui'
+import { SESSION_STATUS_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
@@ -89,8 +89,8 @@ export function SessionDetailPage() {
               <h1 className="text-2xl font-bold text-gray-900">
                 {session.subjectName}
               </h1>
-              <SessionStatusBadge status={session.status} />
-              <SessionModeBadge mode={session.mode} />
+              <ConfigBadge config={SESSION_STATUS_CONFIG} value={session.status} />
+              <ConfigBadge config={SESSION_MODE_CONFIG} value={session.mode} />
               {isInProgress && (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-700">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-yellow-500" />

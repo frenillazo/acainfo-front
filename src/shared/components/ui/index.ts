@@ -2,6 +2,7 @@ export { Alert, alertVariants, type AlertVariant } from './Alert'
 export { Avatar, avatarVariants, type AvatarSize, type AvatarColor } from './Avatar'
 export { Badge, badgeVariants, type BadgeVariant } from './Badge'
 export { Breadcrumbs } from './Breadcrumbs'
+export { ConfigBadge, type BadgeConfigEntry } from './ConfigBadge'
 export {
   Button,
   buttonVariants,

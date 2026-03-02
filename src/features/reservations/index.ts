@@ -34,8 +34,6 @@ export { useEnrichedReservations } from './hooks/useEnrichedReservations'
 
 // Components
 export { ReservationSection } from './components/ReservationSection'
-export { ReservationModeBadge } from './components/ReservationModeBadge'
-export { ReservationStatusBadge } from './components/ReservationStatusBadge'
 export { OnlineRequestBadge } from './components/OnlineRequestBadge'
 export { AttendanceHistoryTable } from './components/AttendanceHistoryTable'
 

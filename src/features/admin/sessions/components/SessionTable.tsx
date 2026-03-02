@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Session } from '../../types/admin.types'
-import { SessionStatusBadge } from './SessionStatusBadge'
-import { SessionTypeBadge } from './SessionTypeBadge'
-import { SessionModeBadge } from './SessionModeBadge'
+import { ConfigBadge } from '@/shared/components/ui'
+import { SESSION_STATUS_CONFIG, SESSION_TYPE_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 
 interface SessionTableProps {
@@ -98,13 +97,13 @@ export function SessionTable({ sessions, isLoading }: SessionTableProps) {
                 </div>
               </td>
               <td className="whitespace-nowrap px-4 py-3">
-                <SessionTypeBadge type={session.type} />
+                <ConfigBadge config={SESSION_TYPE_CONFIG} value={session.type} />
               </td>
               <td className="whitespace-nowrap px-4 py-3">
-                <SessionModeBadge mode={session.mode} />
+                <ConfigBadge config={SESSION_MODE_CONFIG} value={session.mode} />
               </td>
               <td className="whitespace-nowrap px-4 py-3">
-                <SessionStatusBadge status={session.status} />
+                <ConfigBadge config={SESSION_STATUS_CONFIG} value={session.status} />
               </td>
               <td className="whitespace-nowrap px-4 py-3 text-right">
                 <Link

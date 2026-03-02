@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import type { User } from '../../types/admin.types'
-import { UserStatusBadge } from './UserStatusBadge'
 import { RoleBadge } from './RoleBadge'
+import { ConfigBadge } from '@/shared/components/ui'
+import { USER_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 
 type SelectionMode = 'none' | 'deactivate' | 'activate'
 
@@ -158,7 +159,7 @@ export function UserTable({
                   </div>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
-                  <UserStatusBadge status={user.status} />
+                  <ConfigBadge config={USER_STATUS_CONFIG} value={user.status} fallback="PENDING_ACTIVATION" />
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                   {new Date(user.createdAt).toLocaleDateString('es-ES')}

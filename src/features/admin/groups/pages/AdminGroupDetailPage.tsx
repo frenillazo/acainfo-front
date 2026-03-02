@@ -4,9 +4,9 @@ import {
   useCancelGroup,
   useDeleteGroup,
 } from '../hooks/useAdminGroups'
-import { GroupStatusBadge } from '../components/GroupStatusBadge'
-import { GroupTypeBadge } from '../components/GroupTypeBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { ConfigBadge } from '@/shared/components/ui'
+import { GROUP_STATUS_CONFIG, GROUP_TYPE_CONFIG } from '@/shared/config/badgeConfig'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
@@ -87,8 +87,8 @@ export function AdminGroupDetailPage() {
               <h1 className="text-2xl font-bold text-gray-900">
                 {group.name}
               </h1>
-              <GroupTypeBadge type={group.type} />
-              <GroupStatusBadge status={group.status} />
+              <ConfigBadge config={GROUP_TYPE_CONFIG} value={group.type} />
+              <ConfigBadge config={GROUP_STATUS_CONFIG} value={group.status} />
             </div>
             <p className="mt-1 text-gray-500">{group.subjectName} · {group.subjectCode}</p>
           </div>
@@ -148,13 +148,13 @@ export function AdminGroupDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Tipo</dt>
               <dd className="mt-1">
-                <GroupTypeBadge type={group.type} />
+                <ConfigBadge config={GROUP_TYPE_CONFIG} value={group.type} />
               </dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Estado</dt>
               <dd className="mt-1">
-                <GroupStatusBadge status={group.status} />
+                <ConfigBadge config={GROUP_STATUS_CONFIG} value={group.status} />
               </dd>
             </div>
             <div>

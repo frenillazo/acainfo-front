@@ -5,8 +5,8 @@ import {
   useArchiveSubject,
   useDeleteSubject,
 } from '../hooks/useAdminSubjects'
-import { SubjectStatusBadge } from '../components/SubjectStatusBadge'
-import { DegreeBadge } from '../components/DegreeBadge'
+import { ConfigBadge } from '@/shared/components/ui'
+import { SUBJECT_STATUS_CONFIG, DEGREE_CONFIG } from '@/shared/config/badgeConfig'
 import { useMaterials } from '@/features/materials/hooks/useMaterials'
 import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
@@ -162,7 +162,7 @@ export function AdminSubjectDetailPage() {
               <h1 className="text-2xl font-bold text-gray-900">
                 {subject.name}
               </h1>
-              <SubjectStatusBadge status={subject.status} />
+              <ConfigBadge config={SUBJECT_STATUS_CONFIG} value={subject.status} />
             </div>
             <p className="mt-1 font-mono text-gray-500">{subject.code}</p>
           </div>
@@ -237,13 +237,13 @@ export function AdminSubjectDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Grado</dt>
               <dd className="mt-1">
-                <DegreeBadge degree={subject.degree} />
+                <ConfigBadge config={DEGREE_CONFIG} value={subject.degree} />
               </dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Estado</dt>
               <dd className="mt-1">
-                <SubjectStatusBadge status={subject.status} />
+                <ConfigBadge config={SUBJECT_STATUS_CONFIG} value={subject.status} />
               </dd>
             </div>
             <div>

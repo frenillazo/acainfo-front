@@ -1,7 +1,6 @@
 import type { Session, StudentSession } from '../types/session.types'
-import { SessionStatusBadge } from './SessionStatusBadge'
-import { SessionModeBadge } from './SessionModeBadge'
-import { Card } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
+import { SESSION_STATUS_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { cn } from '@/shared/utils/cn'
 import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
 
@@ -138,8 +137,8 @@ export function SessionCard({ session }: SessionCardProps) {
         </div>
 
         <div className="flex flex-col gap-2">
-          <SessionStatusBadge status={session.status} />
-          <SessionModeBadge mode={session.mode} />
+          <ConfigBadge config={SESSION_STATUS_CONFIG} value={session.status} />
+          <ConfigBadge config={SESSION_MODE_CONFIG} value={session.mode} />
         </div>
       </div>
 

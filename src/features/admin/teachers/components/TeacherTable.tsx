@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom'
 import type { Teacher } from '../../types/admin.types'
-import { UserStatusBadge } from '../../users/components/UserStatusBadge'
 import {
   DataTable,
   ActionsCell,
   ActionButton,
   Avatar,
+  ConfigBadge,
   type Column,
 } from '@/shared/components/ui'
+import { USER_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 
 interface TeacherTableProps {
   teachers: Teacher[]
@@ -43,7 +44,7 @@ export function TeacherTable({
     {
       key: 'status',
       header: 'Estado',
-      render: (teacher) => <UserStatusBadge status={teacher.status} />,
+      render: (teacher) => <ConfigBadge config={USER_STATUS_CONFIG} value={teacher.status} fallback="PENDING_ACTIVATION" />,
     },
     {
       key: 'createdAt',

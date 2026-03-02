@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom'
 import { useAdminPayment, useMarkPaymentAsPaid, useCancelPayment } from '../hooks/useAdminPayments'
 import { PaymentStatusBadge } from '../components/PaymentStatusBadge'
-import { PaymentTypeBadge } from '../components/PaymentTypeBadge'
+import { ConfigBadge } from '@/shared/components/ui'
+import { PAYMENT_TYPE_CONFIG } from '@/shared/config/badgeConfig'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { PromptDialog } from '@/shared/components/common/PromptDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
@@ -147,7 +148,7 @@ export function AdminPaymentDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Tipo de pago</dt>
               <dd className="mt-1">
-                <PaymentTypeBadge type={payment.type} />
+                <ConfigBadge config={PAYMENT_TYPE_CONFIG} value={payment.type} />
               </dd>
             </div>
             {payment.billingMonth && payment.billingYear && (

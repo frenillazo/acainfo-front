@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom'
 import type { Payment } from '@/features/payments/types/payment.types'
 import { PaymentStatusBadge } from './PaymentStatusBadge'
-import { PaymentTypeBadge } from './PaymentTypeBadge'
 import { formatCurrency } from '@/shared/utils/formatCurrency'
 import {
   DataTable,
   TextCell,
   ActionsCell,
   ActionButton,
+  ConfigBadge,
   type Column,
 } from '@/shared/components/ui'
+import { PAYMENT_TYPE_CONFIG } from '@/shared/config/badgeConfig'
 
 interface PaymentTableProps {
   payments: Payment[]
@@ -53,7 +54,7 @@ export function PaymentTable({
     {
       key: 'type',
       header: 'Tipo',
-      render: (payment) => <PaymentTypeBadge type={payment.type} />,
+      render: (payment) => <ConfigBadge config={PAYMENT_TYPE_CONFIG} value={payment.type} />,
     },
     {
       key: 'period',

@@ -1,9 +1,9 @@
 import type { Payment } from '../types/payment.types'
 import { PaymentStatusBadge } from './PaymentStatusBadge'
-import { PaymentTypeBadge } from './PaymentTypeBadge'
 import { formatCurrency, formatDate } from '@/shared/utils/formatters'
 import { cn } from '@/shared/utils/cn'
-import { Card } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
+import { PAYMENT_TYPE_CONFIG } from '@/shared/config/badgeConfig'
 
 interface PaymentCardProps {
   payment: Payment
@@ -25,7 +25,7 @@ export function PaymentCard({ payment, onPayClick }: PaymentCardProps) {
             isOverdue={payment.isOverdue}
             daysOverdue={payment.daysOverdue}
           />
-          <PaymentTypeBadge type={payment.type} />
+          <ConfigBadge config={PAYMENT_TYPE_CONFIG} value={payment.type} />
         </div>
       </div>
 

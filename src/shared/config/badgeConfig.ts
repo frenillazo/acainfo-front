@@ -69,8 +69,8 @@ export const GROUP_STATUS_CONFIG = {
 export const GROUP_TYPE_CONFIG = {
   REGULAR_Q1: { label: 'Cuatrimestre 1', variant: 'info' as BadgeVariant },
   REGULAR_Q2: { label: 'Cuatrimestre 2', variant: 'info' as BadgeVariant },
-  INTENSIVE_Q1: { label: 'Intensivo Q1', variant: 'purple' as BadgeVariant },
-  INTENSIVE_Q2: { label: 'Intensivo Q2', variant: 'purple' as BadgeVariant },
+  INTENSIVE_Q1: { label: 'Intensivo Enero', variant: 'purple' as BadgeVariant },
+  INTENSIVE_Q2: { label: 'Intensivo Junio', variant: 'purple' as BadgeVariant },
 } as const
 
 // ==================== Group Request ====================
@@ -91,6 +91,17 @@ export const SUBJECT_STATUS_CONFIG = {
 export const DEGREE_CONFIG = {
   INGENIERIA_INFORMATICA: { label: 'Ing. Informatica', variant: 'info' as BadgeVariant },
   INGENIERIA_INDUSTRIAL: { label: 'Ing. Industrial', variant: 'purple' as BadgeVariant },
+} as const
+
+// ==================== Reservation ====================
+export const RESERVATION_STATUS_CONFIG = {
+  CONFIRMED: { label: 'Confirmada', variant: 'success' as BadgeVariant },
+  CANCELLED: { label: 'Cancelada', variant: 'default' as BadgeVariant },
+} as const
+
+export const RESERVATION_MODE_CONFIG = {
+  IN_PERSON: { label: 'Presencial', variant: 'success' as BadgeVariant },
+  ONLINE: { label: 'Online', variant: 'info' as BadgeVariant },
 } as const
 
 // ==================== Classroom ====================

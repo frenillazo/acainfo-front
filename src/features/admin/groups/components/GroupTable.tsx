@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom'
 import type { Group } from '../../types/admin.types'
-import { GroupStatusBadge } from './GroupStatusBadge'
-import { GroupTypeBadge } from './GroupTypeBadge'
 import {
   DataTable,
   TextCell,
   ActionsCell,
   ActionButton,
+  ConfigBadge,
   type Column,
 } from '@/shared/components/ui'
+import { GROUP_STATUS_CONFIG, GROUP_TYPE_CONFIG } from '@/shared/config/badgeConfig'
 
 interface GroupTableProps {
   groups: Group[]
@@ -36,7 +36,7 @@ export function GroupTable({
     {
       key: 'type',
       header: 'Tipo',
-      render: (group) => <GroupTypeBadge type={group.type} />,
+      render: (group) => <ConfigBadge config={GROUP_TYPE_CONFIG} value={group.type} />,
     },
     {
       key: 'teacher',
@@ -66,7 +66,7 @@ export function GroupTable({
     {
       key: 'status',
       header: 'Estado',
-      render: (group) => <GroupStatusBadge status={group.status} />,
+      render: (group) => <ConfigBadge config={GROUP_STATUS_CONFIG} value={group.status} />,
     },
     {
       key: 'actions',

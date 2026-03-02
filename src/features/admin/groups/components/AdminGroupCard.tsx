@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom'
 import type { Group } from '../../types/admin.types'
-import { GroupStatusBadge } from './GroupStatusBadge'
-import { GroupTypeBadge } from './GroupTypeBadge'
 import { CapacityBar } from './CapacityBar'
-import { Card } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
+import { GROUP_STATUS_CONFIG, GROUP_TYPE_CONFIG } from '@/shared/config/badgeConfig'
 import { Eye, XCircle, Trash2 } from 'lucide-react'
 
 interface AdminGroupCardsProps {
@@ -66,12 +65,12 @@ function AdminGroupCard({
           <h3 className="truncate font-medium text-gray-900">{group.name}</h3>
           <p className="mt-0.5 text-xs text-gray-500">{group.subjectName}</p>
         </div>
-        <GroupStatusBadge status={group.status} />
+        <ConfigBadge config={GROUP_STATUS_CONFIG} value={group.status} />
       </div>
 
       {/* Info: type, teacher */}
       <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-        <GroupTypeBadge type={group.type} />
+        <ConfigBadge config={GROUP_TYPE_CONFIG} value={group.type} />
         <span className="ml-auto text-xs text-gray-500">{group.teacherName}</span>
       </div>
 

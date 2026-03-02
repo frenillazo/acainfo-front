@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAdminUser } from '../hooks/useAdminUsers'
-import { UserStatusBadge } from '../components/UserStatusBadge'
 import { RoleBadge } from '../components/RoleBadge'
+import { ConfigBadge } from '@/shared/components/ui'
+import { USER_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 import { RoleManagementPanel } from '@/features/auth/components/RoleManagementPanel'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
@@ -70,7 +71,7 @@ export function AdminUserDetailPage() {
               <p className="text-gray-500">{user.email}</p>
             </div>
           </div>
-          <UserStatusBadge status={user.status} />
+          <ConfigBadge config={USER_STATUS_CONFIG} value={user.status} fallback="PENDING_ACTIVATION" />
         </div>
       </div>
 
@@ -107,7 +108,7 @@ export function AdminUserDetailPage() {
             <div>
               <dt className="text-sm font-medium text-gray-500">Estado</dt>
               <dd className="mt-1">
-                <UserStatusBadge status={user.status} />
+                <ConfigBadge config={USER_STATUS_CONFIG} value={user.status} fallback="PENDING_ACTIVATION" />
               </dd>
             </div>
           </dl>

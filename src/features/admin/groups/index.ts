@@ -7,8 +7,6 @@ export { AdminGroupEditPage } from './pages/AdminGroupEditPage'
 // Components
 export { GroupTable } from './components/GroupTable'
 export { GroupForm } from './components/GroupForm'
-export { GroupStatusBadge } from './components/GroupStatusBadge'
-export { GroupTypeBadge } from './components/GroupTypeBadge'
 
 // Hooks
 export {
