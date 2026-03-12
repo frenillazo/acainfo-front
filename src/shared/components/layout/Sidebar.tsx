@@ -98,6 +98,7 @@ const adminNavigation: NavItem[] = [
     name: 'Inscripciones',
     href: '/admin/enrollments',
     icon: <CheckCircle className={ICON_CLASS} />,
+    end: true,
   },
   {
     name: 'Solicitudes Pendientes',

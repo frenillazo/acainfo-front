@@ -19,14 +19,20 @@ export function useUrlFilters<T extends object>(
   const defaultsRef = useRef(defaults)
 
   const [filters, setFiltersState] = useState<T>(() => {
-    const initial = { ...defaults }
+    const initial = { ...defaults } as Record<string, FilterValue>
     const defs = defaults as Record<string, FilterValue>
+    // Read known default keys from URL
     for (const key of Object.keys(defaults)) {
       const urlValue = searchParams.get(key)
       if (urlValue === null) continue
-      ;(initial as Record<string, FilterValue>)[key] = parseUrlValue(urlValue, defs[key])
+      initial[key] = parseUrlValue(urlValue, defs[key])
     }
-    return initial
+    // Read extra URL params not present in defaults (e.g. groupId passed via link)
+    for (const [key, urlValue] of searchParams.entries()) {
+      if (key in defs) continue // already handled above
+      initial[key] = parseUrlValue(urlValue, undefined)
+    }
+    return initial as T
   })
 
   // Sync filters → URL on every change (skip defaults and empty values)
