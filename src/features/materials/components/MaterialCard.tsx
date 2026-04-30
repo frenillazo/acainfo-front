@@ -3,7 +3,7 @@ import type { Material } from '../types/material.types'
 import { getFileIcon, CATEGORY_ICONS } from '../types/material.types'
 import { cn } from '@/shared/utils/cn'
 import { Card } from '@/shared/components/ui'
-import { Eye } from 'lucide-react'
+import { Eye, EyeOff, Pencil, Ban, Check } from 'lucide-react'
 
 interface MaterialCardProps {
   material: Material
@@ -12,6 +12,13 @@ interface MaterialCardProps {
   onDelete?: (id: number) => void
   canDelete?: boolean
   isDownloading?: boolean
+  // ===== Admin mode (only enabled in AdminSubjectDetailPage) =====
+  isAdminMode?: boolean
+  selected?: boolean
+  onSelectChange?: (id: number, selected: boolean) => void
+  onToggleDownloadDisabled?: (id: number, disabled: boolean) => void
+  onToggleVisibility?: (id: number, visible: boolean) => void
+  onEdit?: (material: Material) => void
 }
 
 export function MaterialCard({
@@ -21,6 +28,12 @@ export function MaterialCard({
   onDelete,
   canDelete = false,
   isDownloading = false,
+  isAdminMode = false,
+  selected = false,
+  onSelectChange,
+  onToggleDownloadDisabled,
+  onToggleVisibility,
+  onEdit,
 }: MaterialCardProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
@@ -29,6 +42,7 @@ export function MaterialCard({
   }
 
   const handleDownload = () => {
+    if (material.downloadDisabled) return
     onDownload?.(material.id, material.originalFilename)
   }
 
@@ -37,9 +51,22 @@ export function MaterialCard({
     setShowDeleteConfirm(false)
   }
 
+  const downloadBlocked = material.downloadDisabled
+
   return (
     <Card variant="interactive" padding="sm">
       <div className="flex items-start gap-3">
+        {/* Admin: selection checkbox */}
+        {isAdminMode && (
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={(e) => onSelectChange?.(material.id, e.target.checked)}
+            className="mt-1 h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            aria-label="Seleccionar material"
+          />
+        )}
+
         {/* File Icon */}
         <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 text-2xl">
           {getFileIcon(material.fileExtension)}
@@ -67,8 +94,24 @@ export function MaterialCard({
             <span>{material.subjectName}</span>
           </div>
 
+          {/* Admin status badges */}
+          {isAdminMode && (
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+              {!material.visible && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-2 py-0.5 text-gray-700">
+                  <EyeOff className="h-3 w-3" /> Oculto
+                </span>
+              )}
+              {material.downloadDisabled && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-red-700">
+                  <Ban className="h-3 w-3" /> Descarga deshabilitada
+                </span>
+              )}
+            </div>
+          )}
+
           <div className="mt-2 text-xs text-gray-400">
-            Uploaded by {material.uploadedByName} •{' '}
+            Subido por {material.uploadedByName} •{' '}
             {new Date(material.uploadedAt).toLocaleDateString()}
           </div>
         </div>
@@ -84,12 +127,13 @@ export function MaterialCard({
           </button>
           <button
             onClick={handleDownload}
-            disabled={isDownloading}
+            disabled={isDownloading || downloadBlocked}
             className={cn(
               'rounded-md p-2 text-blue-600 hover:bg-blue-50',
-              'disabled:cursor-not-allowed disabled:opacity-50'
+              'disabled:cursor-not-allowed disabled:opacity-50',
+              downloadBlocked && 'text-gray-400 hover:bg-transparent'
             )}
-            title="Descargar"
+            title={downloadBlocked ? 'Descarga deshabilitada' : 'Descargar'}
           >
             <svg
               className="h-5 w-5"
@@ -106,13 +150,56 @@ export function MaterialCard({
             </svg>
           </button>
 
+          {/* Admin actions */}
+          {isAdminMode && (
+            <>
+              <button
+                onClick={() => onEdit?.(material)}
+                className="rounded-md p-2 text-amber-600 hover:bg-amber-50"
+                title="Editar material"
+              >
+                <Pencil className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => onToggleVisibility?.(material.id, !material.visible)}
+                className={cn(
+                  'rounded-md p-2 hover:bg-gray-100',
+                  material.visible ? 'text-gray-700' : 'text-gray-400'
+                )}
+                title={material.visible ? 'Ocultar a estudiantes' : 'Mostrar a estudiantes'}
+              >
+                {material.visible ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+              </button>
+              <button
+                onClick={() =>
+                  onToggleDownloadDisabled?.(material.id, !material.downloadDisabled)
+                }
+                className={cn(
+                  'rounded-md p-2 hover:bg-red-50',
+                  material.downloadDisabled ? 'text-green-600' : 'text-red-600'
+                )}
+                title={
+                  material.downloadDisabled
+                    ? 'Habilitar descarga'
+                    : 'Deshabilitar descarga'
+                }
+              >
+                {material.downloadDisabled ? (
+                  <Check className="h-5 w-5" />
+                ) : (
+                  <Ban className="h-5 w-5" />
+                )}
+              </button>
+            </>
+          )}
+
           {canDelete && (
             <>
               {!showDeleteConfirm ? (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   className="rounded-md p-2 text-red-600 hover:bg-red-50"
-                  title="Delete"
+                  title="Eliminar"
                 >
                   <svg
                     className="h-5 w-5"
@@ -134,13 +221,13 @@ export function MaterialCard({
                     onClick={handleDelete}
                     className="rounded-md bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700"
                   >
-                    Confirm
+                    Confirmar
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
                     className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-700 hover:bg-gray-50"
                   >
-                    Cancel
+                    Cancelar
                   </button>
                 </div>
               )}

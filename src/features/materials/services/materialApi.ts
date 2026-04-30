@@ -4,6 +4,8 @@ import type {
   Material,
   MaterialFilters,
   UploadMaterialRequest,
+  UpdateMaterialRequest,
+  BatchUpdateResponse,
   CanDownloadResponse,
 } from '../types/material.types'
 
@@ -56,9 +58,11 @@ export const materialApi = {
     window.URL.revokeObjectURL(url)
   },
 
-  // GET /materials/{id}/download - Get content as Blob (for viewer)
+  // GET /materials/{id}/preview - Get content as Blob (for in-app viewer).
+  // Uses a separate endpoint that ignores the admin downloadDisabled flag,
+  // so a material can be visible & previewable but not directly downloadable.
   getContent: async (id: number): Promise<Blob> => {
-    const response = await apiClient.get(`/materials/${id}/download`, {
+    const response = await apiClient.get(`/materials/${id}/preview`, {
       responseType: 'blob',
     })
     return new Blob([response.data])
@@ -96,6 +100,36 @@ export const materialApi = {
     const response = await apiClient.get<Material[]>('/materials/recent', {
       params: { days },
     })
+    return response.data
+  },
+
+  // PATCH /materials/{id} - Update material metadata + admin flags (ADMIN only)
+  update: async (id: number, payload: UpdateMaterialRequest): Promise<Material> => {
+    const response = await apiClient.patch<Material>(`/materials/${id}`, payload)
+    return response.data
+  },
+
+  // PATCH /materials/batch/download-disabled - Batch toggle download (ADMIN only)
+  batchSetDownloadDisabled: async (
+    ids: number[],
+    disabled: boolean
+  ): Promise<BatchUpdateResponse> => {
+    const response = await apiClient.patch<BatchUpdateResponse>(
+      '/materials/batch/download-disabled',
+      { ids, disabled }
+    )
+    return response.data
+  },
+
+  // PATCH /materials/batch/visibility - Batch toggle visibility (ADMIN only)
+  batchSetVisibility: async (
+    ids: number[],
+    visible: boolean
+  ): Promise<BatchUpdateResponse> => {
+    const response = await apiClient.patch<BatchUpdateResponse>(
+      '/materials/batch/visibility',
+      { ids, visible }
+    )
     return response.data
   },
 }

@@ -8,17 +8,24 @@ import {
 import { ConfigBadge } from '@/shared/components/ui'
 import { SUBJECT_STATUS_CONFIG, DEGREE_CONFIG } from '@/shared/config/badgeConfig'
 import { useMaterials } from '@/features/materials/hooks/useMaterials'
+import { useMaterialAdmin } from '@/features/materials/hooks/useMaterialAdmin'
 import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { MaterialUploadForm } from '@/features/materials/components/MaterialUploadForm'
 import { MaterialsGroupedByCategory } from '@/features/materials/components/MaterialsGroupedByCategory'
 import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
+import { MaterialBatchActionBar } from '@/features/materials/components/MaterialBatchActionBar'
+import { MaterialEditModal } from '@/features/materials/components/MaterialEditModal'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
-import type { Material, UploadMaterialRequest } from '@/features/materials/types/material.types'
+import type {
+  Material,
+  UpdateMaterialRequest,
+  UploadMaterialRequest,
+} from '@/features/materials/types/material.types'
 
 export function AdminSubjectDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -33,6 +40,8 @@ export function AdminSubjectDetailPage() {
   // Materials management
   const [showUploadForm, setShowUploadForm] = useState(false)
   const [viewMode, setViewMode] = useState<'list' | 'grouped'>('grouped')
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const [editingMaterial, setEditingMaterial] = useState<Material | null>(null)
   const {
     materials,
     isLoading: isLoadingMaterials,
@@ -43,6 +52,13 @@ export function AdminSubjectDetailPage() {
     upload,
     getBySubjectId,
   } = useMaterials()
+  const {
+    isUpdating,
+    isBatching,
+    update: updateMaterial,
+    batchSetDownloadDisabled,
+    batchSetVisibility,
+  } = useMaterialAdmin()
 
   const {
     isOpen: viewerOpen,
@@ -122,6 +138,82 @@ export function AdminSubjectDetailPage() {
   const handleViewerDownload = () => {
     if (viewerMaterial) {
       download(viewerMaterial.id, viewerMaterial.originalFilename)
+    }
+  }
+
+  // ===== Admin: selection / batch / edit handlers =====
+
+  const handleSelectChange = (id: number, isSelected: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (isSelected) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  }
+
+  const handleSelectAll = () => {
+    setSelectedIds(new Set(materials.map((m) => m.id)))
+  }
+
+  const handleClearSelection = () => {
+    setSelectedIds(new Set())
+  }
+
+  const refreshAfterBatch = async () => {
+    handleClearSelection()
+    await getBySubjectId(subjectId)
+  }
+
+  const handleBatchDownload = async (disabled: boolean) => {
+    const ids = Array.from(selectedIds)
+    if (ids.length === 0) return
+    const action = disabled ? 'deshabilitar la descarga' : 'habilitar la descarga'
+    const confirmed = await confirm({
+      title: 'Acción por lotes',
+      message: `¿${disabled ? 'Deshabilitar' : 'Habilitar'} la descarga de ${ids.length} material(es)?`,
+      confirmLabel: `Sí, ${action}`,
+      variant: disabled ? 'danger' : 'warning',
+    })
+    if (!confirmed) return
+    const updated = await batchSetDownloadDisabled(ids, disabled)
+    if (updated > 0) await refreshAfterBatch()
+  }
+
+  const handleBatchVisibility = async (visible: boolean) => {
+    const ids = Array.from(selectedIds)
+    if (ids.length === 0) return
+    const action = visible ? 'mostrar' : 'ocultar'
+    const confirmed = await confirm({
+      title: 'Acción por lotes',
+      message: `¿${visible ? 'Mostrar' : 'Ocultar'} ${ids.length} material(es) a los estudiantes?`,
+      confirmLabel: `Sí, ${action}`,
+      variant: visible ? 'warning' : 'danger',
+    })
+    if (!confirmed) return
+    const updated = await batchSetVisibility(ids, visible)
+    if (updated > 0) await refreshAfterBatch()
+  }
+
+  const handleToggleDownloadDisabled = async (id: number, disabled: boolean) => {
+    const result = await updateMaterial(id, { downloadDisabled: disabled })
+    if (result) await getBySubjectId(subjectId)
+  }
+
+  const handleToggleVisibility = async (id: number, visible: boolean) => {
+    const result = await updateMaterial(id, { visible })
+    if (result) await getBySubjectId(subjectId)
+  }
+
+  const handleEdit = (material: Material) => {
+    setEditingMaterial(material)
+  }
+
+  const handleSaveEdit = async (id: number, payload: UpdateMaterialRequest) => {
+    const result = await updateMaterial(id, payload)
+    if (result) {
+      setEditingMaterial(null)
+      await getBySubjectId(subjectId)
     }
   }
 
@@ -395,6 +487,12 @@ export function AdminSubjectDetailPage() {
               onDelete={handleDeleteMaterial}
               canDelete={true}
               isDownloading={isDownloading}
+              isAdminMode={true}
+              selectedIds={selectedIds}
+              onSelectChange={handleSelectChange}
+              onToggleDownloadDisabled={handleToggleDownloadDisabled}
+              onToggleVisibility={handleToggleVisibility}
+              onEdit={handleEdit}
             />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -407,6 +505,12 @@ export function AdminSubjectDetailPage() {
                   onDelete={handleDeleteMaterial}
                   canDelete={true}
                   isDownloading={isDownloading}
+                  isAdminMode={true}
+                  selected={selectedIds.has(material.id)}
+                  onSelectChange={handleSelectChange}
+                  onToggleDownloadDisabled={handleToggleDownloadDisabled}
+                  onToggleVisibility={handleToggleVisibility}
+                  onEdit={handleEdit}
                 />
               ))}
             </div>
@@ -427,6 +531,26 @@ export function AdminSubjectDetailPage() {
           </div>
         )}
       </section>
+
+      <MaterialBatchActionBar
+        selectedCount={selectedIds.size}
+        totalCount={materials.length}
+        isLoading={isBatching}
+        onSelectAll={handleSelectAll}
+        onClearSelection={handleClearSelection}
+        onDisableDownload={() => handleBatchDownload(true)}
+        onEnableDownload={() => handleBatchDownload(false)}
+        onHide={() => handleBatchVisibility(false)}
+        onShow={() => handleBatchVisibility(true)}
+      />
+
+      <MaterialEditModal
+        isOpen={editingMaterial !== null}
+        material={editingMaterial}
+        isSaving={isUpdating}
+        onClose={() => setEditingMaterial(null)}
+        onSave={handleSaveEdit}
+      />
 
       <MaterialViewerModal
         isOpen={viewerOpen}

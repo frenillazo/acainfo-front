@@ -64,7 +64,9 @@ export interface TeacherFilters {
 }
 
 // Group types
-export type GroupType = 'REGULAR_Q1' | 'INTENSIVE_Q1' | 'REGULAR_Q2' | 'INTENSIVE_Q2'
+// NOTE: GroupType has been removed from the backend. The alias below stays for
+// backwards-compatibility; prefer omitting it for new code.
+export type GroupType = string
 export type GroupStatus = 'OPEN' | 'CLOSED' | 'CANCELLED'
 
 export interface Group {
@@ -72,13 +74,18 @@ export interface Group {
   name: string
   subjectId: number
   teacherId: number
-  type: GroupType
+  /** @deprecated Removed from backend. Always undefined in new responses. */
+  type?: GroupType
   status: GroupStatus
   currentEnrollmentCount: number
   capacity: number | null
   availableSeats: number
   maxCapacity: number
   pricePerHour: number
+  /** Inclusive — first day sessions can be generated. */
+  startDate?: string // yyyy-MM-dd
+  /** Inclusive — last day sessions can be generated. */
+  endDate?: string // yyyy-MM-dd
   createdAt: string
   updatedAt: string
   // Enriched
@@ -88,33 +95,42 @@ export interface Group {
   // Flags
   isOpen: boolean
   canEnroll: boolean
-  isIntensive: boolean
-  isRegular: boolean
+  /** @deprecated Always false (intensives are now a separate entity). */
+  isIntensive?: boolean
+  /** @deprecated Always true. */
+  isRegular?: boolean
 }
 
 export interface CreateGroupRequest {
   subjectId: number
   teacherId: number
-  type: GroupType
+  startDate: string // yyyy-MM-dd
+  endDate: string // yyyy-MM-dd
   capacity?: number
   pricePerHour?: number
+  /** @deprecated Removed from backend, ignored. */
+  type?: GroupType
 }
 
 export interface UpdateGroupRequest {
   status?: GroupStatus
   capacity?: number
+  pricePerHour?: number
+  startDate?: string
+  endDate?: string
 }
 
 export interface GroupFilters {
   subjectId?: number
   teacherId?: number
-  type?: GroupType
   status?: GroupStatus
   searchTerm?: string
   page?: number
   size?: number
   sortBy?: string
   sortDirection?: 'ASC' | 'DESC'
+  /** @deprecated Removed from backend, will be ignored if sent. */
+  type?: GroupType
 }
 
 // Subject types
@@ -218,7 +234,8 @@ export interface EnrichedSchedule {
   createdAt: string
   updatedAt: string
   // Enriched data from Group
-  groupType: GroupType
+  /** @deprecated Removed from backend. */
+  groupType?: GroupType
   groupStatus: GroupStatus
   pricePerHour: number
   // Enriched data from Subject
@@ -265,7 +282,8 @@ export interface Session {
   // Enriched data
   subjectName: string
   subjectCode: string
-  groupType: GroupType | null
+  /** @deprecated Removed from backend response. */
+  groupType?: GroupType | null
   teacherName: string | null
   // Convenience flags
   isScheduled: boolean

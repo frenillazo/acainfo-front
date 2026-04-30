@@ -47,6 +47,11 @@ export interface Material {
   uploadedAt: string
   createdAt: string
   updatedAt: string
+  // Admin flags
+  visible: boolean
+  downloadDisabled: boolean
+  visibilityEnabledAt: string | null
+  downloadEnabledAt: string | null
   // Enriched data from related entities
   subjectName: string
   uploadedByName: string
@@ -70,6 +75,29 @@ export interface UploadMaterialRequest {
   name: string
   description?: string | null
   category?: MaterialCategory
+}
+
+// Admin: update single material (all fields optional, null keeps the current value)
+export interface UpdateMaterialRequest {
+  name?: string
+  description?: string | null
+  visible?: boolean
+  downloadDisabled?: boolean
+}
+
+// Admin: batch operations
+export interface BatchDownloadDisabledRequest {
+  ids: number[]
+  disabled: boolean
+}
+
+export interface BatchVisibilityRequest {
+  ids: number[]
+  visible: boolean
+}
+
+export interface BatchUpdateResponse {
+  updated: number
 }
 
 // Response DTOs

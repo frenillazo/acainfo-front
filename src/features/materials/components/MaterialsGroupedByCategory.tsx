@@ -10,6 +10,13 @@ interface MaterialsGroupedByCategoryProps {
   onDelete?: (materialId: number) => void
   canDelete?: boolean
   isDownloading?: boolean
+  // ===== Admin mode =====
+  isAdminMode?: boolean
+  selectedIds?: Set<number>
+  onSelectChange?: (id: number, selected: boolean) => void
+  onToggleDownloadDisabled?: (id: number, disabled: boolean) => void
+  onToggleVisibility?: (id: number, visible: boolean) => void
+  onEdit?: (material: Material) => void
 }
 
 export function MaterialsGroupedByCategory({
@@ -19,6 +26,12 @@ export function MaterialsGroupedByCategory({
   onDelete,
   canDelete = false,
   isDownloading = false,
+  isAdminMode = false,
+  selectedIds,
+  onSelectChange,
+  onToggleDownloadDisabled,
+  onToggleVisibility,
+  onEdit,
 }: MaterialsGroupedByCategoryProps) {
   // Group materials by category
   const groupedMaterials = useMemo(() => {
@@ -82,6 +95,12 @@ export function MaterialsGroupedByCategory({
                   onDelete={onDelete}
                   canDelete={canDelete}
                   isDownloading={isDownloading}
+                  isAdminMode={isAdminMode}
+                  selected={selectedIds?.has(material.id) ?? false}
+                  onSelectChange={onSelectChange}
+                  onToggleDownloadDisabled={onToggleDownloadDisabled}
+                  onToggleVisibility={onToggleVisibility}
+                  onEdit={onEdit}
                 />
               ))}
             </div>

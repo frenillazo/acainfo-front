@@ -8,20 +8,42 @@ import { FormField, FormSelect, SearchableList } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
 import type { Group } from '../../types/admin.types'
 
-const createGroupSchema = z.object({
-  subjectId: z.number({ message: 'Selecciona una asignatura' }).min(1),
-  teacherId: z.number({ message: 'Selecciona un profesor' }).min(1),
-  type: z.enum(['REGULAR_Q1', 'INTENSIVE_Q1', 'REGULAR_Q2', 'INTENSIVE_Q2'] as const, {
-    message: 'Selecciona un tipo',
-  }),
-  capacity: z.number().min(1).optional(),
-  pricePerHour: z.number().min(0.01).optional(),
-})
+// Helper: yyyy-MM-dd today + N months
+function todayPlusMonths(months: number): string {
+  const d = new Date()
+  d.setMonth(d.getMonth() + months)
+  return d.toISOString().slice(0, 10)
+}
 
-const updateGroupSchema = z.object({
-  status: z.enum(['OPEN', 'CLOSED', 'CANCELLED']).optional(),
-  capacity: z.number().min(1).optional(),
-})
+const isoDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Fecha en formato yyyy-MM-dd' })
+
+const createGroupSchema = z
+  .object({
+    subjectId: z.number({ message: 'Selecciona una asignatura' }).min(1),
+    teacherId: z.number({ message: 'Selecciona un profesor' }).min(1),
+    startDate: isoDate,
+    endDate: isoDate,
+    capacity: z.number().min(1).optional(),
+    pricePerHour: z.number().min(0.01).optional(),
+  })
+  .refine((d) => d.endDate >= d.startDate, {
+    path: ['endDate'],
+    message: 'La fecha fin debe ser igual o posterior a la fecha de inicio',
+  })
+
+const updateGroupSchema = z
+  .object({
+    status: z.enum(['OPEN', 'CLOSED', 'CANCELLED']).optional(),
+    capacity: z.number().min(1).optional(),
+    startDate: isoDate.optional(),
+    endDate: isoDate.optional(),
+  })
+  .refine(
+    (d) => !d.startDate || !d.endDate || d.endDate >= d.startDate,
+    { path: ['endDate'], message: 'La fecha fin debe ser igual o posterior a la fecha de inicio' }
+  )
 
 type CreateGroupFormData = z.infer<typeof createGroupSchema>
 type UpdateGroupFormData = z.infer<typeof updateGroupSchema>
@@ -33,14 +55,6 @@ interface GroupFormProps {
   error?: Error | null
   onCancel?: () => void
 }
-
-const groupTypeOptions = [
-  { value: '', label: 'Selecciona un tipo' },
-  { value: 'REGULAR_Q1', label: 'Cuatrimestre 1 (máx. 24)' },
-  { value: 'REGULAR_Q2', label: 'Cuatrimestre 2 (máx. 24)' },
-  { value: 'INTENSIVE_Q1', label: 'Intensivo Enero (máx. 50)' },
-  { value: 'INTENSIVE_Q2', label: 'Intensivo Junio (máx. 50)' },
-]
 
 const statusOptions = [
   { value: 'OPEN', label: 'Abierto' },
@@ -59,14 +73,12 @@ export function GroupForm({
   const [subjectSearch, setSubjectSearch] = useState('')
   const [teacherSearch, setTeacherSearch] = useState('')
 
-  // Fetch subjects
   const { data: subjectsData, isLoading: isLoadingSubjects } = useQuery({
     queryKey: ['admin', 'subjects', { size: 100 }],
     queryFn: () => adminApi.getSubjects({ size: 100 }),
     enabled: !isEditing,
   })
 
-  // Fetch teachers
   const { data: teachersData, isLoading: isLoadingTeachers } = useQuery({
     queryKey: ['admin', 'teachers', { size: 100, searchTerm: teacherSearch }],
     queryFn: () => adminApi.getTeachers({ size: 100, searchTerm: teacherSearch || undefined }),
@@ -84,8 +96,13 @@ export function GroupForm({
     defaultValues: group
       ? {
           capacity: group.capacity ?? undefined,
+          startDate: group.startDate ?? undefined,
+          endDate: group.endDate ?? undefined,
         }
-      : undefined,
+      : {
+          startDate: todayPlusMonths(0),
+          endDate: todayPlusMonths(4),
+        },
   })
 
   const selectedSubjectId = watch('subjectId')
@@ -124,6 +141,22 @@ export function GroupForm({
           placeholder={`Default: ${group.maxCapacity}`}
           helperText="Deja vacío para usar la capacidad por defecto"
         />
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField
+            {...register('startDate')}
+            label="Fecha inicio"
+            type="date"
+            error={errors.startDate?.message}
+          />
+          <FormField
+            {...register('endDate')}
+            label="Fecha fin"
+            type="date"
+            error={errors.endDate?.message}
+            helperText="Las sesiones nunca se generarán después de esta fecha"
+          />
+        </div>
 
         {error && (
           <Alert
@@ -180,19 +213,28 @@ export function GroupForm({
       />
       <input type="hidden" {...register('teacherId', { valueAsNumber: true })} />
 
-      <FormSelect
-        {...register('type')}
-        label="Tipo de grupo"
-        options={groupTypeOptions}
-        error={errors.type?.message}
-      />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FormField
+          {...register('startDate')}
+          label="Fecha inicio"
+          type="date"
+          error={errors.startDate?.message}
+        />
+        <FormField
+          {...register('endDate')}
+          label="Fecha fin"
+          type="date"
+          error={errors.endDate?.message}
+          helperText="Las sesiones nunca se generarán después de esta fecha"
+        />
+      </div>
 
       <FormField
         {...register('capacity', { valueAsNumber: true })}
         label="Capacidad personalizada (opcional)"
         type="number"
         min={1}
-        placeholder="Dejar vacío para usar el default"
+        placeholder="Dejar vacío para usar el default (24)"
       />
 
       <FormField
