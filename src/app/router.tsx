@@ -203,6 +203,22 @@ export const router = createBrowserRouter([
         ...lazyPage(() => import('@/features/admin/schedules/pages/AdminGroupSchedulesPage'), 'AdminGroupSchedulesPage'),
       },
       {
+        path: 'intensives',
+        ...lazyPage(() => import('@/features/admin/intensives/pages/AdminIntensivesPage'), 'AdminIntensivesPage'),
+      },
+      {
+        path: 'intensives/new',
+        ...lazyPage(() => import('@/features/admin/intensives/pages/AdminIntensiveCreatePage'), 'AdminIntensiveCreatePage'),
+      },
+      {
+        path: 'intensives/:id',
+        ...lazyPage(() => import('@/features/admin/intensives/pages/AdminIntensiveDetailPage'), 'AdminIntensiveDetailPage'),
+      },
+      {
+        path: 'intensives/:id/edit',
+        ...lazyPage(() => import('@/features/admin/intensives/pages/AdminIntensiveEditPage'), 'AdminIntensiveEditPage'),
+      },
+      {
         path: 'schedules',
         ...lazyPage(() => import('@/features/admin/schedules/pages/AdminSchedulesPage'), 'AdminSchedulesPage'),
       },

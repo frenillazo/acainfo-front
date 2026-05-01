@@ -12,6 +12,7 @@ import {
   UserCircle,
   CheckCircle,
   UsersRound,
+  Zap,
   CalendarDays,
   Clock,
   ClipboardList,
@@ -114,6 +115,11 @@ const adminNavigation: NavItem[] = [
     name: 'Grupos',
     href: '/admin/groups',
     icon: <UsersRound className={ICON_CLASS} />,
+  },
+  {
+    name: 'Intensivos',
+    href: '/admin/intensives',
+    icon: <Zap className={ICON_CLASS} />,
   },
   {
     name: 'Horarios',
