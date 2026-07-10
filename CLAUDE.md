@@ -1,104 +1,35 @@
-# AcaInfo Frontend - Plan de Desarrollo
+# AcaInfo Frontend
 
-## Stack Tecnológico
-- React 19 + TypeScript + Vite
-- TanStack Query (data fetching/cache)
-- Zustand (estado global)
-- React Router DOM (routing)
-- Axios (HTTP client)
-- Tailwind CSS + shadcn/ui (UI)
-- React Hook Form + Zod (formularios)
-- date-fns (fechas)
+React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 7 · Tailwind 4 · React Hook Form + Zod · axios. Submódulo git (remote: frenillazo/acainfo-front); tras commitear aquí, bumpear el puntero en el superproyecto.
 
-## Arquitectura
-Feature-based: `src/features/{feature}/` con components, hooks, services, types, pages.
+**La app está CONSTRUIDA y en producción** (~45 rutas, área estudiante + panel admin completos). Este archivo describe el estado real, no un plan.
 
-## Fases de Desarrollo
+## Verificación
 
-### Fase 1: Fundamentos
-1. **Setup proyecto**
-   - Instalar dependencias (react-router-dom, @tanstack/react-query, zustand, axios, tailwindcss, etc.)
-   - Configurar alias `@/` en vite.config.ts y tsconfig
-   - Crear estructura de carpetas (app/, features/, shared/, assets/)
-   - Configurar Tailwind CSS
+- `npx tsc --noEmit` — pasa. OJO: `strict: false` en tsconfig.app.json (relajación temporal que se quedó); escribir código nuevo strict-clean.
+- `npm run build` (tsc -b && vite build) — pasa.
+- `npm run lint` — baseline heredado: **55 errores / 11 warnings**; no introducir nuevos.
+- Sin tests aún. Verificación manual: `npm run dev` contra el back en perfil dev (usuarios seed, contraseña "password"), probar como STUDENT y como ADMIN.
 
-2. **Shared base**
-   - `shared/config/env.ts` - Variables de entorno
-   - `shared/services/apiClient.ts` - Axios con interceptores (auth, refresh token)
-   - `shared/types/api.types.ts` - PageResponse, ApiError
-   - `shared/utils/formatters.ts` - Fechas, moneda
+## Arquitectura real
 
-3. **Providers**
-   - `app/providers/QueryProvider.tsx` - TanStack Query
-   - `app/providers/AuthProvider.tsx` - Contexto auth (opcional, Zustand puede bastar)
-   - `app/providers/index.tsx` - Composición de providers
+- `src/app/` — router (`createBrowserRouter`, rutas lazy con helper `lazyPage()`) + providers (solo QueryProvider; auth vive en Zustand). Áreas: públicas, `/dashboard` (cualquier autenticado), `/admin` (rol ADMIN vía `ProtectedRoute`). No hay área TEACHER.
+- `src/features/{auth,student,enrollments,sessions,reservations,payments,materials,subjects,group-requests,landing,legal,admin}` — cada una con pages/components/hooks/services/types. `admin/` tiene sub-features por dominio.
+- `src/shared/` — **UI kit PROPIO** en `components/ui` (Button, Modal, DataTable, ConfigBadge…). NO es shadcn: **no ejecutar `npx shadcn add`** (components.json es un resto engañoso). `services/apiClient.ts` (axios + Bearer desde localStorage + refresh automático en 401), `config/badgeConfig.ts` + `domainConstants.ts`, `utils/`.
+- Estado global (Zustand): solo `authStore` (persist en localStorage) y toasts.
 
-### Fase 2: Autenticación
-1. **Auth types** - `features/auth/types/auth.types.ts`
-2. **Auth store** - `features/auth/store/authStore.ts` (Zustand + persist)
-3. **Auth API** - `features/auth/services/authApi.ts`
-4. **Auth hooks** - `features/auth/hooks/useAuth.ts`
-5. **Componentes auth**
-   - LoginForm.tsx
-   - RegisterForm.tsx
-   - ProtectedRoute.tsx
-6. **Páginas auth**
-   - LoginPage.tsx
-   - RegisterPage.tsx
+## Patrones
 
-### Fase 3: Layout y UI Base
-1. **Componentes UI** (shadcn/ui)
-   - Button, Input, Card, Badge, Alert, Spinner, Toast
-2. **Layout**
-   - MainLayout.tsx (sidebar + header + content)
-   - Header.tsx
-   - Sidebar.tsx
-3. **Common**
-   - LoadingScreen.tsx
-   - ErrorBoundary.tsx
-   - Pagination.tsx
+- Services: objeto `xxxApi` usando `apiClient` — la baseURL YA incluye `/api`, las rutas de los servicios NO llevan ese prefijo.
+- Hooks: `useXxx` (queries) / `useXxxMutations` / `useEnrichedXxx` (agregación). `sessions` y `reservations` usan key factories exportadas (`sessionKeys`, `reservationKeys`); el resto, arrays inline.
+- Estado visual de sesiones: SIEMPRE `getVisualSessionStatus()` (`shared/utils/sessionStatus.ts`), nunca `session.status` directo (el back no transiciona estados automáticamente).
+- Formularios: RHF + zodResolver. Badges: `ConfigBadge` + `badgeConfig.ts`.
+- Excepción heredada: la feature `materials` usa hooks imperativos con useState (sin TanStack Query) — migrar a Query cuando se toque.
 
-### Fase 4: Router
-- `app/router.tsx` - Definición de rutas
-- `app/App.tsx` - RouterProvider + Providers
+## Trampas
 
-### Fase 5: Student Dashboard
-1. **Types** - student.types.ts
-2. **API** - studentApi.ts
-3. **Hooks** - useStudentOverview.ts
-4. **Componentes**
-   - Dashboard.tsx
-   - EnrollmentCard.tsx
-   - UpcomingSessionCard.tsx
-   - PaymentSummary.tsx
-5. **Page** - StudentDashboardPage.tsx
-
-### Fase 6: Features Estudiante
-1. **Enrollments** - Lista, detalle, inscripción
-2. **Sessions** - Calendario, reservas
-3. **Payments** - Lista de pagos, estados
-4. **Materials** - Lista, descarga (con control de acceso)
-5. **Profile** - Edición perfil
-
-### Fase 7: Admin Panel (futuro)
-- Gestión usuarios, asignaturas, grupos, sesiones, pagos
-
-## Convenciones
-- Componentes: PascalCase.tsx
-- Hooks: useNombre.ts
-- Services: nombreApi.ts
-- Types: nombre.types.ts
-- Constantes: SCREAMING_SNAKE_CASE
-
-## Query Keys
-```
-['student', 'overview', limit]
-['enrollments', 'list', filters]
-['enrollment', id]
-['sessions', 'list', filters]
-['payments', 'list', filters]
-['payment', 'access', studentId]
-```
-
-## Próximo paso
-Comenzar con **Fase 1: Setup proyecto** - instalar dependencias y crear estructura.
+- **Tipos espejo del back duplicados y con deriva**: `Degree` ×4 (uno obsoleto GRADO/MASTER), `Session` ×2, `Classroom` ×3 (el de session.types.ts tiene aulas fantasma). La referencia fiable son los DTOs Java (`back/.../infrastructure/adapter/in/rest/dto/`). `admin/types/admin.types.ts` marca con @deprecated lo eliminado del back.
+- `groupType` YA NO EXISTE en el backend; varios componentes aún lo tipan/renderizan (bug conocido: rompe el botón "Solicitar online").
+- **OBSOLETO — no invertir** (se eliminará en la simplificación): `features/group-requests` (el flujo estudiante ya está huérfano, sin rutas), el flujo de pago del alumno (botón "Pagar" es un no-op deliberado), `features/profile/` (esqueleto vacío; el perfil real vive en `features/auth`).
+- `.env` → `http://localhost:8080/api`; `.env.production` → `/api` relativo (proxy nginx en el servidor).
+- Los docs útiles por feature: `features/auth/README.md` y `features/reservations/README.md`. `docs/API_INTEGRACION.md` y `docs/ESTRUCTURA_FRONTEND.md` están desfasados.
