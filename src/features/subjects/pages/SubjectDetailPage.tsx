@@ -1,9 +1,9 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useSubject, useGroupsBySubject } from '../hooks/useSubjects'
+import { useSubject, useCoursesBySubject } from '../hooks/useSubjects'
 import { useEnroll, useActiveEnrollmentSubjectIds, usePendingEnrollmentsByStudent } from '@/features/enrollments/hooks/useEnrollments'
 import { useAuthStore } from '@/features/auth/store/authStore'
-import { GroupCard } from '../components/GroupCard'
-import type { Group } from '../types/subject.types'
+import { CourseCard } from '../components/CourseCard'
+import type { Course } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
 import { useMaterials } from '@/features/materials/hooks/useMaterials'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
@@ -11,7 +11,7 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useEffect } from 'react'
-import { useCheckInterest, useMarkInterest, useRemoveInterest } from '@/features/group-requests/hooks/useGroupRequests'
+import { useCheckInterest, useMarkInterest, useRemoveInterest } from '../hooks/useSubjectInterest'
 import { HandMetal, Lock } from 'lucide-react'
 
 const degreeLabels: Record<string, string> = {
@@ -27,11 +27,11 @@ export function SubjectDetailPage() {
   const user = useAuthStore((state) => state.user)
   const userId = user?.id ?? 0
   const { data: subject, isLoading: isLoadingSubject, error: subjectError } = useSubject(subjectId)
-  const { data: groupsData, isLoading: isLoadingGroups } = useGroupsBySubject(subjectId, 'OPEN')
+  const { data: coursesData, isLoading: isLoadingCourses } = useCoursesBySubject(subjectId, 'OPEN')
   const enrollMutation = useEnroll()
 
   // "Me interesa" functionality
-  const { data: isInterested, isLoading: isCheckingInterest } = useCheckInterest(subjectId, userId)
+  const { data: isInterested, isLoading: isCheckingInterest } = useCheckInterest(subjectId)
   const markInterestMutation = useMarkInterest()
   const removeInterestMutation = useRemoveInterest()
   const isToggling = markInterestMutation.isPending || removeInterestMutation.isPending
@@ -53,7 +53,7 @@ export function SubjectDetailPage() {
     getBySubjectId,
   } = useMaterials()
 
-  const groups = groupsData?.content ?? []
+  const courses = coursesData?.content ?? []
 
   // Load materials when subject is loaded
   useEffect(() => {
@@ -62,13 +62,13 @@ export function SubjectDetailPage() {
     }
   }, [subjectId])
 
-  const handleEnroll = async (group: Group) => {
+  const handleEnroll = async (course: Course) => {
     if (!user?.id) return
 
     try {
       await enrollMutation.mutateAsync({
         studentId: user.id,
-        groupId: group.id,
+        courseId: course.id,
       })
       navigate('/dashboard/enrollments')
     } catch (error) {
@@ -80,9 +80,9 @@ export function SubjectDetailPage() {
     if (!userId || isToggling) return
 
     if (isInterested) {
-      removeInterestMutation.mutate({ subjectId, studentId: userId })
+      removeInterestMutation.mutate(subjectId)
     } else {
-      markInterestMutation.mutate({ subjectId, requesterId: userId })
+      markInterestMutation.mutate(subjectId)
     }
   }
 
@@ -176,15 +176,15 @@ export function SubjectDetailPage() {
                 d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
               />
             </svg>
-            <span>{subject.currentGroupCount} grupo{subject.currentGroupCount !== 1 ? 's' : ''}</span>
+            <span>{subject.currentGroupCount} curso{subject.currentGroupCount !== 1 ? 's' : ''}</span>
           </div>
         </div>
       </div>
 
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Grupos Disponibles</h2>
-          {isLoadingGroups && (
+          <h2 className="text-lg font-semibold text-gray-900">Cursos Disponibles</h2>
+          {isLoadingCourses && (
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600" />
           )}
         </div>
@@ -195,12 +195,12 @@ export function SubjectDetailPage() {
           </div>
         )}
 
-        {groups.length > 0 ? (
+        {courses.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {groups.map((group) => (
-              <GroupCard
-                key={group.id}
-                group={group}
+            {courses.map((course) => (
+              <CourseCard
+                key={course.id}
+                course={course}
                 onEnroll={handleEnroll}
                 isEnrolling={enrollMutation.isPending}
                 hasPendingRequest={subjectHasPendingRequest}
@@ -210,7 +210,7 @@ export function SubjectDetailPage() {
         ) : (
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
             <p className="text-gray-500">
-              No hay grupos disponibles para esta asignatura en este momento.
+              No hay cursos disponibles para esta asignatura en este momento.
             </p>
           </div>
         )}

@@ -43,7 +43,7 @@ export function SessionsPage() {
   const [currentWeekStart, setCurrentWeekStart] = useState(() => getWeekStart(new Date()))
   const [showAlternatives, setShowAlternatives] = useState(false)
 
-  // Get all group IDs from active enrollments
+  // Get all course IDs from active enrollments
   const activeEnrollments = useMemo(() => {
     if (!enrollments) return []
     return enrollments.filter((e) => e.isActive || e.isOnWaitingList)

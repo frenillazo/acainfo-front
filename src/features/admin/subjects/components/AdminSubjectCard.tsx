@@ -74,7 +74,7 @@ function AdminSubjectCard({
           <span className="text-xs text-gray-500">{subject.year}º Curso</span>
         )}
         <span className="ml-auto text-xs text-gray-500">
-          {subject.currentGroupCount} grupo{subject.currentGroupCount !== 1 ? 's' : ''}
+          {subject.currentGroupCount} curso{subject.currentGroupCount !== 1 ? 's' : ''}
         </span>
       </div>
 

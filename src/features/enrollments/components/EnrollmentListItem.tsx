@@ -3,15 +3,12 @@ import type { Enrollment } from '../types/enrollment.types'
 import { EnrollmentStatusBadge } from './EnrollmentStatusBadge'
 import { cn } from '@/shared/utils/cn'
 import { formatDate } from '@/shared/utils/formatters'
-import { GROUP_TYPE_LABELS, type GroupType } from '@/shared/types/api.types'
 
 interface EnrollmentListItemProps {
   enrollment: Enrollment
 }
 
 export function EnrollmentListItem({ enrollment }: EnrollmentListItemProps) {
-  const groupTypeLabel = GROUP_TYPE_LABELS[enrollment.groupType as GroupType] || enrollment.groupType
-
   return (
     <Link
       to={`/dashboard/enrollments/${enrollment.id}`}
@@ -23,7 +20,7 @@ export function EnrollmentListItem({ enrollment }: EnrollmentListItemProps) {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-900">
-            {groupTypeLabel}
+            {enrollment.courseName}
           </p>
           <p className="text-sm text-gray-500">
             Inscrito: {formatDate(enrollment.enrolledAt)}

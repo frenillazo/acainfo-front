@@ -99,14 +99,6 @@ export const router = createBrowserRouter([
         ...lazyPage(() => import('@/features/sessions'), 'SessionDetailPage'),
       },
       {
-        path: 'attendance',
-        ...lazyPage(() => import('@/features/reservations'), 'AttendanceHistoryPage'),
-      },
-      {
-        path: 'payments',
-        ...lazyPage(() => import('@/features/payments'), 'PaymentsPage'),
-      },
-      {
         path: 'materials',
         ...lazyPage(() => import('@/features/materials'), 'MaterialsPage'),
       },
@@ -175,48 +167,32 @@ export const router = createBrowserRouter([
         ...lazyPage(() => import('@/features/admin/enrollments/pages/AdminEnrollmentDetailPage'), 'AdminEnrollmentDetailPage'),
       },
       {
-        path: 'enrollments/:id/change-group',
-        ...lazyPage(() => import('@/features/admin/enrollments/pages/AdminEnrollmentChangeGroupPage'), 'AdminEnrollmentChangeGroupPage'),
+        path: 'enrollments/:id/change-course',
+        ...lazyPage(() => import('@/features/admin/enrollments/pages/AdminEnrollmentChangeCoursePage'), 'AdminEnrollmentChangeCoursePage'),
       },
       {
         path: 'enrollments/pending',
         ...lazyPage(() => import('@/features/admin/enrollments/pages/AdminPendingEnrollmentsPage'), 'AdminPendingEnrollmentsPage'),
       },
       {
-        path: 'groups',
-        ...lazyPage(() => import('@/features/admin/groups/pages/AdminGroupsPage'), 'AdminGroupsPage'),
+        path: 'courses',
+        ...lazyPage(() => import('@/features/admin/courses/pages/AdminCoursesPage'), 'AdminCoursesPage'),
       },
       {
-        path: 'groups/new',
-        ...lazyPage(() => import('@/features/admin/groups/pages/AdminGroupCreatePage'), 'AdminGroupCreatePage'),
+        path: 'courses/new',
+        ...lazyPage(() => import('@/features/admin/courses/pages/AdminCourseCreatePage'), 'AdminCourseCreatePage'),
       },
       {
-        path: 'groups/:id',
-        ...lazyPage(() => import('@/features/admin/groups/pages/AdminGroupDetailPage'), 'AdminGroupDetailPage'),
+        path: 'courses/:id',
+        ...lazyPage(() => import('@/features/admin/courses/pages/AdminCourseDetailPage'), 'AdminCourseDetailPage'),
       },
       {
-        path: 'groups/:id/edit',
-        ...lazyPage(() => import('@/features/admin/groups/pages/AdminGroupEditPage'), 'AdminGroupEditPage'),
+        path: 'courses/:id/edit',
+        ...lazyPage(() => import('@/features/admin/courses/pages/AdminCourseEditPage'), 'AdminCourseEditPage'),
       },
       {
-        path: 'groups/:groupId/schedules',
-        ...lazyPage(() => import('@/features/admin/schedules/pages/AdminGroupSchedulesPage'), 'AdminGroupSchedulesPage'),
-      },
-      {
-        path: 'intensives',
-        ...lazyPage(() => import('@/features/admin/intensives/pages/AdminIntensivesPage'), 'AdminIntensivesPage'),
-      },
-      {
-        path: 'intensives/new',
-        ...lazyPage(() => import('@/features/admin/intensives/pages/AdminIntensiveCreatePage'), 'AdminIntensiveCreatePage'),
-      },
-      {
-        path: 'intensives/:id',
-        ...lazyPage(() => import('@/features/admin/intensives/pages/AdminIntensiveDetailPage'), 'AdminIntensiveDetailPage'),
-      },
-      {
-        path: 'intensives/:id/edit',
-        ...lazyPage(() => import('@/features/admin/intensives/pages/AdminIntensiveEditPage'), 'AdminIntensiveEditPage'),
+        path: 'courses/:courseId/schedules',
+        ...lazyPage(() => import('@/features/admin/schedules/pages/AdminCourseSchedulesPage'), 'AdminCourseSchedulesPage'),
       },
       {
         path: 'schedules',
@@ -251,24 +227,8 @@ export const router = createBrowserRouter([
         ...lazyPage(() => import('@/features/admin/subjects/pages/AdminSubjectEditPage'), 'AdminSubjectEditPage'),
       },
       {
-        path: 'payments',
-        ...lazyPage(() => import('@/features/admin/payments/pages/AdminPaymentsPage'), 'AdminPaymentsPage'),
-      },
-      {
-        path: 'payments/generate',
-        ...lazyPage(() => import('@/features/admin/payments/pages/AdminPaymentGeneratePage'), 'AdminPaymentGeneratePage'),
-      },
-      {
-        path: 'payments/:id',
-        ...lazyPage(() => import('@/features/admin/payments/pages/AdminPaymentDetailPage'), 'AdminPaymentDetailPage'),
-      },
-      {
-        path: 'group-requests',
-        ...lazyPage(() => import('@/features/group-requests/pages/AdminGroupRequestsPage'), 'AdminGroupRequestsPage'),
-      },
-      {
-        path: 'group-requests/:id',
-        ...lazyPage(() => import('@/features/group-requests/pages/AdminGroupRequestDetailPage'), 'AdminGroupRequestDetailPage'),
+        path: 'demand',
+        ...lazyPage(() => import('@/features/admin/pages/AdminDemandPage'), 'AdminDemandPage'),
       },
       {
         path: 'profile',

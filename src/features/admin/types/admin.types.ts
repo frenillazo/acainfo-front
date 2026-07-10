@@ -63,74 +63,74 @@ export interface TeacherFilters {
   sortDirection?: 'ASC' | 'DESC'
 }
 
-// Group types
-// NOTE: GroupType has been removed from the backend. The alias below stays for
-// backwards-compatibility; prefer omitting it for new code.
-export type GroupType = string
-export type GroupStatus = 'OPEN' | 'CLOSED' | 'CANCELLED'
+// Course types (unified course model: date range identifies the course)
+export type CourseStatus = 'OPEN' | 'CLOSED' | 'CANCELLED'
 
-export interface Group {
+export interface ScheduleSummary {
+  dayOfWeek: DayOfWeek
+  startTime: string // HH:mm
+  endTime: string // HH:mm
+}
+
+export interface Course {
   id: number
   name: string
   subjectId: number
-  teacherId: number
-  /** @deprecated Removed from backend. Always undefined in new responses. */
-  type?: GroupType
-  status: GroupStatus
+  teacherId: number | null
+  status: CourseStatus
   currentEnrollmentCount: number
+  /** null = unlimited (virtual/dual course) */
   capacity: number | null
-  availableSeats: number
-  maxCapacity: number
-  pricePerHour: number
+  /** null = unlimited */
+  availableSeats: number | null
+  /** Informative only, null if not set */
+  pricePerMonth: number | null
   /** Inclusive — first day sessions can be generated. */
-  startDate?: string // yyyy-MM-dd
+  startDate: string // yyyy-MM-dd
   /** Inclusive — last day sessions can be generated. */
-  endDate?: string // yyyy-MM-dd
+  endDate: string // yyyy-MM-dd
   createdAt: string
   updatedAt: string
   // Enriched
   subjectName: string
   subjectCode: string
-  teacherName: string
+  teacherName: string | null
   // Flags
   isOpen: boolean
   canEnroll: boolean
-  /** @deprecated Always false (intensives are now a separate entity). */
-  isIntensive?: boolean
-  /** @deprecated Always true. */
-  isRegular?: boolean
+  // Schedule summary for display
+  schedules: ScheduleSummary[]
 }
 
-export interface CreateGroupRequest {
+export interface CreateCourseRequest {
   subjectId: number
-  teacherId: number
+  /** Optional: null = not assigned yet */
+  teacherId?: number
   startDate: string // yyyy-MM-dd
   endDate: string // yyyy-MM-dd
+  /** Empty = unlimited (virtual/dual) */
   capacity?: number
-  pricePerHour?: number
-  /** @deprecated Removed from backend, ignored. */
-  type?: GroupType
+  pricePerMonth?: number
 }
 
-export interface UpdateGroupRequest {
-  status?: GroupStatus
+export interface UpdateCourseRequest {
+  status?: CourseStatus
   capacity?: number
-  pricePerHour?: number
+  pricePerMonth?: number
+  teacherId?: number
   startDate?: string
   endDate?: string
 }
 
-export interface GroupFilters {
+export interface CourseFilters {
   subjectId?: number
   teacherId?: number
-  status?: GroupStatus
+  status?: CourseStatus
   searchTerm?: string
   page?: number
   size?: number
   sortBy?: string
   sortDirection?: 'ASC' | 'DESC'
-  /** @deprecated Removed from backend, will be ignored if sent. */
-  type?: GroupType
 }
 
 // Subject types
@@ -178,13 +178,22 @@ export interface SubjectFilters {
   sortDirection?: 'ASC' | 'DESC'
 }
 
+// Subject interest summary (admin demand view)
+export interface SubjectInterestSummary {
+  subjectId: number
+  subjectName: string
+  subjectCode: string
+  degreeName: string | null
+  interestedCount: number
+}
+
 // Schedule types
 export type DayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY'
 export type Classroom = 'AULA_PORTAL1' | 'AULA_PORTAL2' | 'AULA_VIRTUAL'
 
 export interface Schedule {
   id: number
-  groupId: number
+  courseId: number
   dayOfWeek: DayOfWeek
   startTime: string // HH:mm format
   endTime: string // HH:mm format
@@ -196,7 +205,7 @@ export interface Schedule {
 }
 
 export interface CreateScheduleRequest {
-  groupId: number
+  courseId: number
   dayOfWeek: DayOfWeek
   startTime: string // HH:mm format
   endTime: string // HH:mm format
@@ -211,7 +220,7 @@ export interface UpdateScheduleRequest {
 }
 
 export interface ScheduleFilters {
-  groupId?: number
+  courseId?: number
   classroom?: Classroom
   dayOfWeek?: DayOfWeek
   page?: number
@@ -220,11 +229,11 @@ export interface ScheduleFilters {
   sortDirection?: 'ASC' | 'DESC'
 }
 
-// Enriched schedule with group, subject, and teacher info
+// Enriched schedule with course, subject, and teacher info
 export interface EnrichedSchedule {
   // Schedule fields
   id: number
-  groupId: number
+  courseId: number
   dayOfWeek: DayOfWeek
   startTime: string // HH:mm format
   endTime: string // HH:mm format
@@ -233,18 +242,16 @@ export interface EnrichedSchedule {
   durationMinutes: number
   createdAt: string
   updatedAt: string
-  // Enriched data from Group
-  /** @deprecated Removed from backend. */
-  groupType?: GroupType
-  groupStatus: GroupStatus
-  pricePerHour: number
+  // Enriched data from Course
+  courseStatus: CourseStatus
+  pricePerMonth: number | null
   // Enriched data from Subject
   subjectId: number
   subjectName: string
   subjectCode: string
   // Enriched data from Teacher
-  teacherId: number
-  teacherName: string
+  teacherId: number | null
+  teacherName: string | null
 }
 
 // Dashboard stats computed from API responses
@@ -253,21 +260,20 @@ export interface AdminDashboardStats {
   totalStudents: number
   totalTeachers: number
   activeEnrollments: number
-  pendingPayments: number
   totalSubjects: number
-  totalGroups: number
+  totalCourses: number
 }
 
 // Session types
 export type SessionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'POSTPONED'
-export type SessionType = 'REGULAR' | 'EXTRA' | 'SCHEDULING'
+export type SessionType = 'REGULAR' | 'EXTRA'
 export type SessionMode = 'IN_PERSON' | 'ONLINE' | 'DUAL'
 
 export interface Session {
   // Core fields
   id: number
   subjectId: number
-  groupId: number | null
+  courseId: number
   scheduleId: number | null
   classroom: Classroom
   date: string // yyyy-MM-dd format
@@ -282,8 +288,7 @@ export interface Session {
   // Enriched data
   subjectName: string
   subjectCode: string
-  /** @deprecated Removed from backend response. */
-  groupType?: GroupType | null
+  courseName: string | null
   teacherName: string | null
   // Convenience flags
   isScheduled: boolean
@@ -293,16 +298,14 @@ export interface Session {
   isPostponed: boolean
   isRegular: boolean
   isExtra: boolean
-  isSchedulingType: boolean
-  hasGroup: boolean
   hasSchedule: boolean
   durationMinutes: number
 }
 
 export interface CreateSessionRequest {
   type: SessionType
-  subjectId?: number // Required for SCHEDULING
-  groupId?: number // Required for EXTRA, optional for REGULAR
+  subjectId?: number // Optional: derived from the course
+  courseId?: number // Required for EXTRA, optional for REGULAR
   scheduleId?: number // Required for REGULAR
   classroom: Classroom
   date: string // yyyy-MM-dd format
@@ -320,7 +323,7 @@ export interface UpdateSessionRequest {
 }
 
 export interface GenerateSessionsRequest {
-  groupId: number
+  courseId: number
   startDate: string // yyyy-MM-dd format
   endDate: string // yyyy-MM-dd format
 }
@@ -335,7 +338,7 @@ export interface PostponeSessionRequest {
 
 export interface SessionFilters {
   subjectId?: number
-  groupId?: number
+  courseId?: number
   scheduleId?: number
   type?: SessionType
   status?: SessionStatus
@@ -350,7 +353,7 @@ export interface SessionFilters {
 
 export type UserPageResponse = PageResponse<User>
 export type TeacherPageResponse = PageResponse<Teacher>
-export type GroupPageResponse = PageResponse<Group>
+export type CoursePageResponse = PageResponse<Course>
 export type SubjectPageResponse = PageResponse<Subject>
 export type SchedulePageResponse = PageResponse<Schedule>
 export type EnrichedSchedulePageResponse = PageResponse<EnrichedSchedule>

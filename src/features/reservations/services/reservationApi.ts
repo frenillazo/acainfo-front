@@ -123,19 +123,19 @@ export const reservationApi = {
 
   /**
    * Generate reservations for a session from enrolled students.
-   * POST /api/sessions/{sessionId}/reservations/generate?groupId=1
+   * POST /api/sessions/{sessionId}/reservations/generate?courseId=1
    * Admin only operation.
    * Backend: ReservationGenerationController.java
    * @param sessionId - Session ID
-   * @param groupId - Group ID to generate reservations for
+   * @param courseId - Course ID to generate reservations for
    * @returns List of generated reservations
    */
-  generateForSession: async (sessionId: number, groupId: number): Promise<Reservation[]> => {
+  generateForSession: async (sessionId: number, courseId: number): Promise<Reservation[]> => {
     const response = await apiClient.post<Reservation[]>(
       `/sessions/${sessionId}/reservations/generate`,
       null,
       {
-        params: { groupId },
+        params: { courseId },
       }
     )
     return response.data

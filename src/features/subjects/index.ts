@@ -1,20 +1,28 @@
 export { SubjectsPage } from './pages/SubjectsPage'
 export { SubjectDetailPage } from './pages/SubjectDetailPage'
 export { SubjectCard } from './components/SubjectCard'
-export { GroupCard } from './components/GroupCard'
+export { CourseCard } from './components/CourseCard'
 export {
   useSubjects,
   useSubject,
   useSubjectByCode,
-  useGroups,
-  useGroupsBySubject,
-  useGroup,
+  useCourses,
+  useCoursesBySubject,
+  useCourse,
 } from './hooks/useSubjects'
+export {
+  useCheckInterest,
+  useMyInterests,
+  useMarkInterest,
+  useRemoveInterest,
+  useInterestSummary,
+} from './hooks/useSubjectInterest'
 export type {
   Subject,
   Degree,
   SubjectStatus,
   SubjectFilters,
-  Group,
-  GroupFilters,
+  SubjectInterestSummary,
+  Course,
+  CourseFilters,
 } from './types/subject.types'

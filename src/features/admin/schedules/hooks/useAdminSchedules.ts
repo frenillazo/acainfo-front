@@ -12,7 +12,7 @@ export const scheduleKeys = {
   list: (filters: ScheduleFilters) => [...scheduleKeys.lists(), filters] as const,
   details: () => [...scheduleKeys.all, 'detail'] as const,
   detail: (id: number) => [...scheduleKeys.details(), id] as const,
-  byGroup: (groupId: number) => [...scheduleKeys.all, 'group', groupId] as const,
+  byCourse: (courseId: number) => [...scheduleKeys.all, 'course', courseId] as const,
   enriched: () => [...scheduleKeys.all, 'enriched'] as const,
   enrichedList: (filters: ScheduleFilters) => [...scheduleKeys.enriched(), filters] as const,
 }
@@ -32,11 +32,11 @@ export function useAdminSchedule(id: number) {
   })
 }
 
-export function useSchedulesByGroup(groupId: number) {
+export function useSchedulesByCourse(courseId: number) {
   return useQuery({
-    queryKey: scheduleKeys.byGroup(groupId),
-    queryFn: () => adminApi.getSchedulesByGroup(groupId),
-    enabled: !!groupId,
+    queryKey: scheduleKeys.byCourse(courseId),
+    queryFn: () => adminApi.getSchedulesByCourse(courseId),
+    enabled: !!courseId,
   })
 }
 
@@ -47,7 +47,7 @@ export function useCreateSchedule() {
     mutationFn: (data: CreateScheduleRequest) => adminApi.createSchedule(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: scheduleKeys.lists() })
-      queryClient.invalidateQueries({ queryKey: scheduleKeys.byGroup(variables.groupId) })
+      queryClient.invalidateQueries({ queryKey: scheduleKeys.byCourse(variables.courseId) })
     },
   })
 }
@@ -61,7 +61,7 @@ export function useUpdateSchedule() {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: scheduleKeys.lists() })
       queryClient.invalidateQueries({ queryKey: scheduleKeys.detail(id) })
-      // Also invalidate group schedules (we don't have groupId here, so invalidate all)
+      // Also invalidate course schedules (we don't have courseId here, so invalidate all)
       queryClient.invalidateQueries({ queryKey: scheduleKeys.all })
     },
   })

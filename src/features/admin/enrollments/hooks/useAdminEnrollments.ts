@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { enrollmentApi } from '@/features/enrollments/services/enrollmentApi'
-import type { EnrollRequest, ChangeGroupRequest, EnrollmentStatus } from '@/features/enrollments/types/enrollment.types'
+import type { EnrollRequest, ChangeCourseRequest, EnrollmentStatus } from '@/features/enrollments/types/enrollment.types'
 
 export interface AdminEnrollmentFilters {
   studentId?: number
   studentEmail?: string
-  groupId?: number
+  courseId?: number
   status?: EnrollmentStatus
   page?: number
   size?: number
@@ -53,12 +53,12 @@ export function useWithdrawEnrollment() {
   })
 }
 
-export function useChangeEnrollmentGroup() {
+export function useChangeEnrollmentCourse() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: ChangeGroupRequest }) =>
-      enrollmentApi.changeGroup(id, data),
+    mutationFn: ({ id, data }: { id: number; data: ChangeCourseRequest }) =>
+      enrollmentApi.changeCourse(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'enrollments'] })
       queryClient.invalidateQueries({ queryKey: ['admin', 'enrollment'] })

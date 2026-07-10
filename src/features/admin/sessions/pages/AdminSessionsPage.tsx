@@ -7,12 +7,11 @@ import {
   useCancelSession,
   useDeleteSession,
 } from '../hooks/useAdminSessions'
-import { useAdminGroups } from '../../groups/hooks/useAdminGroups'
+import { useAdminCourses } from '../../courses/hooks/useAdminCourses'
 import { useAdminSubjects } from '../../subjects/hooks/useAdminSubjects'
 import { SessionTable } from '../components/SessionTable'
 import { AdminWeeklyScheduleGrid } from '../components/AdminWeeklyScheduleGrid'
 import { PostponeModal } from '../components/PostponeModal'
-import { AttendanceModal } from '../components/AttendanceModal'
 import { Pagination } from '@/shared/components/ui/Pagination'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
@@ -33,7 +32,6 @@ const SESSION_TYPES: { key: SessionType | ''; label: string }[] = [
   { key: '', label: 'Todos los tipos' },
   { key: 'REGULAR', label: 'Regular' },
   { key: 'EXTRA', label: 'Extra' },
-  { key: 'SCHEDULING', label: 'Agenda' },
 ]
 
 const SESSION_MODES: { key: SessionMode | ''; label: string }[] = [
@@ -75,13 +73,12 @@ export function AdminSessionsPage() {
   const [selectedStatus, setSelectedStatus] = useState<SessionStatus | ''>('')
   const [selectedType, setSelectedType] = useState<SessionType | ''>('')
   const [selectedMode, setSelectedMode] = useState<SessionMode | ''>('')
-  const [selectedGroupId, setSelectedGroupId] = useState<number | ''>('')
+  const [selectedCourseId, setSelectedCourseId] = useState<number | ''>('')
   const [selectedSubjectId, setSelectedSubjectId] = useState<number | ''>('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [weekStart, setWeekStart] = useState(() => getWeekStart(new Date()))
   const [postponeSessionId, setPostponeSessionId] = useState<number | null>(null)
-  const [attendanceSessionId, setAttendanceSessionId] = useState<number | null>(null)
 
   const startMutation = useStartSession()
   const completeMutation = useCompleteSession()
@@ -102,7 +99,7 @@ export function AdminSessionsPage() {
         ...(selectedStatus && { status: selectedStatus }),
         ...(selectedType && { type: selectedType }),
         ...(selectedMode && { mode: selectedMode }),
-        ...(selectedGroupId && { groupId: selectedGroupId }),
+        ...(selectedCourseId && { courseId: selectedCourseId }),
         ...(selectedSubjectId && { subjectId: selectedSubjectId }),
       }
     : {
@@ -113,28 +110,28 @@ export function AdminSessionsPage() {
         ...(selectedStatus && { status: selectedStatus }),
         ...(selectedType && { type: selectedType }),
         ...(selectedMode && { mode: selectedMode }),
-        ...(selectedGroupId && { groupId: selectedGroupId }),
+        ...(selectedCourseId && { courseId: selectedCourseId }),
         ...(selectedSubjectId && { subjectId: selectedSubjectId }),
         ...(dateFrom && { dateFrom }),
         ...(dateTo && { dateTo }),
       }
 
   const { data: sessionsData, isLoading, error } = useAdminSessions(filters)
-  const { data: groupsData } = useAdminGroups({ size: 100 })
+  const { data: coursesData } = useAdminCourses({ size: 100 })
   const { data: subjectsData } = useAdminSubjects({ size: 100, status: 'ACTIVE' })
 
   const sessions = sessionsData?.content ?? []
   const totalPages = sessionsData?.totalPages ?? 0
   const totalElements = sessionsData?.totalElements ?? 0
 
-  const groups = groupsData?.content ?? []
+  const courses = coursesData?.content ?? []
   const subjects = subjectsData?.content ?? []
 
   const handleClearFilters = () => {
     setSelectedStatus('')
     setSelectedType('')
     setSelectedMode('')
-    setSelectedGroupId('')
+    setSelectedCourseId('')
     setSelectedSubjectId('')
     setDateFrom('')
     setDateTo('')
@@ -362,21 +359,21 @@ export function AdminSessionsPage() {
           </div>
 
           <div>
-            <label htmlFor="group" className="block text-sm font-medium text-gray-700">
-              Grupo
+            <label htmlFor="course" className="block text-sm font-medium text-gray-700">
+              Curso
             </label>
             <select
-              id="group"
-              value={selectedGroupId}
+              id="course"
+              value={selectedCourseId}
               onChange={(e) => {
-                setSelectedGroupId(e.target.value ? Number(e.target.value) : '')
+                setSelectedCourseId(e.target.value ? Number(e.target.value) : '')
                 setPage(0)
               }}
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
-              <option value="">Todos los grupos</option>
-              {groups.map((g) => (
-                <option key={g.id} value={g.id}>{g.subjectCode} - {g.teacherName}</option>
+              <option value="">Todos los cursos</option>
+              {courses.map((c) => (
+                <option key={c.id} value={c.id}>{c.subjectCode} - {c.name}</option>
               ))}
             </select>
           </div>
@@ -479,7 +476,6 @@ export function AdminSessionsPage() {
               onCancel={handleCancel}
               onPostpone={(id) => setPostponeSessionId(id)}
               onDelete={handleDelete}
-              onAttendance={(id) => setAttendanceSessionId(id)}
             />
           ) : (
             <div className="flex h-64 items-center justify-center text-gray-500">
@@ -517,14 +513,6 @@ export function AdminSessionsPage() {
           sessionId={postponeSessionId}
           isOpen
           onClose={() => setPostponeSessionId(null)}
-        />
-      )}
-
-      {attendanceSessionId !== null && (
-        <AttendanceModal
-          sessionId={attendanceSessionId}
-          isOpen
-          onClose={() => setAttendanceSessionId(null)}
         />
       )}
     </div>

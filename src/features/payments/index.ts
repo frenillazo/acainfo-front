@@ -1,5 +1,0 @@
-export { PaymentsPage } from './pages/PaymentsPage'
-export { PaymentCard } from './components/PaymentCard'
-export { PaymentStatusBadge } from './components/PaymentStatusBadge'
-export { usePayments, usePayment, usePendingPayments, useOverduePayments } from './hooks/usePayments'
-export type { Payment, PaymentStatus, PaymentType, PaymentFilters } from './types/payment.types'

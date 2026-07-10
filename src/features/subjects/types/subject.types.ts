@@ -1,4 +1,4 @@
-import type { GroupType, GroupStatus, DayOfWeek } from '@/shared/types/api.types'
+import type { CourseStatus, DayOfWeek } from '@/shared/types/api.types'
 
 export type Degree = 'INGENIERIA_INFORMATICA' | 'INGENIERIA_INDUSTRIAL'
 
@@ -37,40 +37,49 @@ export interface SubjectFilters {
   sortDirection?: 'ASC' | 'DESC'
 }
 
-export interface Group {
+export interface Course {
   id: number
   name: string
   subjectId: number
-  teacherId: number
-  type: GroupType
-  status: GroupStatus
+  teacherId: number | null
+  status: CourseStatus
   currentEnrollmentCount: number
+  /** null = unlimited (virtual/dual course) */
   capacity: number | null
+  /** null = unlimited */
   availableSeats: number | null
-  maxCapacity: number | null
-  pricePerHour: number
+  /** Informative only */
+  pricePerMonth: number | null
+  startDate: string // yyyy-MM-dd
+  endDate: string // yyyy-MM-dd
   // Enriched data
   subjectName: string
   subjectCode: string
-  teacherName: string
+  teacherName: string | null
   createdAt: string
   updatedAt: string
   // Convenience flags
   isOpen: boolean
   canEnroll: boolean
-  isIntensive: boolean
-  isRegular: boolean
   // Schedule summary
   schedules: ScheduleSummary[]
 }
 
-export interface GroupFilters {
+export interface CourseFilters {
   subjectId?: number
   teacherId?: number
-  type?: GroupType
-  status?: GroupStatus
+  status?: CourseStatus
   page?: number
   size?: number
   sortBy?: string
   sortDirection?: 'ASC' | 'DESC'
+}
+
+// Subject interest summary (admin demand view)
+export interface SubjectInterestSummary {
+  subjectId: number
+  subjectName: string
+  subjectCode: string
+  degreeName: string | null
+  interestedCount: number
 }

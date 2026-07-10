@@ -4,19 +4,19 @@ import type {
   Enrollment,
   EnrollmentDetail,
   EnrollRequest,
-  ChangeGroupRequest,
+  ChangeCourseRequest,
   RejectEnrollmentRequest,
 } from '../types/enrollment.types'
 
 interface EnrollmentFilters extends PaginationParams {
   studentId?: number
   studentEmail?: string
-  groupId?: number
+  courseId?: number
   status?: string
 }
 
 export const enrollmentApi = {
-  // GET /enrollments?studentId=&groupId=&status=&page=&size=
+  // GET /enrollments?studentId=&courseId=&status=&page=&size=
   getAll: async (filters: EnrollmentFilters = {}): Promise<PageResponse<Enrollment>> => {
     const response = await apiClient.get<PageResponse<Enrollment>>('/enrollments', {
       params: filters,
@@ -36,9 +36,9 @@ export const enrollmentApi = {
     return response.data
   },
 
-  // GET /enrollments/group/{groupId}
-  getByGroupId: async (groupId: number): Promise<Enrollment[]> => {
-    const response = await apiClient.get<Enrollment[]>(`/enrollments/group/${groupId}`)
+  // GET /enrollments/course/{courseId}
+  getByCourseId: async (courseId: number): Promise<Enrollment[]> => {
+    const response = await apiClient.get<Enrollment[]>(`/enrollments/course/${courseId}`)
     return response.data
   },
 
@@ -53,9 +53,9 @@ export const enrollmentApi = {
     await apiClient.delete(`/enrollments/${id}`)
   },
 
-  // PUT /enrollments/{id}/change-group
-  changeGroup: async (id: number, data: ChangeGroupRequest): Promise<Enrollment> => {
-    const response = await apiClient.put<Enrollment>(`/enrollments/${id}/change-group`, data)
+  // PUT /enrollments/{id}/change-course
+  changeCourse: async (id: number, data: ChangeCourseRequest): Promise<Enrollment> => {
+    const response = await apiClient.put<Enrollment>(`/enrollments/${id}/change-course`, data)
     return response.data
   },
 
@@ -71,10 +71,10 @@ export const enrollmentApi = {
     return response.data
   },
 
-  // GET /enrollments?status=PENDING_APPROVAL&groupId={groupId}
-  getPendingApprovalByGroupId: async (groupId: number): Promise<PageResponse<Enrollment>> => {
+  // GET /enrollments?status=PENDING_APPROVAL&courseId={courseId}
+  getPendingApprovalByCourseId: async (courseId: number): Promise<PageResponse<Enrollment>> => {
     const response = await apiClient.get<PageResponse<Enrollment>>('/enrollments', {
-      params: { groupId, status: 'PENDING_APPROVAL', size: 50 },
+      params: { courseId, status: 'PENDING_APPROVAL', size: 50 },
     })
     return response.data
   },

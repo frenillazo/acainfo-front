@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { enrollmentApi } from '../services/enrollmentApi'
-import type { EnrollRequest, ChangeGroupRequest, RejectEnrollmentRequest } from '../types/enrollment.types'
+import type { EnrollRequest, ChangeCourseRequest, RejectEnrollmentRequest } from '../types/enrollment.types'
 import { useMemo } from 'react'
 
 export const useEnrollments = (studentId: number) => {
@@ -43,12 +43,12 @@ export const useWithdraw = () => {
   })
 }
 
-export const useChangeGroup = () => {
+export const useChangeCourse = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: ChangeGroupRequest }) =>
-      enrollmentApi.changeGroup(id, data),
+    mutationFn: ({ id, data }: { id: number; data: ChangeCourseRequest }) =>
+      enrollmentApi.changeCourse(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollments'] })
       queryClient.invalidateQueries({ queryKey: ['enrollment'] })
@@ -83,11 +83,11 @@ export const useRejectEnrollment = () => {
   })
 }
 
-export const usePendingEnrollmentsByGroupId = (groupId: number) => {
+export const usePendingEnrollmentsByCourseId = (courseId: number) => {
   return useQuery({
-    queryKey: ['pendingEnrollments', 'group', groupId],
-    queryFn: () => enrollmentApi.getPendingApprovalByGroupId(groupId),
-    enabled: !!groupId,
+    queryKey: ['pendingEnrollments', 'course', courseId],
+    queryFn: () => enrollmentApi.getPendingApprovalByCourseId(courseId),
+    enabled: !!courseId,
   })
 }
 
@@ -161,16 +161,16 @@ export const useEnrolledSubjectIds = (studentId: number) => {
 }
 
 /**
- * Hook to get pending enrollment requests by group for a student.
- * Returns a map of groupId -> enrollment for quick lookup.
+ * Hook to get pending enrollment requests by course for a student.
+ * Returns a map of courseId -> enrollment for quick lookup.
  */
 export const usePendingEnrollmentsByStudent = (studentId: number) => {
   const { data: enrollments, isLoading, error } = useEnrollments(studentId)
 
-  const pendingByGroupId = useMemo(() => {
+  const pendingByCourseId = useMemo(() => {
     if (!enrollments) return new Map<number, typeof enrollments[0]>()
     const pending = enrollments.filter((e) => e.status === 'PENDING_APPROVAL')
-    return new Map(pending.map((e) => [e.groupId, e]))
+    return new Map(pending.map((e) => [e.courseId, e]))
   }, [enrollments])
 
   const pendingSubjectIds = useMemo(() => {
@@ -182,12 +182,12 @@ export const usePendingEnrollmentsByStudent = (studentId: number) => {
     )
   }, [enrollments])
 
-  const hasPendingEnrollment = (groupId: number) => pendingByGroupId.has(groupId)
-  const getPendingEnrollment = (groupId: number) => pendingByGroupId.get(groupId)
+  const hasPendingEnrollment = (courseId: number) => pendingByCourseId.has(courseId)
+  const getPendingEnrollment = (courseId: number) => pendingByCourseId.get(courseId)
   const hasPendingEnrollmentForSubject = (subjectId: number) => pendingSubjectIds.has(subjectId)
 
   return {
-    pendingByGroupId,
+    pendingByCourseId,
     hasPendingEnrollment,
     getPendingEnrollment,
     hasPendingEnrollmentForSubject,

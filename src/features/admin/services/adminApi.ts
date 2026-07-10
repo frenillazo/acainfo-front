@@ -8,16 +8,17 @@ import type {
   TeacherPageResponse,
   CreateTeacherRequest,
   UpdateTeacherRequest,
-  Group,
-  GroupFilters,
-  GroupPageResponse,
-  CreateGroupRequest,
-  UpdateGroupRequest,
+  Course,
+  CourseFilters,
+  CoursePageResponse,
+  CreateCourseRequest,
+  UpdateCourseRequest,
   Subject,
   SubjectFilters,
   SubjectPageResponse,
   CreateSubjectRequest,
   UpdateSubjectRequest,
+  SubjectInterestSummary,
   Schedule,
   ScheduleFilters,
   SchedulePageResponse,
@@ -34,16 +35,6 @@ import type {
 } from '../types/admin.types'
 import type { PageResponse } from '@/shared/types/api.types'
 import type { Enrollment } from '@/features/enrollments/types/enrollment.types'
-import type {
-  Payment,
-  PaymentFilters,
-  GeneratePaymentRequest,
-  GenerateMonthlyPaymentsRequest,
-  GenerateGroupPaymentsRequest,
-  GroupPaymentPreviewResponse,
-  CancelPaymentRequest,
-  MarkPaymentPaidRequest,
-} from '@/features/payments/types/payment.types'
 
 export const adminApi = {
   // Users
@@ -128,49 +119,47 @@ export const adminApi = {
     return response.data
   },
 
-  // Groups
-  getGroups: async (filters: GroupFilters = {}): Promise<GroupPageResponse> => {
-    const response = await apiClient.get<GroupPageResponse>('/groups', {
+  // Subject interest (demand view, ADMIN only)
+  getSubjectInterestSummary: async (): Promise<SubjectInterestSummary[]> => {
+    const response = await apiClient.get<SubjectInterestSummary[]>('/subjects/interest-summary')
+    return response.data
+  },
+
+  // Courses
+  getCourses: async (filters: CourseFilters = {}): Promise<CoursePageResponse> => {
+    const response = await apiClient.get<CoursePageResponse>('/courses', {
       params: filters,
     })
     return response.data
   },
 
-  getGroupById: async (id: number): Promise<Group> => {
-    const response = await apiClient.get<Group>(`/groups/${id}`)
+  getCourseById: async (id: number): Promise<Course> => {
+    const response = await apiClient.get<Course>(`/courses/${id}`)
     return response.data
   },
 
-  createGroup: async (data: CreateGroupRequest): Promise<Group> => {
-    const response = await apiClient.post<Group>('/groups', data)
+  createCourse: async (data: CreateCourseRequest): Promise<Course> => {
+    const response = await apiClient.post<Course>('/courses', data)
     return response.data
   },
 
-  updateGroup: async (id: number, data: UpdateGroupRequest): Promise<Group> => {
-    const response = await apiClient.put<Group>(`/groups/${id}`, data)
+  updateCourse: async (id: number, data: UpdateCourseRequest): Promise<Course> => {
+    const response = await apiClient.put<Course>(`/courses/${id}`, data)
     return response.data
   },
 
-  deleteGroup: async (id: number): Promise<void> => {
-    await apiClient.delete(`/groups/${id}`)
+  deleteCourse: async (id: number): Promise<void> => {
+    await apiClient.delete(`/courses/${id}`)
   },
 
-  cancelGroup: async (id: number): Promise<Group> => {
-    const response = await apiClient.post<Group>(`/groups/${id}/cancel`)
+  cancelCourse: async (id: number): Promise<Course> => {
+    const response = await apiClient.post<Course>(`/courses/${id}/cancel`)
     return response.data
   },
 
   // Enrollments (for stats)
   getEnrollments: async (params: { page?: number; size?: number; status?: string } = {}): Promise<PageResponse<Enrollment>> => {
     const response = await apiClient.get<PageResponse<Enrollment>>('/enrollments', {
-      params: { page: params.page ?? 0, size: params.size ?? 1, ...params },
-    })
-    return response.data
-  },
-
-  // Payments (for stats)
-  getPayments: async (params: { page?: number; size?: number; status?: string } = {}): Promise<PageResponse<Payment>> => {
-    const response = await apiClient.get<PageResponse<Payment>>('/payments', {
       params: { page: params.page ?? 0, size: params.size ?? 1, ...params },
     })
     return response.data
@@ -189,8 +178,8 @@ export const adminApi = {
     return response.data
   },
 
-  getSchedulesByGroup: async (groupId: number): Promise<Schedule[]> => {
-    const response = await apiClient.get<Schedule[]>(`/schedules/group/${groupId}`)
+  getSchedulesByCourse: async (courseId: number): Promise<Schedule[]> => {
+    const response = await apiClient.get<Schedule[]>(`/schedules/course/${courseId}`)
     return response.data
   },
 
@@ -228,8 +217,8 @@ export const adminApi = {
     return response.data
   },
 
-  getSessionsByGroup: async (groupId: number): Promise<Session[]> => {
-    const response = await apiClient.get<Session[]>(`/sessions/group/${groupId}`)
+  getSessionsByCourse: async (courseId: number): Promise<Session[]> => {
+    const response = await apiClient.get<Session[]>(`/sessions/course/${courseId}`)
     return response.data
   },
 
@@ -281,81 +270,6 @@ export const adminApi = {
 
   postponeSession: async (id: number, data: PostponeSessionRequest): Promise<Session> => {
     const response = await apiClient.post<Session>(`/sessions/${id}/postpone`, data)
-    return response.data
-  },
-
-  // Admin Payments
-  getPaymentsWithFilters: async (filters: PaymentFilters = {}): Promise<PageResponse<Payment>> => {
-    const response = await apiClient.get<PageResponse<Payment>>('/payments', {
-      params: filters,
-    })
-    return response.data
-  },
-
-  getPaymentById: async (id: number): Promise<Payment> => {
-    const response = await apiClient.get<Payment>(`/payments/${id}`)
-    return response.data
-  },
-
-  getPaymentsByStudentId: async (studentId: number): Promise<Payment[]> => {
-    const response = await apiClient.get<Payment[]>(`/payments/student/${studentId}`)
-    return response.data
-  },
-
-  getPaymentsByEnrollmentId: async (enrollmentId: number): Promise<Payment[]> => {
-    const response = await apiClient.get<Payment[]>(`/payments/enrollment/${enrollmentId}`)
-    return response.data
-  },
-
-  getPendingPaymentsByStudentId: async (studentId: number): Promise<Payment[]> => {
-    const response = await apiClient.get<Payment[]>(`/payments/student/${studentId}/pending`)
-    return response.data
-  },
-
-  getOverduePaymentsByStudentId: async (studentId: number): Promise<Payment[]> => {
-    const response = await apiClient.get<Payment[]>(`/payments/student/${studentId}/overdue`)
-    return response.data
-  },
-
-  getAllOverduePayments: async (): Promise<Payment[]> => {
-    const response = await apiClient.get<Payment[]>('/admin/payments/overdue')
-    return response.data
-  },
-
-  generatePayment: async (data: GeneratePaymentRequest): Promise<Payment> => {
-    const response = await apiClient.post<Payment>('/admin/payments/generate', data)
-    return response.data
-  },
-
-  generateMonthlyPayments: async (data: GenerateMonthlyPaymentsRequest): Promise<Payment[]> => {
-    const response = await apiClient.post<Payment[]>('/admin/payments/generate-monthly', data)
-    return response.data
-  },
-
-  previewGroupPayments: async (
-    groupId: number,
-    billingMonth: number,
-    billingYear: number
-  ): Promise<GroupPaymentPreviewResponse> => {
-    const response = await apiClient.get<GroupPaymentPreviewResponse>(
-      `/admin/payments/group/${groupId}/preview`,
-      { params: { billingMonth, billingYear } }
-    )
-    return response.data
-  },
-
-  generateGroupPayments: async (data: GenerateGroupPaymentsRequest): Promise<Payment[]> => {
-    const response = await apiClient.post<Payment[]>('/admin/payments/generate-by-group', data)
-    return response.data
-  },
-
-  markPaymentAsPaid: async (id: number, data?: MarkPaymentPaidRequest): Promise<Payment> => {
-    const response = await apiClient.post<Payment>(`/payments/${id}/pay`, data ?? {})
-    return response.data
-  },
-
-  cancelPayment: async (id: number, data?: CancelPaymentRequest): Promise<Payment> => {
-    const response = await apiClient.post<Payment>(`/admin/payments/${id}/cancel`, data ?? {})
     return response.data
   },
 }

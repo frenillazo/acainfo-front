@@ -201,12 +201,12 @@ export function SessionDetailPage() {
                 </div>
               </div>
             )}
-            {session.groupType && (
+            {session.courseName && (
               <div className="flex items-start gap-3">
                 <div className="h-5 w-5" /> {/* Spacer for alignment */}
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Tipo de grupo</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{session.groupType}</dd>
+                  <dt className="text-sm font-medium text-gray-500">Curso</dt>
+                  <dd className="mt-1 text-sm text-gray-900">{session.courseName}</dd>
                 </div>
               </div>
             )}

@@ -111,7 +111,7 @@ function SessionBlock({ session }: SessionBlockProps) {
       <div className="flex flex-col h-full">
         <div className="font-medium truncate">
           {isAlternative && <span className="mr-1">◇</span>}
-          {session.groupName || session.subjectName}
+          {session.courseName || session.subjectName}
         </div>
         <div className="opacity-90 truncate text-[10px]">
           {formatTime(session.startTime)} - {formatTime(session.endTime)}

@@ -13,7 +13,6 @@ interface AdminWeeklyScheduleGridProps {
   onCancel: (id: number) => void
   onPostpone: (id: number) => void
   onDelete: (id: number) => void
-  onAttendance: (id: number) => void
 }
 
 const DAYS = [
@@ -125,7 +124,6 @@ export function AdminWeeklyScheduleGrid({
   onCancel,
   onPostpone,
   onDelete,
-  onAttendance,
 }: AdminWeeklyScheduleGridProps) {
   const navigate = useNavigate()
   const [contextMenu, setContextMenu] = useState<{
@@ -274,7 +272,6 @@ export function AdminWeeklyScheduleGrid({
           onCancel={onCancel}
           onPostpone={onPostpone}
           onDelete={onDelete}
-          onAttendance={onAttendance}
           onViewDetail={(id) => navigate(`/admin/sessions/${id}`)}
         />
       )}

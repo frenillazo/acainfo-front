@@ -3,8 +3,7 @@ import type { Session } from '@/features/sessions/types/session.types'
 import type { Enrollment } from '@/features/enrollments/types/enrollment.types'
 import { useSessionReservations } from '../hooks/useReservations'
 import { useEnrichedReservations } from '../hooks/useEnrichedReservations'
-import { useCancelReservation, useRequestOnline } from '../hooks/useReservationMutations'
-import { OnlineRequestBadge } from './OnlineRequestBadge'
+import { useCancelReservation } from '../hooks/useReservationMutations'
 import { CreateReservationModal } from './CreateReservationModal'
 import { SwitchSessionModal } from './SwitchSessionModal'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
@@ -12,7 +11,7 @@ import { Badge } from '@/shared/components/ui/Badge'
 import { Button } from '@/shared/components/ui/Button'
 import { ConfigBadge } from '@/shared/components/ui'
 import { RESERVATION_MODE_CONFIG } from '@/shared/config/badgeConfig'
-import { CalendarCheck, Users, ArrowRightLeft, Wifi } from 'lucide-react'
+import { CalendarCheck, Users, ArrowRightLeft } from 'lucide-react'
 import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
 
 interface ReservationSectionProps {
@@ -24,12 +23,10 @@ interface ReservationSectionProps {
 export function ReservationSection({ session, studentId, enrollments }: ReservationSectionProps) {
   const { data: reservations, isLoading } = useSessionReservations(session.id)
   const cancelMutation = useCancelReservation()
-  const requestOnlineMutation = useRequestOnline()
 
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showSwitchModal, setShowSwitchModal] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
-  const [showOnlineConfirm, setShowOnlineConfirm] = useState(false)
 
   // Find student's confirmed reservation for this session
   const myReservation = useMemo(
@@ -74,9 +71,6 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
   sessionDate.setHours(0, 0, 0, 0)
   const canSwitchSession = isUpcoming && sessionDate > today
 
-  // Check if online request is allowed (regular groups only, not intensive)
-  const isRegularGroup = session.groupType && !session.groupType.startsWith('INTENSIVE')
-
   if (isLoading) {
     return (
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
@@ -88,20 +82,14 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
     )
   }
 
-  // Past session: show attendance result
+  // Past session: show the reservation the student had
   if (isPast && myReservation) {
     return (
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Asistencia</h2>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">Reserva</h2>
         <div className="flex items-center gap-3">
           <ConfigBadge config={RESERVATION_MODE_CONFIG} value={myReservation.mode} />
-          {myReservation.hasAttendanceRecorded ? (
-            <Badge variant={myReservation.wasPresent ? 'success' : 'error'}>
-              {myReservation.wasPresent ? 'Presente' : 'Ausente'}
-            </Badge>
-          ) : (
-            <Badge variant="default">Pendiente de registro</Badge>
-          )}
+          <Badge variant="success">Confirmada</Badge>
         </div>
       </div>
     )
@@ -133,7 +121,6 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
           <div className="flex flex-wrap items-center gap-2">
             <ConfigBadge config={RESERVATION_MODE_CONFIG} value={myReservation.mode} />
             <Badge variant="success">Confirmada</Badge>
-            <OnlineRequestBadge status={myReservation.onlineRequestStatus} />
           </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -143,17 +130,6 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
 
           {/* Actions */}
           <div className="flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3">
-            {myReservation.canRequestOnline && isRegularGroup && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowOnlineConfirm(true)}
-              >
-                <Wifi className="mr-1 h-3.5 w-3.5" />
-                Solicitar online
-              </Button>
-            )}
-
             {canSwitchSession && (
               <Button
                 variant="secondary"
@@ -239,22 +215,6 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
               )
             }}
             onCancel={() => setShowCancelConfirm(false)}
-          />
-
-          <ConfirmDialog
-            isOpen={showOnlineConfirm}
-            title="Solicitar asistencia online"
-            message="Tu solicitud sera enviada al profesor para su aprobacion. Solo disponible con 6 o mas horas de antelacion y para grupos regulares."
-            confirmLabel="Enviar solicitud"
-            variant="info"
-            isLoading={requestOnlineMutation.isPending}
-            onConfirm={() => {
-              requestOnlineMutation.mutate(
-                { id: myReservation.id, studentId },
-                { onSuccess: () => setShowOnlineConfirm(false) }
-              )
-            }}
-            onCancel={() => setShowOnlineConfirm(false)}
           />
         </>
       )}

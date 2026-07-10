@@ -20,13 +20,6 @@ const CLASSROOM_LABELS: Record<string, string> = {
   AULA_PORTAL1: 'Aula Portal 1',
   AULA_PORTAL2: 'Aula Portal 2',
   AULA_VIRTUAL: 'Aula Virtual',
-  AULA_101: 'Aula 101',
-  AULA_102: 'Aula 102',
-  AULA_201: 'Aula 201',
-  AULA_202: 'Aula 202',
-  LAB_A: 'Laboratorio A',
-  LAB_B: 'Laboratorio B',
-  ONLINE_MEET: 'Online (Meet)',
 }
 
 export function SwitchSessionModal({
@@ -41,7 +34,7 @@ export function SwitchSessionModal({
 
   const { data: subjectSessions } = useSessionsBySubject(currentSession.subjectId)
 
-  // Filter to same-day scheduled sessions excluding current (alternatives = other groups, same day)
+  // Filter to same-day scheduled sessions excluding current (alternatives = other courses, same day)
   const alternativeSessions = (subjectSessions ?? []).filter(
     (s) =>
       s.id !== currentSession.id &&

@@ -1,9 +1,7 @@
-import type { GroupType } from '@/shared/types/api.types'
-
 export interface Enrollment {
   id: number
   studentId: number
-  groupId: number
+  courseId: number
   status: EnrollmentStatus
   waitingListPosition: number | null
   enrolledAt: string
@@ -34,11 +32,11 @@ export interface Enrollment {
   subjectId: number
   subjectName: string
   subjectCode: string
-  groupType: GroupType
-  groupName: string
-  teacherName: string
+  courseName: string
+  teacherName: string | null
   scheduleSummary: string
-  groupCapacity: number
+  /** null = unlimited capacity (virtual/dual course) */
+  courseCapacity: number | null
   currentEnrollmentCount: number
 }
 
@@ -56,11 +54,11 @@ export type EnrollmentDetail = Enrollment
 
 export interface EnrollRequest {
   studentId: number
-  groupId: number
+  courseId: number
 }
 
-export interface ChangeGroupRequest {
-  newGroupId: number
+export interface ChangeCourseRequest {
+  newCourseId: number
 }
 
 export interface RejectEnrollmentRequest {

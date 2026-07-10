@@ -9,7 +9,7 @@ import { Button, Alert } from '@/shared/components/ui'
 
 const enrollmentSchema = z.object({
   studentId: z.number({ message: 'Selecciona un estudiante' }).min(1, 'Selecciona un estudiante'),
-  groupId: z.number({ message: 'Selecciona un grupo' }).min(1, 'Selecciona un grupo'),
+  courseId: z.number({ message: 'Selecciona un curso' }).min(1, 'Selecciona un curso'),
 })
 
 type EnrollmentFormData = z.infer<typeof enrollmentSchema>
@@ -28,7 +28,7 @@ export function EnrollmentForm({
   onCancel,
 }: EnrollmentFormProps) {
   const [studentSearch, setStudentSearch] = useState('')
-  const [groupSearch, setGroupSearch] = useState('')
+  const [courseSearch, setCourseSearch] = useState('')
 
   // Fetch students (users with STUDENT role)
   const { data: studentsData, isLoading: isLoadingStudents } = useQuery({
@@ -36,10 +36,10 @@ export function EnrollmentForm({
     queryFn: () => adminApi.getUsers({ roleType: 'STUDENT', size: 100, searchTerm: studentSearch || undefined }),
   })
 
-  // Fetch groups
-  const { data: groupsData, isLoading: isLoadingGroups } = useQuery({
-    queryKey: ['admin', 'groups', { size: 100 }],
-    queryFn: () => adminApi.getGroups({ size: 100 }),
+  // Fetch courses
+  const { data: coursesData, isLoading: isLoadingCourses } = useQuery({
+    queryKey: ['admin', 'courses', { size: 100 }],
+    queryFn: () => adminApi.getCourses({ size: 100 }),
   })
 
   const {
@@ -53,10 +53,10 @@ export function EnrollmentForm({
   })
 
   const selectedStudentId = watch('studentId')
-  const selectedGroupId = watch('groupId')
+  const selectedCourseId = watch('courseId')
 
   const students = studentsData?.content ?? []
-  const groups = groupsData?.content ?? []
+  const courses = coursesData?.content ?? []
 
   const studentItems = students.map((s) => ({
     id: s.id,
@@ -64,17 +64,17 @@ export function EnrollmentForm({
     secondary: s.email,
   }))
 
-  const groupItems = groups
-    .filter((group) =>
-      groupSearch
-        ? group.subjectName?.toLowerCase().includes(groupSearch.toLowerCase()) ||
-          group.type?.toLowerCase().includes(groupSearch.toLowerCase())
+  const courseItems = courses
+    .filter((course) =>
+      courseSearch
+        ? course.subjectName?.toLowerCase().includes(courseSearch.toLowerCase()) ||
+          course.name?.toLowerCase().includes(courseSearch.toLowerCase())
         : true
     )
-    .map((g) => ({
-      id: g.id,
-      primary: `${g.subjectName} - ${g.type}`,
-      secondary: `Profesor: ${g.teacherName} | Capacidad: ${g.currentEnrollmentCount}/${g.maxCapacity}`,
+    .map((c) => ({
+      id: c.id,
+      primary: `${c.subjectName} - ${c.name}`,
+      secondary: `Profesor: ${c.teacherName ?? 'Sin asignar'} | Capacidad: ${c.currentEnrollmentCount}/${c.capacity ?? '∞'}`,
     }))
 
   return (
@@ -94,18 +94,18 @@ export function EnrollmentForm({
       <input type="hidden" {...register('studentId', { valueAsNumber: true })} />
 
       <SearchableList
-        label="Grupo"
-        placeholder="Buscar grupo..."
-        items={groupItems}
-        selectedId={selectedGroupId}
-        onSelect={(id) => setValue('groupId', id as number)}
-        isLoading={isLoadingGroups}
-        error={errors.groupId?.message}
-        emptyMessage="No se encontraron grupos"
-        searchValue={groupSearch}
-        onSearchChange={setGroupSearch}
+        label="Curso"
+        placeholder="Buscar curso..."
+        items={courseItems}
+        selectedId={selectedCourseId}
+        onSelect={(id) => setValue('courseId', id as number)}
+        isLoading={isLoadingCourses}
+        error={errors.courseId?.message}
+        emptyMessage="No se encontraron cursos"
+        searchValue={courseSearch}
+        onSearchChange={setCourseSearch}
       />
-      <input type="hidden" {...register('groupId', { valueAsNumber: true })} />
+      <input type="hidden" {...register('courseId', { valueAsNumber: true })} />
 
       {error && (
         <Alert
@@ -122,7 +122,7 @@ export function EnrollmentForm({
         )}
         <Button
           type="submit"
-          disabled={!selectedStudentId || !selectedGroupId}
+          disabled={!selectedStudentId || !selectedCourseId}
           isLoading={isSubmitting}
           loadingText="Creando..."
         >

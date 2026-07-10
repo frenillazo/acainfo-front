@@ -7,7 +7,7 @@ export { SessionCard } from './components/SessionCard'
 export { StudentWeeklyScheduleGrid } from './components/StudentWeeklyScheduleGrid'
 
 // Hooks
-export { useSessions, useSession, useSessionsByGroup, useSessionsBySubject, useSessionsBySchedule } from './hooks/useSessions'
+export { useSessions, useSession, useSessionsByCourse, useSessionsBySubject, useSessionsBySchedule } from './hooks/useSessions'
 
 // Types
 export type { Session, SessionFilters, SessionStatus, SessionType, SessionMode, Classroom } from './types/session.types'

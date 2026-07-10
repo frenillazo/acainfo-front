@@ -3,7 +3,7 @@ import { useEnrichedSchedules } from '../hooks/useAdminSchedules'
 import { GlobalScheduleGrid } from '../components/GlobalScheduleGrid'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-import type { Classroom, DayOfWeek, GroupStatus } from '../../types/admin.types'
+import type { Classroom, DayOfWeek, CourseStatus } from '../../types/admin.types'
 
 const CLASSROOMS: { key: Classroom | ''; label: string }[] = [
   { key: '', label: 'Todas las aulas' },
@@ -34,9 +34,9 @@ export function AdminSchedulesPage() {
 
   const { data: schedulesData, isLoading, error } = useEnrichedSchedules(filters)
 
-  // Filter out cancelled group schedules unless showCancelled is true
+  // Filter out cancelled course schedules unless showCancelled is true
   const schedules = (schedulesData?.content ?? []).filter(
-    schedule => showCancelled || schedule.groupStatus !== 'CANCELLED'
+    schedule => showCancelled || schedule.courseStatus !== 'CANCELLED'
   )
 
   // Stats

@@ -78,7 +78,7 @@ function ScheduleBlock({ schedule }: ScheduleBlockProps) {
 
   return (
     <Link
-      to={`/admin/groups/${schedule.groupId}`}
+      to={`/admin/courses/${schedule.courseId}`}
       className={cn(
         'absolute left-1 right-1 rounded-md px-2 py-1 text-white text-xs overflow-hidden transition-transform hover:scale-[1.02] hover:z-10',
         subjectColor

@@ -26,31 +26,6 @@ export enum ReservationStatus {
 }
 
 /**
- * Simple attendance status recorded after a session.
- * Backend: AttendanceStatus.java
- */
-export enum AttendanceStatus {
-  /** Student attended the session */
-  PRESENT = 'PRESENT',
-  /** Student did not attend the session */
-  ABSENT = 'ABSENT',
-}
-
-/**
- * Status of a request to change from in-person to online attendance.
- * Only applicable for regular group sessions.
- * Backend: OnlineRequestStatus.java
- */
-export enum OnlineRequestStatus {
-  /** Request is pending teacher approval */
-  PENDING = 'PENDING',
-  /** Request was approved by the teacher */
-  APPROVED = 'APPROVED',
-  /** Request was rejected by the teacher */
-  REJECTED = 'REJECTED',
-}
-
-/**
  * Session Reservation entity.
  * Backend: SessionReservation.java + ReservationResponse.java
  */
@@ -68,17 +43,6 @@ export interface Reservation {
   reservedAt: string // ISO 8601 format: "yyyy-MM-dd'T'HH:mm:ss"
   cancelledAt: string | null
 
-  // Online request fields
-  onlineRequestStatus: OnlineRequestStatus | null
-  onlineRequestedAt: string | null
-  onlineRequestProcessedAt: string | null
-  onlineRequestProcessedById: number | null
-
-  // Attendance fields
-  attendanceStatus: AttendanceStatus | null
-  attendanceRecordedAt: string | null
-  attendanceRecordedById: number | null
-
   // Audit fields
   createdAt: string
   updatedAt: string
@@ -88,15 +52,7 @@ export interface Reservation {
   isCancelled: boolean
   isInPerson: boolean
   isOnline: boolean
-  hasOnlineRequest: boolean
-  isOnlineRequestPending: boolean
-  isOnlineRequestApproved: boolean
-  isOnlineRequestRejected: boolean
-  hasAttendanceRecorded: boolean
-  wasPresent: boolean
-  wasAbsent: boolean
   canBeCancelled: boolean
-  canRequestOnline: boolean
 }
 
 /**
@@ -120,7 +76,7 @@ export interface SwitchSessionRequest {
 
 /**
  * Filters for querying reservations.
- * Backend: ReservationFilters.java
+ * Backend: ReservationController.java query params
  */
 export interface ReservationFilters {
   studentId?: number
@@ -128,9 +84,6 @@ export interface ReservationFilters {
   enrollmentId?: number
   status?: ReservationStatus
   mode?: ReservationMode
-  onlineRequestStatus?: OnlineRequestStatus
-  attendanceStatus?: AttendanceStatus
-  hasAttendanceRecorded?: boolean
   page?: number
   size?: number
   sortBy?: string
@@ -150,31 +103,5 @@ export interface EnrichedReservation extends Reservation {
   classroom: string
   subjectName: string
   subjectCode: string
-  groupType: string
-  teacherName: string
-}
-
-/**
- * Request to process (approve/reject) an online attendance request.
- * Backend: ProcessOnlineRequestRequest.java
- */
-export interface ProcessOnlineRequestRequest {
-  approved: boolean
-}
-
-/**
- * Request to record attendance for a single reservation.
- * Backend: RecordAttendanceRequest.java
- */
-export interface RecordAttendanceRequest {
-  status: AttendanceStatus
-}
-
-/**
- * Request to record attendance for multiple reservations in bulk.
- * Backend: BulkRecordAttendanceRequest.java
- */
-export interface BulkRecordAttendanceRequest {
-  /** Map of reservationId to AttendanceStatus */
-  attendanceMap: Record<number, AttendanceStatus>
+  teacherName: string | null
 }

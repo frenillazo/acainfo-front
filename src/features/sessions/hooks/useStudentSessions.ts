@@ -17,14 +17,14 @@ interface UseStudentSessionsResult {
 
 /**
  * Hook that fetches sessions for a student, optionally including
- * alternative sessions from other groups of the same subjects.
+ * alternative sessions from other courses of the same subjects.
  *
  * When includeAlternatives is true:
  * - Fetches sessions for all subjects the student is enrolled in
  * - Marks each session as isOwnSession or isAlternative
  *
  * When includeAlternatives is false (default):
- * - Only returns sessions from the student's enrolled groups
+ * - Only returns sessions from the student's enrolled courses
  * - All sessions are marked as isOwnSession=true, isAlternative=false
  */
 export function useStudentSessions(
@@ -33,27 +33,27 @@ export function useStudentSessions(
 ): UseStudentSessionsResult {
   const { includeAlternatives = false } = options
 
-  // Get active enrollments and their group/subject IDs
+  // Get active enrollments and their course/subject IDs
   const activeEnrollments = useMemo(() => {
     if (!enrollments) return []
     return enrollments.filter((e) => e.isActive || e.isOnWaitingList)
   }, [enrollments])
 
-  const enrolledGroupIds = useMemo(() => {
-    return new Set(activeEnrollments.map((e) => e.groupId))
+  const enrolledCourseIds = useMemo(() => {
+    return new Set(activeEnrollments.map((e) => e.courseId))
   }, [activeEnrollments])
 
   const enrolledSubjectIds = useMemo(() => {
     return [...new Set(activeEnrollments.map((e) => e.subjectId))]
   }, [activeEnrollments])
 
-  // When not including alternatives, fetch sessions for enrolled groups only
-  const groupQueries = useQueries({
+  // When not including alternatives, fetch sessions for enrolled courses only
+  const courseQueries = useQueries({
     queries: !includeAlternatives
       ? activeEnrollments.map((enrollment) => ({
-          queryKey: sessionKeys.byGroup(enrollment.groupId),
-          queryFn: () => sessionApi.getSessionsByGroup(enrollment.groupId),
-          enabled: !!enrollment.groupId,
+          queryKey: sessionKeys.byCourse(enrollment.courseId),
+          queryFn: () => sessionApi.getSessionsByCourse(enrollment.courseId),
+          enabled: !!enrollment.courseId,
         }))
       : [],
   })
@@ -71,7 +71,7 @@ export function useStudentSessions(
 
   // Combine and process the results
   const result = useMemo((): UseStudentSessionsResult => {
-    const queries = includeAlternatives ? subjectQueries : groupQueries
+    const queries = includeAlternatives ? subjectQueries : courseQueries
 
     const isLoading = queries.some((q) => q.isLoading)
     const error = queries.find((q) => q.error)?.error as Error | null
@@ -93,8 +93,8 @@ export function useStudentSessions(
     // Mark each session as own or alternative
     const studentSessions: StudentSession[] = uniqueSessions.map((session) => ({
       ...session,
-      isOwnSession: enrolledGroupIds.has(session.groupId),
-      isAlternative: !enrolledGroupIds.has(session.groupId),
+      isOwnSession: enrolledCourseIds.has(session.courseId),
+      isAlternative: !enrolledCourseIds.has(session.courseId),
     }))
 
     // Sort by date and start time
@@ -105,7 +105,7 @@ export function useStudentSessions(
     })
 
     return { sessions: studentSessions, isLoading: false, error: null }
-  }, [includeAlternatives, subjectQueries, groupQueries, enrolledGroupIds])
+  }, [includeAlternatives, subjectQueries, courseQueries, enrolledCourseIds])
 
   return result
 }

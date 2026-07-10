@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { reservationApi } from '../services/reservationApi'
-import { onlineRequestApi } from '../services/onlineRequestApi'
 import { reservationKeys } from './useReservations'
 import type { CreateReservationRequest, SwitchSessionRequest } from '../types/reservation.types'
 
@@ -39,18 +38,6 @@ export const useSwitchSession = () => {
       queryClient.invalidateQueries({ queryKey: reservationKeys.all })
       queryClient.invalidateQueries({ queryKey: ['sessions'] })
       queryClient.invalidateQueries({ queryKey: ['student', 'overview'] })
-    },
-  })
-}
-
-export const useRequestOnline = () => {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: ({ id, studentId }: { id: number; studentId: number }) =>
-      onlineRequestApi.requestOnline(id, studentId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: reservationKeys.all })
     },
   })
 }

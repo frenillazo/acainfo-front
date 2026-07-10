@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { subjectApi, groupApi } from '../services/subjectApi'
-import type { SubjectFilters, GroupFilters } from '../types/subject.types'
+import { subjectApi, courseApi } from '../services/subjectApi'
+import type { SubjectFilters, CourseFilters } from '../types/subject.types'
 
 export const useSubjects = (filters: SubjectFilters = {}) => {
   return useQuery({
@@ -25,25 +25,25 @@ export const useSubjectByCode = (code: string) => {
   })
 }
 
-export const useGroups = (filters: GroupFilters = {}) => {
+export const useCourses = (filters: CourseFilters = {}) => {
   return useQuery({
-    queryKey: ['groups', filters],
-    queryFn: () => groupApi.getAll(filters),
+    queryKey: ['courses', filters],
+    queryFn: () => courseApi.getAll(filters),
   })
 }
 
-export const useGroupsBySubject = (subjectId: number, status?: string) => {
+export const useCoursesBySubject = (subjectId: number, status?: string) => {
   return useQuery({
-    queryKey: ['groups', 'subject', subjectId, status],
-    queryFn: () => groupApi.getBySubjectId(subjectId, status),
+    queryKey: ['courses', 'subject', subjectId, status],
+    queryFn: () => courseApi.getBySubjectId(subjectId, status),
     enabled: !!subjectId,
   })
 }
 
-export const useGroup = (id: number) => {
+export const useCourse = (id: number) => {
   return useQuery({
-    queryKey: ['group', id],
-    queryFn: () => groupApi.getById(id),
+    queryKey: ['course', id],
+    queryFn: () => courseApi.getById(id),
     enabled: !!id,
   })
 }

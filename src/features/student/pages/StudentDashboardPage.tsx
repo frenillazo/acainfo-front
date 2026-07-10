@@ -4,7 +4,6 @@ import { useStudentOverview } from '../hooks/useStudentOverview'
 import { WelcomeCard } from '../components/WelcomeCard'
 import { EnrollmentCard } from '../components/EnrollmentCard'
 import { UpcomingSessionCard } from '../components/UpcomingSessionCard'
-import { PaymentSummaryCard } from '../components/PaymentSummaryCard'
 import { RecentMaterialsCard } from '../components/RecentMaterialsCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
@@ -46,9 +45,8 @@ export function StudentDashboardPage() {
         waitingListCount={overview.waitingListCount}
       />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main content */}
-        <div className="space-y-6 lg:col-span-2">
+      <div className="space-y-6">
+        <div className="space-y-6">
           {/* Active Enrollments */}
           <section>
             <div className="mb-4 flex items-center justify-between">
@@ -103,11 +101,6 @@ export function StudentDashboardPage() {
           <section>
             <RecentMaterialsCard />
           </section>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          <PaymentSummaryCard paymentStatus={overview.paymentStatus} />
         </div>
       </div>
     </div>

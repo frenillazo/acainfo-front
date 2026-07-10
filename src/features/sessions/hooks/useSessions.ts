@@ -8,7 +8,7 @@ export const sessionKeys = {
   list: (filters: SessionFilters) => [...sessionKeys.lists(), filters] as const,
   details: () => [...sessionKeys.all, 'detail'] as const,
   detail: (id: number) => [...sessionKeys.details(), id] as const,
-  byGroup: (groupId: number) => [...sessionKeys.all, 'group', groupId] as const,
+  byCourse: (courseId: number) => [...sessionKeys.all, 'course', courseId] as const,
   bySubject: (subjectId: number) => [...sessionKeys.all, 'subject', subjectId] as const,
   bySchedule: (scheduleId: number) => [...sessionKeys.all, 'schedule', scheduleId] as const,
 }
@@ -28,11 +28,11 @@ export function useSession(id: number) {
   })
 }
 
-export function useSessionsByGroup(groupId: number) {
+export function useSessionsByCourse(courseId: number) {
   return useQuery({
-    queryKey: sessionKeys.byGroup(groupId),
-    queryFn: () => sessionApi.getSessionsByGroup(groupId),
-    enabled: !!groupId,
+    queryKey: sessionKeys.byCourse(courseId),
+    queryFn: () => sessionApi.getSessionsByCourse(courseId),
+    enabled: !!courseId,
   })
 }
 

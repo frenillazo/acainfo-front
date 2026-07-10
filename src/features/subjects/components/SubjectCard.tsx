@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom'
 import type { Subject } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
 import { Card } from '@/shared/components/ui'
-import { useAuthStore } from '@/features/auth/store/authStore'
-import { useCheckInterest, useMarkInterest, useRemoveInterest } from '@/features/group-requests/hooks/useGroupRequests'
+import { useCheckInterest, useMarkInterest, useRemoveInterest } from '../hooks/useSubjectInterest'
 import { HandMetal } from 'lucide-react'
 
 interface SubjectCardProps {
@@ -16,10 +15,7 @@ const degreeLabels: Record<string, string> = {
 }
 
 export function SubjectCard({ subject }: SubjectCardProps) {
-  const user = useAuthStore((state) => state.user)
-  const userId = user?.id ?? 0
-
-  const { data: isInterested, isLoading: isCheckingInterest } = useCheckInterest(subject.id, userId)
+  const { data: isInterested, isLoading: isCheckingInterest } = useCheckInterest(subject.id)
   const markInterestMutation = useMarkInterest()
   const removeInterestMutation = useRemoveInterest()
 
@@ -29,12 +25,12 @@ export function SubjectCard({ subject }: SubjectCardProps) {
     e.preventDefault()
     e.stopPropagation()
 
-    if (!userId || isToggling) return
+    if (isToggling) return
 
     if (isInterested) {
-      removeInterestMutation.mutate({ subjectId: subject.id, studentId: userId })
+      removeInterestMutation.mutate(subject.id)
     } else {
-      markInterestMutation.mutate({ subjectId: subject.id, requesterId: userId })
+      markInterestMutation.mutate(subject.id)
     }
   }
 
@@ -67,7 +63,7 @@ export function SubjectCard({ subject }: SubjectCardProps) {
           <span className="text-gray-600">{degreeLabels[subject.degree] || subject.degree}</span>
           <div className="flex items-center gap-3">
             <span className="text-gray-500">
-              {subject.currentGroupCount} grupo{subject.currentGroupCount !== 1 ? 's' : ''}
+              {subject.currentGroupCount} curso{subject.currentGroupCount !== 1 ? 's' : ''}
             </span>
             <button
               onClick={handleToggleInterest}

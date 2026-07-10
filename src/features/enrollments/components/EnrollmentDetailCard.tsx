@@ -2,7 +2,6 @@ import type { EnrollmentDetail } from '../types/enrollment.types'
 import { EnrollmentStatusBadge } from './EnrollmentStatusBadge'
 import { formatDate } from '@/shared/utils/formatters'
 import { cn } from '@/shared/utils/cn'
-import { GROUP_TYPE_LABELS } from '@/shared/types/api.types'
 import { Card } from '@/shared/components/ui'
 
 interface EnrollmentDetailCardProps {
@@ -35,14 +34,12 @@ export function EnrollmentDetailCard({
       <div className="p-6">
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-sm font-medium text-gray-500">Tipo de grupo</dt>
-            <dd className="mt-1 text-gray-900">
-              {GROUP_TYPE_LABELS[enrollment.groupType as keyof typeof GROUP_TYPE_LABELS] || enrollment.groupType}
-            </dd>
+            <dt className="text-sm font-medium text-gray-500">Curso</dt>
+            <dd className="mt-1 text-gray-900">{enrollment.courseName}</dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Profesor</dt>
-            <dd className="mt-1 text-gray-900">{enrollment.teacherName}</dd>
+            <dd className="mt-1 text-gray-900">{enrollment.teacherName ?? 'Sin asignar'}</dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Fecha de inscripción</dt>
@@ -64,7 +61,7 @@ export function EnrollmentDetailCard({
                 'hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50'
               )}
             >
-              {isWithdrawing ? 'Retirando...' : 'Retirarse del grupo'}
+              {isWithdrawing ? 'Retirando...' : 'Retirarse del curso'}
             </button>
           </div>
         )}

@@ -1,21 +1,18 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
-import { CreditCard } from 'lucide-react'
 import {
   useAdminEnrollments,
   useWithdrawEnrollment,
   type AdminEnrollmentFilters,
 } from '../hooks/useAdminEnrollments'
 import { EnrollmentTable } from '../components/EnrollmentTable'
-import { GenerateGroupPaymentsDialog } from '@/features/admin/payments/components/GenerateGroupPaymentsDialog'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Pagination } from '@/shared/components/ui/Pagination'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { useDebounce } from '@/shared/hooks/useDebounce'
-import { toast } from '@/shared/hooks/useToast'
 import type { EnrollmentStatus } from '@/features/enrollments/types/enrollment.types'
 
 export function AdminEnrollmentsPage() {
@@ -25,15 +22,10 @@ export function AdminEnrollmentsPage() {
   })
   const [studentEmailInput, setStudentEmailInput] = useState(filters.studentEmail ?? '')
   const debouncedStudentEmail = useDebounce(studentEmailInput, 300)
-  const [showPaymentsDialog, setShowPaymentsDialog] = useState(false)
 
   const { data, isLoading, error } = useAdminEnrollments(filters)
   const withdrawMutation = useWithdrawEnrollment()
   const { dialogProps, confirm } = useConfirmDialog()
-
-  const handlePaymentsSuccess = (count: number) => {
-    toast.success(`Se generaron ${count} pagos correctamente`)
-  }
 
   useEffect(() => {
     setFilters((prev) => ({ ...prev, studentEmail: debouncedStudentEmail || undefined, page: 0 }))
@@ -51,8 +43,8 @@ export function AdminEnrollmentsPage() {
     }))
   }
 
-  const handleClearGroupFilter = () => {
-    setFilters((prev) => ({ ...prev, groupId: undefined, page: 0 }))
+  const handleClearCourseFilter = () => {
+    setFilters((prev) => ({ ...prev, courseId: undefined, page: 0 }))
   }
 
   const handlePageChange = (page: number) => {
@@ -83,16 +75,16 @@ export function AdminEnrollmentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {filters.groupId
-              ? `Inscripciones del Grupo #${filters.groupId}`
+            {filters.courseId
+              ? `Inscripciones del Curso #${filters.courseId}`
               : 'Gestión de Inscripciones'}
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            {filters.groupId ? (
+            {filters.courseId ? (
               <span className="flex items-center gap-2">
-                Filtrando por grupo
+                Filtrando por curso
                 <button
-                  onClick={handleClearGroupFilter}
+                  onClick={handleClearCourseFilter}
                   className="text-blue-600 hover:text-blue-800 hover:underline"
                 >
                   Ver todas
@@ -104,15 +96,6 @@ export function AdminEnrollmentsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {filters.groupId && (
-            <button
-              onClick={() => setShowPaymentsDialog(true)}
-              className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-            >
-              <CreditCard className="h-4 w-4" />
-              Generar Pagos
-            </button>
-          )}
           <Link
             to="/admin/enrollments/new"
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -206,16 +189,6 @@ export function AdminEnrollmentsPage() {
       ) : null}
 
       <ConfirmDialog {...dialogProps} isLoading={withdrawMutation.isPending} />
-
-      {/* Generate Payments Dialog */}
-      {filters.groupId && (
-        <GenerateGroupPaymentsDialog
-          isOpen={showPaymentsDialog}
-          groupId={filters.groupId}
-          onClose={() => setShowPaymentsDialog(false)}
-          onSuccess={handlePaymentsSuccess}
-        />
-      )}
     </div>
   )
 }

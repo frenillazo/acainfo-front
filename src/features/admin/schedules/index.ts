@@ -1,4 +1,4 @@
-export { AdminGroupSchedulesPage } from './pages/AdminGroupSchedulesPage'
+export { AdminCourseSchedulesPage } from './pages/AdminCourseSchedulesPage'
 export { AdminSchedulesPage } from './pages/AdminSchedulesPage'
 export { WeeklyScheduleGrid } from './components/WeeklyScheduleGrid'
 export { GlobalScheduleGrid } from './components/GlobalScheduleGrid'

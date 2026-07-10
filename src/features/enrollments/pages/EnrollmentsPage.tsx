@@ -19,7 +19,7 @@ function EnrollmentCard({ enrollment, className }: { enrollment: Enrollment; cla
     >
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="font-medium text-gray-900">{enrollment.groupName}</h3>
+          <h3 className="font-medium text-gray-900">{enrollment.courseName}</h3>
         </div>
         <EnrollmentStatusBadge
           status={enrollment.status}
@@ -36,7 +36,8 @@ function EnrollmentCard({ enrollment, className }: { enrollment: Enrollment; cla
         <div className="flex items-center gap-2 text-sm">
           <Users className="h-4 w-4 text-gray-400" />
           <span className="text-gray-700">
-            {enrollment.currentEnrollmentCount} / {enrollment.groupCapacity} inscritos
+            {enrollment.currentEnrollmentCount}
+            {enrollment.courseCapacity !== null && ` / ${enrollment.courseCapacity}`} inscritos
           </span>
         </div>
 

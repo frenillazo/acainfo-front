@@ -14,10 +14,10 @@ export {
   useEnrollment,
   useEnroll,
   useWithdraw,
-  useChangeGroup,
+  useChangeCourse,
   useApproveEnrollment,
   useRejectEnrollment,
-  usePendingEnrollmentsByGroupId,
+  usePendingEnrollmentsByCourseId,
   useActiveEnrollmentSubjectIds,
   usePendingEnrollmentsByStudent,
 } from './hooks/useEnrollments'
@@ -28,5 +28,5 @@ export type {
   EnrollmentDetail,
   EnrollmentStatus,
   EnrollRequest,
-  ChangeGroupRequest,
+  ChangeCourseRequest,
 } from './types/enrollment.types'

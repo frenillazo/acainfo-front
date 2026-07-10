@@ -2,7 +2,6 @@
 export { WelcomeCard } from './components/WelcomeCard'
 export { EnrollmentCard } from './components/EnrollmentCard'
 export { UpcomingSessionCard } from './components/UpcomingSessionCard'
-export { PaymentSummaryCard } from './components/PaymentSummaryCard'
 
 // Pages
 export { StudentDashboardPage } from './pages/StudentDashboardPage'
@@ -15,5 +14,4 @@ export type {
   StudentOverviewResponse,
   EnrollmentSummary,
   UpcomingSessionSummary,
-  PaymentSummary,
 } from './types/student.types'

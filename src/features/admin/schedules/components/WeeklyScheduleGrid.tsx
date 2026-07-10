@@ -4,7 +4,7 @@ import { cn } from '@/shared/utils/cn'
 
 interface WeeklyScheduleGridProps {
   schedules: Schedule[]
-  groupId: number
+  courseId: number
   onCreateSchedule: (data: CreateScheduleRequest) => void
   onUpdateSchedule: (id: number, data: { dayOfWeek?: DayOfWeek; startTime?: string; endTime?: string }) => void
   onDeleteSchedule: (id: number) => void
@@ -192,7 +192,7 @@ function CreateScheduleModal({
 
 export function WeeklyScheduleGrid({
   schedules,
-  groupId,
+  courseId,
   onCreateSchedule,
   onUpdateSchedule,
   onDeleteSchedule,
@@ -224,7 +224,7 @@ export function WeeklyScheduleGrid({
     if (!selectedDay) return
 
     onCreateSchedule({
-      groupId,
+      courseId,
       dayOfWeek: selectedDay,
       startTime: data.startTime,
       endTime: data.endTime,
@@ -232,7 +232,7 @@ export function WeeklyScheduleGrid({
     })
     setModalOpen(false)
     setSelectedDay(null)
-  }, [groupId, selectedDay, onCreateSchedule])
+  }, [courseId, selectedDay, onCreateSchedule])
 
   const handleDragStart = useCallback((e: React.DragEvent, schedule: Schedule) => {
     draggedScheduleRef.current = schedule

@@ -66,14 +66,14 @@ export function PendingEnrollmentCard({ enrollment }: PendingEnrollmentCardProps
           </div>
         </div>
 
-        {/* Subject and group info */}
+        {/* Subject and course info */}
         <div className="flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-gray-400" />
           <div>
             <p className="font-medium text-gray-900">
               {enrollment.subjectCode} - {enrollment.subjectName}
             </p>
-            <p className="text-sm text-gray-500">{enrollment.groupType}</p>
+            <p className="text-sm text-gray-500">{enrollment.courseName}</p>
           </div>
         </div>
 

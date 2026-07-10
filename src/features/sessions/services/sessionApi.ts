@@ -17,9 +17,9 @@ export const sessionApi = {
     return response.data
   },
 
-  // Get sessions by group
-  getSessionsByGroup: async (groupId: number): Promise<Session[]> => {
-    const response = await apiClient.get<Session[]>(`/sessions/group/${groupId}`)
+  // Get sessions by course
+  getSessionsByCourse: async (courseId: number): Promise<Session[]> => {
+    const response = await apiClient.get<Session[]>(`/sessions/course/${courseId}`)
     return response.data
   },
 

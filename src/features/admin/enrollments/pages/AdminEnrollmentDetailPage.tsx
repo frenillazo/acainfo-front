@@ -81,10 +81,10 @@ export function AdminEnrollmentDetailPage() {
               waitingPosition={enrollment.waitingListPosition}
             />
             <Link
-              to={`/admin/enrollments/${enrollment.id}/change-group`}
+              to={`/admin/enrollments/${enrollment.id}/change-course`}
               className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
             >
-              Cambiar grupo
+              Cambiar curso
             </Link>
             {enrollment.canBeWithdrawn && (
               <button
@@ -166,10 +166,10 @@ export function AdminEnrollmentDetailPage() {
           </dl>
         </div>
 
-        {/* Subject & Group Info */}
+        {/* Subject & Course Info */}
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
-            Asignatura y Grupo
+            Asignatura y Curso
           </h2>
           <dl className="space-y-4">
             <div>
@@ -179,16 +179,16 @@ export function AdminEnrollmentDetailPage() {
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">ID Grupo</dt>
-              <dd className="mt-1 text-sm text-gray-900">{enrollment.groupId}</dd>
+              <dt className="text-sm font-medium text-gray-500">ID Curso</dt>
+              <dd className="mt-1 text-sm text-gray-900">{enrollment.courseId}</dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">Tipo de grupo</dt>
-              <dd className="mt-1 text-sm text-gray-900">{enrollment.groupType}</dd>
+              <dt className="text-sm font-medium text-gray-500">Curso</dt>
+              <dd className="mt-1 text-sm text-gray-900">{enrollment.courseName}</dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Profesor</dt>
-              <dd className="mt-1 text-sm text-gray-900">{enrollment.teacherName}</dd>
+              <dd className="mt-1 text-sm text-gray-900">{enrollment.teacherName ?? 'Sin asignar'}</dd>
             </div>
           </dl>
         </div>

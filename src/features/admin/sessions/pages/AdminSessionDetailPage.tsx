@@ -15,7 +15,6 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
-import { AttendanceModal } from '../components/AttendanceModal'
 import { PostponeModal } from '../components/PostponeModal'
 
 export function AdminSessionDetailPage() {
@@ -24,7 +23,6 @@ export function AdminSessionDetailPage() {
   const sessionId = id ? parseInt(id, 10) : 0
 
   const [showPostponeModal, setShowPostponeModal] = useState(false)
-  const [showAttendanceModal, setShowAttendanceModal] = useState(false)
 
   const { data: session, isLoading, error } = useAdminSession(sessionId)
 
@@ -173,28 +171,12 @@ export function AdminSessionDetailPage() {
               </>
             )}
             {session.isInProgress && (
-              <>
-                <button
-                  onClick={handleComplete}
-                  disabled={completeMutation.isPending}
-                  className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
-                >
-                  {completeMutation.isPending ? 'Completando...' : 'Completar'}
-                </button>
-                <button
-                  onClick={() => setShowAttendanceModal(true)}
-                  className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
-                >
-                  Pasar Lista
-                </button>
-              </>
-            )}
-            {session.isCompleted && (
               <button
-                onClick={() => setShowAttendanceModal(true)}
-                className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+                onClick={handleComplete}
+                disabled={completeMutation.isPending}
+                className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
               >
-                Pasar Lista
+                {completeMutation.isPending ? 'Completando...' : 'Completar'}
               </button>
             )}
           </div>
@@ -242,10 +224,10 @@ export function AdminSessionDetailPage() {
           </dl>
         </div>
 
-        {/* Subject & Group Info */}
+        {/* Subject & Course Info */}
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
-            Asignatura y Grupo
+            Asignatura y Curso
           </h2>
           <dl className="space-y-4">
             <div>
@@ -254,20 +236,20 @@ export function AdminSessionDetailPage() {
                 {session.subjectName} ({session.subjectCode})
               </dd>
             </div>
-            {session.hasGroup && (
+            {session.courseId && (
               <>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Grupo</dt>
+                  <dt className="text-sm font-medium text-gray-500">Curso</dt>
                   <dd className="mt-1 text-sm text-gray-900">
-                    {session.groupType ?? 'N/A'}
+                    {session.courseName ?? `#${session.courseId}`}
                   </dd>
                 </div>
                 <div className="pt-2">
                   <Link
-                    to={`/admin/groups/${session.groupId}`}
+                    to={`/admin/courses/${session.courseId}`}
                     className="text-sm text-blue-600 hover:text-blue-800"
                   >
-                    Ver detalles del grupo →
+                    Ver detalles del curso →
                   </Link>
                 </div>
               </>
@@ -318,12 +300,6 @@ export function AdminSessionDetailPage() {
       </div>
 
       <ConfirmDialog {...dialogProps} />
-
-      <AttendanceModal
-        sessionId={sessionId}
-        isOpen={showAttendanceModal}
-        onClose={() => setShowAttendanceModal(false)}
-      />
 
       <PostponeModal
         sessionId={sessionId}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAdminGroups } from '../../groups/hooks/useAdminGroups'
+import { useAdminCourses } from '../../courses/hooks/useAdminCourses'
 import { useGenerateSessions, usePreviewGenerateSessions } from '../hooks/useAdminSessions'
 import { SessionTable } from '../components/SessionTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
@@ -10,28 +10,28 @@ import type { GenerateSessionsRequest, Session } from '../../types/admin.types'
 
 export function AdminSessionGeneratePage() {
   const navigate = useNavigate()
-  const [groupId, setGroupId] = useState<number | ''>('')
+  const [courseId, setCourseId] = useState<number | ''>('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [previewSessions, setPreviewSessions] = useState<Session[]>([])
 
-  const { data: groupsData, isLoading: isLoadingGroups } = useAdminGroups({
+  const { data: coursesData, isLoading: isLoadingCourses } = useAdminCourses({
     size: 100,
     status: 'OPEN',
   })
-  const groups = groupsData?.content ?? []
+  const courses = coursesData?.content ?? []
 
   const previewMutation = usePreviewGenerateSessions()
   const generateMutation = useGenerateSessions()
   const { dialogProps, confirm } = useConfirmDialog()
 
-  const isFormValid = groupId && startDate && endDate && new Date(startDate) <= new Date(endDate)
+  const isFormValid = courseId && startDate && endDate && new Date(startDate) <= new Date(endDate)
 
   const handlePreview = () => {
-    if (!isFormValid || typeof groupId !== 'number') return
+    if (!isFormValid || typeof courseId !== 'number') return
 
     const request: GenerateSessionsRequest = {
-      groupId,
+      courseId,
       startDate,
       endDate,
     }
@@ -44,7 +44,7 @@ export function AdminSessionGeneratePage() {
   }
 
   const handleGenerate = async () => {
-    if (!isFormValid || typeof groupId !== 'number') return
+    if (!isFormValid || typeof courseId !== 'number') return
 
     const confirmed = await confirm({
       title: 'Generar sesiones',
@@ -55,7 +55,7 @@ export function AdminSessionGeneratePage() {
     if (!confirmed) return
 
     const request: GenerateSessionsRequest = {
-      groupId,
+      courseId,
       startDate,
       endDate,
     }
@@ -72,7 +72,7 @@ export function AdminSessionGeneratePage() {
     setPreviewSessions([])
   }
 
-  const selectedGroup = groups.find(g => g.id === groupId)
+  const selectedCourse = courses.find(c => c.id === courseId)
 
   return (
     <div className="space-y-6">
@@ -88,7 +88,7 @@ export function AdminSessionGeneratePage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Generar Sesiones</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Genera sesiones automaticamente basandose en los horarios del grupo.
+          Genera sesiones automaticamente basandose en los horarios del curso.
         </p>
       </div>
 
@@ -96,29 +96,29 @@ export function AdminSessionGeneratePage() {
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 md:grid-cols-3">
           <div>
-            <label htmlFor="group" className="block text-sm font-medium text-gray-700">
-              Grupo *
+            <label htmlFor="course" className="block text-sm font-medium text-gray-700">
+              Curso *
             </label>
             <select
-              id="group"
-              value={groupId}
+              id="course"
+              value={courseId}
               onChange={(e) => {
-                setGroupId(e.target.value ? Number(e.target.value) : '')
+                setCourseId(e.target.value ? Number(e.target.value) : '')
                 setPreviewSessions([])
               }}
-              disabled={isLoadingGroups}
+              disabled={isLoadingCourses}
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100"
             >
-              <option value="">Selecciona un grupo</option>
-              {groups.map((g) => (
-                <option key={g.id} value={g.id}>
-                  {g.subjectCode} - {g.teacherName} ({g.type})
+              <option value="">Selecciona un curso</option>
+              {courses.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.subjectCode} - {c.name}
                 </option>
               ))}
             </select>
-            {selectedGroup && (
+            {selectedCourse && (
               <p className="mt-1 text-xs text-gray-500">
-                {selectedGroup.subjectName}
+                {selectedCourse.subjectName}
               </p>
             )}
           </div>
@@ -202,9 +202,9 @@ export function AdminSessionGeneratePage() {
       <div className="rounded-lg border border-gray-200 bg-blue-50 p-4 shadow-sm">
         <h3 className="text-sm font-medium text-blue-800">Como funciona</h3>
         <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-blue-700">
-          <li>Selecciona un grupo que tenga horarios configurados</li>
+          <li>Selecciona un curso que tenga horarios configurados</li>
           <li>Indica el rango de fechas para el cual deseas generar sesiones</li>
-          <li>El sistema creara una sesion por cada dia que coincida con los horarios del grupo</li>
+          <li>El sistema creara una sesion por cada dia que coincida con los horarios del curso</li>
           <li>No se crearan sesiones duplicadas si ya existen para esa fecha y horario</li>
           <li>Usa "Vista previa" para ver las sesiones que se crearan antes de confirmar</li>
         </ul>
@@ -228,7 +228,7 @@ export function AdminSessionGeneratePage() {
       {previewMutation.isSuccess && previewSessions.length === 0 && (
         <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-yellow-700">
           No se encontraron sesiones para generar en el rango de fechas seleccionado.
-          Verifica que el grupo tenga horarios configurados.
+          Verifica que el curso tenga horarios configurados.
         </div>
       )}
 

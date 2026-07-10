@@ -14,7 +14,7 @@ export const sessionKeys = {
   list: (filters: SessionFilters) => [...sessionKeys.lists(), filters] as const,
   details: () => [...sessionKeys.all, 'detail'] as const,
   detail: (id: number) => [...sessionKeys.details(), id] as const,
-  byGroup: (groupId: number) => [...sessionKeys.all, 'group', groupId] as const,
+  byCourse: (courseId: number) => [...sessionKeys.all, 'course', courseId] as const,
   bySubject: (subjectId: number) => [...sessionKeys.all, 'subject', subjectId] as const,
 }
 
@@ -33,11 +33,11 @@ export function useAdminSession(id: number) {
   })
 }
 
-export function useSessionsByGroup(groupId: number) {
+export function useSessionsByCourse(courseId: number) {
   return useQuery({
-    queryKey: sessionKeys.byGroup(groupId),
-    queryFn: () => adminApi.getSessionsByGroup(groupId),
-    enabled: !!groupId,
+    queryKey: sessionKeys.byCourse(courseId),
+    queryFn: () => adminApi.getSessionsByCourse(courseId),
+    enabled: !!courseId,
   })
 }
 
@@ -92,7 +92,7 @@ export function useGenerateSessions() {
     mutationFn: (data: GenerateSessionsRequest) => adminApi.generateSessions(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: sessionKeys.lists() })
-      queryClient.invalidateQueries({ queryKey: sessionKeys.byGroup(variables.groupId) })
+      queryClient.invalidateQueries({ queryKey: sessionKeys.byCourse(variables.courseId) })
     },
   })
 }

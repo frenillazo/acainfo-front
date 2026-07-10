@@ -2,7 +2,7 @@
 export { AdminEnrollmentsPage } from './pages/AdminEnrollmentsPage'
 export { AdminEnrollmentDetailPage } from './pages/AdminEnrollmentDetailPage'
 export { AdminEnrollmentCreatePage } from './pages/AdminEnrollmentCreatePage'
-export { AdminEnrollmentChangeGroupPage } from './pages/AdminEnrollmentChangeGroupPage'
+export { AdminEnrollmentChangeCoursePage } from './pages/AdminEnrollmentChangeCoursePage'
 
 // Components
 export { EnrollmentTable } from './components/EnrollmentTable'
@@ -14,6 +14,6 @@ export {
   useAdminEnrollment,
   useCreateEnrollment,
   useWithdrawEnrollment,
-  useChangeEnrollmentGroup,
+  useChangeEnrollmentCourse,
 } from './hooks/useAdminEnrollments'
 export type { AdminEnrollmentFilters } from './hooks/useAdminEnrollments'

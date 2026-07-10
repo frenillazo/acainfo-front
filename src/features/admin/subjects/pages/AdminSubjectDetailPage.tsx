@@ -340,7 +340,7 @@ export function AdminSubjectDetailPage() {
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">
-                ¿Puede crear grupos?
+                ¿Puede crear cursos?
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
                 {subject.canCreateGroup ? (
@@ -353,13 +353,13 @@ export function AdminSubjectDetailPage() {
           </dl>
         </div>
 
-        {/* Groups Info */}
+        {/* Courses Info */}
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Grupos</h2>
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Cursos</h2>
           <dl className="space-y-4">
             <div>
               <dt className="text-sm font-medium text-gray-500">
-                Número de grupos
+                Número de cursos
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
                 {subject.currentGroupCount}
@@ -368,10 +368,10 @@ export function AdminSubjectDetailPage() {
             {subject.currentGroupCount > 0 && (
               <div className="pt-2">
                 <Link
-                  to={`/admin/groups?subjectId=${subject.id}`}
+                  to={`/admin/courses?subjectId=${subject.id}`}
                   className="text-sm text-blue-600 hover:text-blue-800"
                 >
-                  Ver grupos de esta asignatura →
+                  Ver cursos de esta asignatura →
                 </Link>
               </div>
             )}

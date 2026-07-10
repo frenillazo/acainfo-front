@@ -5,18 +5,14 @@ import {
   Home,
   GraduationCap,
   Calendar,
-  CreditCard,
   BookOpen,
   Settings,
   Users,
   UserCircle,
   CheckCircle,
-  UsersRound,
-  Zap,
   CalendarDays,
   Clock,
   ClipboardList,
-  ClipboardCheck,
   UserCheck,
   X,
 } from 'lucide-react'
@@ -53,16 +49,6 @@ const studentNavigation: NavItem[] = [
     name: 'Sesiones',
     href: '/dashboard/sessions',
     icon: <Calendar className={ICON_CLASS} />,
-  },
-  {
-    name: 'Mi Asistencia',
-    href: '/dashboard/attendance',
-    icon: <ClipboardCheck className={ICON_CLASS} />,
-  },
-  {
-    name: 'Pagos',
-    href: '/dashboard/payments',
-    icon: <CreditCard className={ICON_CLASS} />,
   },
   {
     name: 'Asignaturas',
@@ -112,14 +98,9 @@ const adminNavigation: NavItem[] = [
     icon: <BookOpen className={ICON_CLASS} />,
   },
   {
-    name: 'Grupos',
-    href: '/admin/groups',
-    icon: <UsersRound className={ICON_CLASS} />,
-  },
-  {
-    name: 'Intensivos',
-    href: '/admin/intensives',
-    icon: <Zap className={ICON_CLASS} />,
+    name: 'Cursos',
+    href: '/admin/courses',
+    icon: <GraduationCap className={ICON_CLASS} />,
   },
   {
     name: 'Horarios',
@@ -132,13 +113,8 @@ const adminNavigation: NavItem[] = [
     icon: <Clock className={ICON_CLASS} />,
   },
   {
-    name: 'Pagos',
-    href: '/admin/payments',
-    icon: <CreditCard className={ICON_CLASS} />,
-  },
-  {
-    name: 'Demanda de Asignaturas',
-    href: '/admin/group-requests',
+    name: 'Demanda',
+    href: '/admin/demand',
     icon: <ClipboardList className={ICON_CLASS} />,
   },
 ]

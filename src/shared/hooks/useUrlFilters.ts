@@ -27,7 +27,7 @@ export function useUrlFilters<T extends object>(
       if (urlValue === null) continue
       initial[key] = parseUrlValue(urlValue, defs[key])
     }
-    // Read extra URL params not present in defaults (e.g. groupId passed via link)
+    // Read extra URL params not present in defaults (e.g. courseId passed via link)
     for (const [key, urlValue] of searchParams.entries()) {
       if (key in defs) continue // already handled above
       initial[key] = parseUrlValue(urlValue, undefined)

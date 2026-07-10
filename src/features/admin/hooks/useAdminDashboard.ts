@@ -12,17 +12,15 @@ export function useAdminDashboardStats() {
         studentsResponse,
         teachersResponse,
         subjectsResponse,
-        groupsResponse,
+        coursesResponse,
         activeEnrollmentsResponse,
-        pendingPaymentsResponse,
       ] = await Promise.all([
         adminApi.getUsers({ size: 1 }),
         adminApi.getUsers({ size: 1, roleType: 'STUDENT' }),
         adminApi.getTeachers({ size: 1 }),
         adminApi.getSubjects({ size: 1 }),
-        adminApi.getGroups({ size: 1 }),
+        adminApi.getCourses({ size: 1 }),
         adminApi.getEnrollments({ size: 1, status: 'ACTIVE' }),
-        adminApi.getPayments({ size: 1, status: 'PENDING' }),
       ])
 
       return {
@@ -30,9 +28,8 @@ export function useAdminDashboardStats() {
         totalStudents: studentsResponse.totalElements,
         totalTeachers: teachersResponse.totalElements,
         totalSubjects: subjectsResponse.totalElements,
-        totalGroups: groupsResponse.totalElements,
+        totalCourses: coursesResponse.totalElements,
         activeEnrollments: activeEnrollmentsResponse.totalElements,
-        pendingPayments: pendingPaymentsResponse.totalElements,
       }
     },
     staleTime: 30000, // 30 seconds

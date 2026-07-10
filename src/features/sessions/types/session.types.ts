@@ -1,27 +1,21 @@
+import type { Classroom } from '@/shared/types/api.types'
+
 export type SessionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'POSTPONED'
-export type SessionType = 'REGULAR' | 'EXTRA' | 'SCHEDULING'
+export type SessionType = 'REGULAR' | 'EXTRA'
 export type SessionMode = 'IN_PERSON' | 'ONLINE' | 'DUAL'
-export type Classroom =
-  | 'AULA_101'
-  | 'AULA_102'
-  | 'AULA_201'
-  | 'AULA_202'
-  | 'LAB_A'
-  | 'LAB_B'
-  | 'ONLINE_MEET'
+export type { Classroom }
 
 export interface Session {
   id: number
   subjectId: number
-  groupId: number
+  courseId: number
   scheduleId: number | null
   classroom: Classroom
   // Enriched data
   subjectName: string
   subjectCode: string
-  groupName: string
-  groupType: string
-  teacherName: string
+  courseName: string | null
+  teacherName: string | null
   // Date and time
   date: string
   startTime: string
@@ -41,8 +35,6 @@ export interface Session {
   isPostponed: boolean
   isRegular: boolean
   isExtra: boolean
-  isSchedulingType: boolean
-  hasGroup: boolean
   hasSchedule: boolean
   // Metadata
   createdAt: string
@@ -51,7 +43,7 @@ export interface Session {
 
 export interface SessionFilters {
   subjectId?: number
-  groupId?: number
+  courseId?: number
   scheduleId?: number
   type?: SessionType
   status?: SessionStatus
@@ -67,11 +59,11 @@ export interface SessionFilters {
 /**
  * Extended session type for student view that includes
  * information about whether this is the student's own session
- * or an alternative session from another group of the same subject.
+ * or an alternative session from another course of the same subject.
  */
 export interface StudentSession extends Session {
-  /** True if this session belongs to a group the student is enrolled in */
+  /** True if this session belongs to a course the student is enrolled in */
   isOwnSession: boolean
-  /** True if this is an alternative session from another group of the same subject */
+  /** True if this is an alternative session from another course of the same subject */
   isAlternative: boolean
 }

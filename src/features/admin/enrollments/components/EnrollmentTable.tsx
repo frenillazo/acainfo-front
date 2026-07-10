@@ -36,17 +36,17 @@ export function EnrollmentTable({
       ),
     },
     {
-      key: 'group',
-      header: 'Grupo',
+      key: 'course',
+      header: 'Curso',
       render: (enrollment) => (
-        <span className="text-sm text-gray-500">{enrollment.groupType}</span>
+        <span className="text-sm text-gray-500">{enrollment.courseName}</span>
       ),
     },
     {
       key: 'teacher',
       header: 'Profesor',
       render: (enrollment) => (
-        <span className="text-sm text-gray-500">{enrollment.teacherName}</span>
+        <span className="text-sm text-gray-500">{enrollment.teacherName ?? 'Sin asignar'}</span>
       ),
     },
     {

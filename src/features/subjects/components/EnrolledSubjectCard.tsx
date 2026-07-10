@@ -47,9 +47,9 @@ export function EnrolledSubjectCard({ subject, enrollment }: EnrolledSubjectCard
             <span className="text-xs text-gray-500">{subject.year}o Curso</span>
           )}
         </div>
-        {enrollment.groupName && (
+        {enrollment.courseName && (
           <div className="flex items-center gap-1.5 text-xs text-gray-500">
-            <span>{enrollment.groupName}</span>
+            <span>{enrollment.courseName}</span>
             <span>&middot;</span>
             <span>{enrollment.teacherName}</span>
           </div>

@@ -47,8 +47,8 @@ export function SubjectTable({
       render: (subject) => <ConfigBadge config={DEGREE_CONFIG} value={subject.degree} />,
     },
     {
-      key: 'groups',
-      header: 'Grupos',
+      key: 'courses',
+      header: 'Cursos',
       render: (subject) => (
         <span className="text-sm text-gray-500">{subject.currentGroupCount}</span>
       ),

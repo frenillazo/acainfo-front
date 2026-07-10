@@ -6,7 +6,6 @@ import {
   XCircle,
   Clock,
   Trash2,
-  ClipboardList,
   Eye,
 } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
@@ -20,7 +19,6 @@ interface SessionContextMenuProps {
   onCancel: (id: number) => void
   onPostpone: (id: number) => void
   onDelete: (id: number) => void
-  onAttendance: (id: number) => void
   onViewDetail: (id: number) => void
 }
 
@@ -41,7 +39,6 @@ export function SessionContextMenu({
   onCancel,
   onPostpone,
   onDelete,
-  onAttendance,
   onViewDetail,
 }: SessionContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null)
@@ -85,13 +82,6 @@ export function SessionContextMenu({
       onClick: () => { onComplete(session.id); onClose() },
       className: 'text-green-700',
       show: session.isInProgress,
-    },
-    {
-      label: 'Pasar Lista',
-      icon: <ClipboardList className="h-4 w-4" />,
-      onClick: () => { onAttendance(session.id); onClose() },
-      className: 'text-indigo-600',
-      show: session.isInProgress || session.isCompleted,
     },
     {
       label: 'Posponer',
