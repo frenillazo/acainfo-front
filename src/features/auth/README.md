@@ -84,8 +84,8 @@ const authResponse = await authApi.register({
 // Refresh token
 const authResponse = await authApi.refresh(refreshToken)
 
-// Logout
-await authApi.logout()
+// Logout (envía el refresh token para que el back lo revoque)
+await authApi.logout(refreshToken)
 
 // Logout de todos los dispositivos
 await authApi.logoutAll()
