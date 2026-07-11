@@ -8,7 +8,7 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 
 - `npx tsc --noEmit` — pasa. OJO: `strict: false` en tsconfig.app.json (relajación temporal que se quedó); escribir código nuevo strict-clean.
 - `npm run build` (tsc -b && vite build) — pasa.
-- `npm run lint` — baseline heredado: **55 errores / 11 warnings**; no introducir nuevos.
+- `npm run lint` — baseline heredado: **44 errores / 8 warnings** (tras la migración curso unificado); no introducir nuevos.
 - Sin tests aún. Verificación manual: `npm run dev` contra el back en perfil dev (usuarios seed, contraseña "password"), probar como STUDENT y como ADMIN.
 
 ## Arquitectura real
