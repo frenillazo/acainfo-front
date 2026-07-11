@@ -223,6 +223,8 @@ export interface ScheduleFilters {
   courseId?: number
   classroom?: Classroom
   dayOfWeek?: DayOfWeek
+  /** Filtra por estado del curso dueño del horario (p.ej. solo OPEN) */
+  courseStatus?: CourseStatus
   page?: number
   size?: number
   sortBy?: string

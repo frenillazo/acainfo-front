@@ -19,9 +19,11 @@ import type { SubjectFilters, SubjectStatus, Degree } from '../../types/admin.ty
 
 export function AdminSubjectsPage() {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards')
+  // Por defecto solo asignaturas activas; el desplegable permite ver inactivas/archivadas/todas
   const [filters, setFilters] = useUrlFilters<SubjectFilters>({
     page: 0,
     size: 10,
+    status: 'ACTIVE',
   })
   const [searchTerm, setSearchTerm] = useState('')
 

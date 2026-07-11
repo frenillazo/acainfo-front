@@ -20,9 +20,11 @@ import type { CourseFilters, CourseStatus } from '../../types/admin.types'
 
 export function AdminCoursesPage() {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards')
+  // Por defecto solo cursos abiertos; el desplegable permite ver cerrados/cancelados/todos
   const [filters, setFilters] = useUrlFilters<CourseFilters>({
     page: 0,
     size: 10,
+    status: 'OPEN',
   })
   const [searchInput, setSearchInput] = useState(filters.searchTerm ?? '')
   const debouncedSearch = useDebounce(searchInput, 300)

@@ -25,19 +25,18 @@ const DAYS: { key: DayOfWeek | ''; label: string }[] = [
 export function AdminSchedulesPage() {
   const [selectedClassroom, setSelectedClassroom] = useState<Classroom | ''>('')
   const [selectedDay, setSelectedDay] = useState<DayOfWeek | ''>('')
-  const [showCancelled, setShowCancelled] = useState(false)
+  // Por defecto solo cursos OPEN (filtro en servidor); el toggle muestra también cerrados/cancelados
+  const [showAllCourses, setShowAllCourses] = useState(false)
 
   const filters = {
     ...(selectedClassroom && { classroom: selectedClassroom }),
     ...(selectedDay && { dayOfWeek: selectedDay }),
+    ...(!showAllCourses && { courseStatus: 'OPEN' as const }),
   }
 
   const { data: schedulesData, isLoading, error } = useEnrichedSchedules(filters)
 
-  // Filter out cancelled course schedules unless showCancelled is true
-  const schedules = (schedulesData?.content ?? []).filter(
-    schedule => showCancelled || schedule.courseStatus !== 'CANCELLED'
-  )
+  const schedules = schedulesData?.content ?? []
 
   // Stats
   const totalSchedules = schedules.length
@@ -111,11 +110,11 @@ export function AdminSchedulesPage() {
             <label className="flex items-center gap-2 text-sm text-gray-700">
               <input
                 type="checkbox"
-                checked={showCancelled}
-                onChange={(e) => setShowCancelled(e.target.checked)}
+                checked={showAllCourses}
+                onChange={(e) => setShowAllCourses(e.target.checked)}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              Mostrar grupos cancelados
+              Mostrar cursos cerrados y cancelados
             </label>
           </div>
         </div>
