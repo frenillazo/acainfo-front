@@ -9,7 +9,8 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 - `npx tsc --noEmit` — pasa. OJO: `strict: false` en tsconfig.app.json (relajación temporal que se quedó); escribir código nuevo strict-clean.
 - `npm run build` (tsc -b && vite build) — pasa.
 - `npm run lint` — baseline heredado: **44 errores / 8 warnings** (tras la migración curso unificado); no introducir nuevos.
-- Sin tests aún. Verificación manual: `npm run dev` contra el back en perfil dev (usuarios seed, contraseña "password"), probar como STUDENT y como ADMIN.
+- `npm run test:run` — **18 tests** (vitest + testing-library sobre jsdom) que deben estar SIEMPRE en verde; CI los exige. Tests co-locados (`*.test.ts(x)` junto al código), **sin globals** (imports explícitos de vitest); setup en `src/test/setup.ts` (jest-dom + `afterEach(cleanup)` — obligatorio: sin globals testing-library no auto-limpia). OJO: jsdom fijado a **26** (la 27 exige Node ≥ 22.12 y el local va en 22.11).
+- Verificación manual: `npm run dev` contra el back en perfil dev (usuarios seed, contraseña "password"), probar como STUDENT y como ADMIN.
 
 ## Arquitectura real
 
