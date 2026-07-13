@@ -32,4 +32,4 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 - **Tipos espejo del back copiados a mano**: la referencia fiable son los DTOs Java (`back/.../infrastructure/adapter/in/rest/dto/`). Al tocar un DTO en el back, actualizar su copia TS.
 - Migración curso unificado APLICADA (11-jul-2026): admin de "Cursos" (capacity vacío = ilimitado/virtual, precio/mes), "me interesa" vía `useSubjectInterest` (`/subjects/{id}/interest`), página admin Demanda. Ya NO existen payments, group-requests, intensives, asistencia ni online-requests — no reintroducirlos.
 - `.env` → `http://localhost:8080/api`; `.env.production` → `/api` relativo (proxy nginx en el servidor).
-- Los docs útiles por feature: `features/auth/README.md` y `features/reservations/README.md`. `docs/API_INTEGRACION.md` y `docs/ESTRUCTURA_FRONTEND.md` están desfasados.
+- Los docs útiles por feature: `features/auth/README.md` y `features/reservations/README.md`. La carpeta `docs/` (API_INTEGRACION, ESTRUCTURA_FRONTEND) se borró el 13-jul-2026 por desfasada; la referencia de API es el back (DTOs Java + Swagger).

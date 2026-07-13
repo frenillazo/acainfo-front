@@ -4,12 +4,12 @@ import { cn } from '@/shared/utils/cn'
 
 // Carousel images from public/carousel/
 const carouselImages = [
-  '/carousel/programacion.png',
-  '/carousel/mates.png',
-  '/carousel/fisica.png',
-  '/carousel/electronica.png',
-  '/carousel/probabilidad.png',
-  '/carousel/dibujo.png',
+  '/carousel/programacion.webp',
+  '/carousel/mates.webp',
+  '/carousel/fisica.webp',
+  '/carousel/electronica.webp',
+  '/carousel/probabilidad.webp',
+  '/carousel/dibujo.webp',
 ]
 
 // Placeholder gradients (fallback if images don't load)
