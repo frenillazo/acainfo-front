@@ -16,7 +16,7 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 
 - `src/app/` — router (`createBrowserRouter`, rutas lazy con helper `lazyPage()`) + providers (solo QueryProvider; auth vive en Zustand). Áreas: públicas, `/dashboard` (cualquier autenticado), `/admin` (rol ADMIN vía `ProtectedRoute`). No hay área TEACHER.
 - `src/features/{auth,student,enrollments,sessions,reservations,materials,subjects,landing,legal,admin}` — cada una con pages/components/hooks/services/types. `admin/` tiene sub-features por dominio (courses, enrollments, schedules, sessions, subjects, teachers, users + página Demanda).
-- `src/shared/` — **UI kit PROPIO** en `components/ui` (Button, Modal, DataTable, ConfigBadge…). NO es shadcn: **no ejecutar `npx shadcn add`** (components.json es un resto engañoso). `services/apiClient.ts` (axios + Bearer desde localStorage + refresh automático en 401), `config/badgeConfig.ts` + `domainConstants.ts`, `utils/`.
+- `src/shared/` — **UI kit PROPIO** en `components/ui` (Button, Modal, DataTable, ConfigBadge…). NO es shadcn: **no ejecutar `npx shadcn add`** (components.json es un resto engañoso). `services/apiClient.ts` (axios `withCredentials` + Bearer del access token del store + refresh automático en 401 vía cookie httpOnly, con cola single-flight; el refresh token NO vive en JS), `config/badgeConfig.ts` + `domainConstants.ts`, `utils/`.
 - Estado global (Zustand): solo `authStore` (persist en localStorage) y toasts.
 
 ## Patrones
