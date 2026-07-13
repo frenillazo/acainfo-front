@@ -3,7 +3,7 @@ import { useEnrichedSchedules } from '../hooks/useAdminSchedules'
 import { GlobalScheduleGrid } from '../components/GlobalScheduleGrid'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-import type { Classroom, DayOfWeek, CourseStatus } from '../../types/admin.types'
+import type { Classroom, DayOfWeek } from '../../types/admin.types'
 
 const CLASSROOMS: { key: Classroom | ''; label: string }[] = [
   { key: '', label: 'Todas las aulas' },

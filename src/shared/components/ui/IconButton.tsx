@@ -71,4 +71,3 @@ export function IconButton({
   )
 }
 
-export { iconButtonVariants }

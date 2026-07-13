@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery } from '@tanstack/react-query'
@@ -94,10 +94,10 @@ export function CourseForm({
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<CreateCourseFormData>({
-    resolver: zodResolver(isEditing ? updateCourseSchema : createCourseSchema) as any,
+    resolver: zodResolver(isEditing ? updateCourseSchema : createCourseSchema) as Resolver<CreateCourseFormData>,
     defaultValues: course
       ? {
           capacity: course.capacity ?? undefined,
@@ -111,8 +111,8 @@ export function CourseForm({
         },
   })
 
-  const selectedSubjectId = watch('subjectId')
-  const selectedTeacherId = watch('teacherId')
+  const selectedSubjectId = useWatch({ control, name: 'subjectId' })
+  const selectedTeacherId = useWatch({ control, name: 'teacherId' })
 
   const subjects = subjectsData?.content ?? []
   const teachers = teachersData?.content ?? []

@@ -76,7 +76,7 @@ export function AdminSubjectDetailPage() {
     if (subjectId) {
       getBySubjectId(subjectId)
     }
-  }, [subjectId])
+  }, [subjectId, getBySubjectId])
 
   const handleArchive = async () => {
     const confirmed = await confirm({
@@ -469,6 +469,7 @@ export function AdminSubjectDetailPage() {
               Subir Nuevo Material
             </h3>
             <MaterialUploadForm
+              key={subjectId}
               subjectId={subjectId}
               onSubmit={handleUploadMaterial}
               onCancel={() => setShowUploadForm(false)}
@@ -545,6 +546,7 @@ export function AdminSubjectDetailPage() {
       />
 
       <MaterialEditModal
+        key={editingMaterial?.id ?? 'none'}
         isOpen={editingMaterial !== null}
         material={editingMaterial}
         isSaving={isUpdating}

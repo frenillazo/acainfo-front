@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { materialApi } from '../services/materialApi'
 import type { Material, MaterialFilters, UploadMaterialRequest } from '../types/material.types'
 import type { PageResponse } from '@/shared/types/api.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 export function useMaterials() {
   const [materials, setMaterials] = useState<Material[]>([])
@@ -29,8 +30,8 @@ export function useMaterials() {
         setMaterials((prev) => [material, ...prev])
       }
       return material
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Failed to upload material'
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'Failed to upload material')
       setError(message)
       return null
     } finally {
@@ -47,8 +48,8 @@ export function useMaterials() {
       const material = await materialApi.getById(id)
       setCurrentMaterial(material)
       return material
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Failed to fetch material'
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'Failed to fetch material')
       setError(message)
       return null
     } finally {
@@ -64,8 +65,8 @@ export function useMaterials() {
     try {
       await materialApi.download(id, filename)
       return true
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Failed to download material'
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'Failed to download material')
       setError(message)
       return false
     } finally {
@@ -86,8 +87,8 @@ export function useMaterials() {
         setCurrentMaterial(null)
       }
       return true
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Failed to delete material'
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'Failed to delete material')
       setError(message)
       return false
     } finally {
@@ -104,8 +105,8 @@ export function useMaterials() {
       const result = await materialApi.getAll(filters)
       setPageData(result)
       setMaterials(result.content)
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Failed to fetch materials'
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'Failed to fetch materials')
       setError(message)
       setMaterials([])
     } finally {
@@ -114,7 +115,7 @@ export function useMaterials() {
   }
 
   // Get materials by subject
-  const getBySubjectId = async (subjectId: number): Promise<void> => {
+  const getBySubjectId = useCallback(async (subjectId: number): Promise<void> => {
     setIsLoading(true)
     setError(null)
 
@@ -122,20 +123,20 @@ export function useMaterials() {
       const result = await materialApi.getBySubjectId(subjectId)
       setMaterials(result)
       setPageData(null) // Clear pagination data
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Failed to fetch materials'
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'Failed to fetch materials')
       setError(message)
       setMaterials([])
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   // Check if user can download
   const canDownload = async (id: number): Promise<boolean> => {
     try {
       return await materialApi.canDownload(id)
-    } catch (err) {
+    } catch {
       return false
     }
   }

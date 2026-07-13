@@ -146,7 +146,7 @@ export function usePostponeSession() {
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: PostponeSessionRequest }) =>
       adminApi.postponeSession(id, data),
-    onSuccess: (_, { id }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionKeys.all })
     },
   })

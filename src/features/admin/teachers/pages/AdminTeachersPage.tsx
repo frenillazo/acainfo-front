@@ -25,7 +25,7 @@ export function AdminTeachersPage() {
 
   useEffect(() => {
     setFilters((prev) => ({ ...prev, searchTerm: debouncedSearch || undefined, page: 0 }))
-  }, [debouncedSearch])
+  }, [debouncedSearch, setFilters])
 
   const handleSearchChange = (value: string) => {
     setSearchInput(value)

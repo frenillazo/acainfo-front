@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { materialApi } from '../services/materialApi'
 import type { Material, UpdateMaterialRequest } from '../types/material.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 /**
  * Admin-only material operations: edit single material metadata + flags,
@@ -21,8 +22,8 @@ export function useMaterialAdmin() {
     setError(null)
     try {
       return await materialApi.update(id, payload)
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'No se pudo actualizar el material'
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'No se pudo actualizar el material')
       setError(message)
       return null
     } finally {
@@ -40,8 +41,8 @@ export function useMaterialAdmin() {
     try {
       const result = await materialApi.batchSetDownloadDisabled(ids, disabled)
       return result.updated
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Error al actualizar la descarga por lotes'
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'Error al actualizar la descarga por lotes')
       setError(message)
       return 0
     } finally {
@@ -59,8 +60,8 @@ export function useMaterialAdmin() {
     try {
       const result = await materialApi.batchSetVisibility(ids, visible)
       return result.updated
-    } catch (err: any) {
-      const message = err.response?.data?.message || 'Error al actualizar la visibilidad por lotes'
+    } catch (err) {
+      const message = getApiErrorMessage(err, 'Error al actualizar la visibilidad por lotes')
       setError(message)
       return 0
     } finally {

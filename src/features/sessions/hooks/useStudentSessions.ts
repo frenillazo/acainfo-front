@@ -1,4 +1,4 @@
-import { useQueries, useQuery } from '@tanstack/react-query'
+import { useQueries } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { sessionApi } from '../services/sessionApi'
 import { sessionKeys } from './useSessions'

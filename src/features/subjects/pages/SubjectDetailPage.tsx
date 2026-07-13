@@ -60,7 +60,7 @@ export function SubjectDetailPage() {
     if (subjectId) {
       getBySubjectId(subjectId)
     }
-  }, [subjectId])
+  }, [subjectId, getBySubjectId])
 
   const handleEnroll = async (course: Course) => {
     if (!user?.id) return

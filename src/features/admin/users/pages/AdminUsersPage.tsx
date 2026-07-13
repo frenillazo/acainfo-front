@@ -71,12 +71,14 @@ export function AdminUsersPage() {
 
   useEffect(() => {
     setFilters((prev) => ({ ...prev, searchTerm: debouncedSearch || undefined, page: 0 }))
-  }, [debouncedSearch])
+  }, [debouncedSearch, setFilters])
 
-  // Clear selection when changing pages or filters
-  useEffect(() => {
+  // Clear selection when changing pages or filters (ajuste de estado durante render, ver react.dev)
+  const [prevFilters, setPrevFilters] = useState(filters)
+  if (filters !== prevFilters) {
+    setPrevFilters(filters)
     setSelectedUserIds([])
-  }, [filters])
+  }
 
   const handleSearchChange = (value: string) => {
     setSearchInput(value)

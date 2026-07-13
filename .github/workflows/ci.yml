@@ -20,9 +20,7 @@ jobs:
         run: npx tsc --noEmit
       - name: Tests
         run: npm run test:run
-      # No bloqueante hasta dejar el baseline (44E/8W) a 0 — hito 6 del backlog
-      - name: Lint (informativo)
+      - name: Lint
         run: npm run lint
-        continue-on-error: true
       - name: Build
         run: npm run build

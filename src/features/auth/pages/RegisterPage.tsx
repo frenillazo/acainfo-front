@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { RegisterForm } from '../components/RegisterForm'
-import { config } from '@/shared/config/env'
 
 export function RegisterPage() {
   return (

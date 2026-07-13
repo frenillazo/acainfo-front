@@ -197,7 +197,6 @@ export function WeeklyScheduleGrid({
   onUpdateSchedule,
   onDeleteSchedule,
   isCreating,
-  isUpdating,
   readOnly,
 }: WeeklyScheduleGridProps) {
   const [modalOpen, setModalOpen] = useState(false)

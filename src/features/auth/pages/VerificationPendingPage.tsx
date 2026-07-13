@@ -22,7 +22,7 @@ export function VerificationPendingPage() {
     try {
       await authApi.resendVerification(email)
       setResendMessage('Email de verificacion reenviado. Revisa tu bandeja de entrada.')
-    } catch (error) {
+    } catch {
       setResendError('Error al reenviar el email. Intentalo de nuevo mas tarde.')
     } finally {
       setIsResending(false)

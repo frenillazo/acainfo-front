@@ -36,4 +36,3 @@ export function Badge({ variant, children, className }: BadgeProps) {
   )
 }
 
-export { badgeVariants }

@@ -30,11 +30,6 @@ export function Header({ onMenuClick }: HeaderProps) {
     }
   }, [dropdownOpen])
 
-  // Close dropdown when route changes
-  useEffect(() => {
-    setDropdownOpen(false)
-  }, [location.pathname])
-
   const profilePath = location.pathname.startsWith('/admin') ? '/admin/profile' : '/dashboard/profile'
 
   return (
@@ -117,6 +112,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
                     <Link
                       to={profilePath}
+                      onClick={() => setDropdownOpen(false)}
                       className={cn(
                         'flex items-center gap-2 px-4 py-2 text-sm text-gray-700',
                         'hover:bg-gray-100 hover:text-gray-900'

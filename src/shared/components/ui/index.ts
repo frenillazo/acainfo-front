@@ -1,11 +1,10 @@
-export { Alert, alertVariants, type AlertVariant } from './Alert'
-export { Avatar, avatarVariants, type AvatarSize, type AvatarColor } from './Avatar'
-export { Badge, badgeVariants, type BadgeVariant } from './Badge'
+export { Alert, type AlertVariant } from './Alert'
+export { Avatar, type AvatarSize, type AvatarColor } from './Avatar'
+export { Badge, type BadgeVariant } from './Badge'
 export { Breadcrumbs } from './Breadcrumbs'
 export { ConfigBadge, type BadgeConfigEntry } from './ConfigBadge'
 export {
   Button,
-  buttonVariants,
   type ButtonVariant,
   type ButtonSize,
 } from './Button'
@@ -15,7 +14,6 @@ export {
   CardTitle,
   CardContent,
   CardFooter,
-  cardVariants,
   type CardVariant,
   type CardPadding,
 } from './Card'
@@ -29,11 +27,10 @@ export {
 export { EmptyState } from './EmptyState'
 export {
   IconButton,
-  iconButtonVariants,
   type IconButtonVariant,
   type IconButtonSize,
 } from './IconButton'
-export { Modal, ModalFooter, modalVariants, type ModalSize } from './Modal'
+export { Modal, ModalFooter, type ModalSize } from './Modal'
 export { Pagination } from './Pagination'
 export { Spinner } from './Spinner'
 export { ToastContainer } from './ToastContainer'

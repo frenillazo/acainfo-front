@@ -87,16 +87,6 @@ function UL({ items }: { items: React.ReactNode[] }) {
   )
 }
 
-function OL({ items, start }: { items: React.ReactNode[]; start?: number }) {
-  return (
-    <ol start={start} className="list-decimal space-y-1.5 pl-6 text-gray-700">
-      {items.map((item, i) => (
-        <li key={i} className="leading-relaxed">{item}</li>
-      ))}
-    </ol>
-  )
-}
-
 function LetterList({ items }: { items: React.ReactNode[] }) {
   return (
     <ol className="list-[lower-alpha] space-y-2 pl-6 text-gray-700">
@@ -109,10 +99,6 @@ function LetterList({ items }: { items: React.ReactNode[] }) {
 
 function SectionCard({ children }: { children: React.ReactNode }) {
   return <div className="space-y-6">{children}</div>
-}
-
-function Divider() {
-  return <hr className="border-gray-200" />
 }
 
 /* ────────────────────── Main page ────────────────────── */

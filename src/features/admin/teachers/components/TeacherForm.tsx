@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { FormField } from '@/shared/components/form'
@@ -42,7 +42,7 @@ export function TeacherForm({
     handleSubmit,
     formState: { errors },
   } = useForm<CreateTeacherFormData>({
-    resolver: zodResolver(isEditing ? updateTeacherSchema : createTeacherSchema) as any,
+    resolver: zodResolver(isEditing ? updateTeacherSchema : createTeacherSchema) as unknown as Resolver<CreateTeacherFormData>,
     defaultValues: teacher
       ? {
           firstName: teacher.firstName,

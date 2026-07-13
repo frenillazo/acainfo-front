@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import type { UploadMaterialRequest } from '../types/material.types'
 import { MaterialCategory } from '../types/material.types'
 import { CategorySelector } from './CategorySelector'
@@ -37,13 +37,6 @@ export function MaterialUploadForm({
     name?: string
     file?: string
   }>({})
-
-  // Set subject if provided
-  useEffect(() => {
-    if (subjectId) {
-      setFormData((prev) => ({ ...prev, subjectId }))
-    }
-  }, [subjectId])
 
   const validateForm = (): boolean => {
     const errors: { subjectId?: string; name?: string; file?: string } = {}

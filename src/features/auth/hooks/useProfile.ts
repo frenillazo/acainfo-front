@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { authApi } from '../services/authApi'
 import type { UpdateProfileRequest, ChangePasswordRequest, User } from '../types/auth.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 /**
  * Custom hook for profile management operations
@@ -22,8 +23,8 @@ export const useProfile = () => {
     try {
       const updatedUser = await authApi.updateProfile(data)
       return updatedUser
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Failed to update profile'
+    } catch (err) {
+      const errorMessage = getApiErrorMessage(err, 'Failed to update profile')
       setError(errorMessage)
       return null
     } finally {
@@ -43,9 +44,8 @@ export const useProfile = () => {
     try {
       await authApi.changePassword(data)
       return true
-    } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message || 'Failed to change password'
+    } catch (err) {
+      const errorMessage = getApiErrorMessage(err, 'Failed to change password')
       setError(errorMessage)
       return false
     } finally {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
 import type { Material, UpdateMaterialRequest } from '../types/material.types'
 
@@ -21,19 +21,11 @@ export function MaterialEditModal({
   onClose,
   onSave,
 }: MaterialEditModalProps) {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [visible, setVisible] = useState(true)
-  const [downloadDisabled, setDownloadDisabled] = useState(false)
-
-  useEffect(() => {
-    if (material) {
-      setName(material.name)
-      setDescription(material.description ?? '')
-      setVisible(material.visible)
-      setDownloadDisabled(material.downloadDisabled)
-    }
-  }, [material])
+  // El padre remonta el modal via key={material.id}: el estado inicial sale del prop
+  const [name, setName] = useState(material?.name ?? '')
+  const [description, setDescription] = useState(material?.description ?? '')
+  const [visible, setVisible] = useState(material?.visible ?? true)
+  const [downloadDisabled, setDownloadDisabled] = useState(material?.downloadDisabled ?? false)
 
   if (!material) return null
 

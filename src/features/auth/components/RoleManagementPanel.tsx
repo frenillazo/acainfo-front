@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { User, RoleType, UserStatus } from '../types/auth.types'
 import { adminApi } from '../services/adminApi'
 import { cn } from '@/shared/utils/cn'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 interface RoleManagementPanelProps {
   user: User
@@ -26,8 +27,8 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
       onUserUpdated(updatedUser)
       setSuccessMessage(`Role ${roleType} assigned successfully`)
       setTimeout(() => setSuccessMessage(null), 3000)
-    } catch (err: any) {
-      const message = err.response?.data?.message || `Failed to assign role ${roleType}`
+    } catch (err) {
+      const message = getApiErrorMessage(err, `Failed to assign role ${roleType}`)
       setError(message)
     } finally {
       setIsLoading(false)
@@ -44,8 +45,8 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
       onUserUpdated(updatedUser)
       setSuccessMessage(`Role ${roleType} revoked successfully`)
       setTimeout(() => setSuccessMessage(null), 3000)
-    } catch (err: any) {
-      const message = err.response?.data?.message || `Failed to revoke role ${roleType}`
+    } catch (err) {
+      const message = getApiErrorMessage(err, `Failed to revoke role ${roleType}`)
       setError(message)
     } finally {
       setIsLoading(false)
@@ -62,8 +63,8 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
       onUserUpdated(updatedUser)
       setSuccessMessage(`Status updated to ${status} successfully`)
       setTimeout(() => setSuccessMessage(null), 3000)
-    } catch (err: any) {
-      const message = err.response?.data?.message || `Failed to update status to ${status}`
+    } catch (err) {
+      const message = getApiErrorMessage(err, `Failed to update status to ${status}`)
       setError(message)
     } finally {
       setIsLoading(false)

@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { FormField, FormSelect } from '@/shared/components/form'
@@ -78,7 +78,7 @@ export function SubjectForm({
     handleSubmit,
     formState: { errors },
   } = useForm<CreateSubjectFormData>({
-    resolver: zodResolver(isEditing ? updateSubjectSchema : createSubjectSchema) as any,
+    resolver: zodResolver(isEditing ? updateSubjectSchema : createSubjectSchema) as Resolver<CreateSubjectFormData>,
     defaultValues: subject
       ? {
           name: subject.name,

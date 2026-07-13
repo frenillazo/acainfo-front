@@ -29,7 +29,7 @@ export function AdminEnrollmentsPage() {
 
   useEffect(() => {
     setFilters((prev) => ({ ...prev, studentEmail: debouncedStudentEmail || undefined, page: 0 }))
-  }, [debouncedStudentEmail])
+  }, [debouncedStudentEmail, setFilters])
 
   const handleSearchByStudentEmail = (value: string) => {
     setStudentEmailInput(value)

@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { LoginForm } from '../components/LoginForm'
-import { config } from '@/shared/config/env'
 
 export function LoginPage() {
   return (

@@ -75,4 +75,3 @@ export function Avatar({ name, src, size, color, className }: AvatarProps) {
   )
 }
 
-export { avatarVariants }

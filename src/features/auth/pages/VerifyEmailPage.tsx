@@ -9,15 +9,13 @@ export function VerifyEmailPage() {
   const navigate = useNavigate()
   const token = searchParams.get('token')
 
-  const [status, setStatus] = useState<VerificationStatus>('loading')
-  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [status, setStatus] = useState<VerificationStatus>(token ? 'loading' : 'error')
+  const [errorMessage, setErrorMessage] = useState<string>(
+    token ? '' : 'Token de verificacion no proporcionado'
+  )
 
   useEffect(() => {
-    if (!token) {
-      setStatus('error')
-      setErrorMessage('Token de verificacion no proporcionado')
-      return
-    }
+    if (!token) return
 
     const verifyEmail = async () => {
       try {

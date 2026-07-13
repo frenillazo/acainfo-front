@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery } from '@tanstack/react-query'
@@ -46,14 +46,14 @@ export function EnrollmentForm({
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<EnrollmentFormData>({
     resolver: zodResolver(enrollmentSchema),
   })
 
-  const selectedStudentId = watch('studentId')
-  const selectedCourseId = watch('courseId')
+  const selectedStudentId = useWatch({ control, name: 'studentId' })
+  const selectedCourseId = useWatch({ control, name: 'courseId' })
 
   const students = studentsData?.content ?? []
   const courses = coursesData?.content ?? []
