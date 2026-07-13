@@ -48,9 +48,9 @@ export interface UpdateUserStatusRequest {
 }
 
 // Response types
+// El refresh token NO viaja aquí: el back lo entrega en una cookie httpOnly.
 export interface AuthResponse {
   accessToken: string
-  refreshToken: string
   tokenType: 'Bearer'
   expiresIn: number
   user: User

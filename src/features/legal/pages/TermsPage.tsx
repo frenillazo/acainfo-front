@@ -557,14 +557,15 @@ export function TermsPage() {
 
             <SubSection title="6.2 Tecnologías de almacenamiento local utilizadas">
               <P>
-                La Plataforma utiliza <Bold>almacenamiento local del navegador (localStorage)</Bold> en lugar de cookies HTTP tradicionales. La información almacenada es:
+                La Plataforma utiliza <Bold>almacenamiento local del navegador (localStorage)</Bold> y una <Bold>cookie técnica httpOnly</Bold> para gestionar la sesión. La información almacenada es:
               </P>
 
               <SubSubSection title="6.2.1 Almacenamiento técnico estrictamente necesario">
                 <Table
                   headers={['Clave', 'Contenido', 'Finalidad', 'Tipo', 'Duración']}
                   rows={[
-                    ['auth-storage', 'Token de acceso (JWT), token de refresco, datos básicos del usuario (nombre, email, roles)', 'Mantener la sesión del usuario autenticado', 'Técnica / Necesaria', 'Hasta cierre de sesión o expiración del token'],
+                    ['auth-storage (localStorage)', 'Token de acceso (JWT) y datos básicos del usuario (nombre, email, roles)', 'Mantener la sesión del usuario autenticado', 'Técnica / Necesaria', 'Hasta cierre de sesión o expiración del token'],
+                    ['refreshToken (cookie httpOnly)', 'Token de refresco de sesión', 'Renovar la sesión de forma segura sin exponer el token a JavaScript', 'Técnica / Necesaria', 'Hasta cierre de sesión o expiración (30 días)'],
                   ]}
                 />
                 <Note>

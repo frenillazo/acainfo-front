@@ -81,11 +81,13 @@ const authResponse = await authApi.register({
   lastName: 'Pérez',
 })
 
-// Refresh token
-const authResponse = await authApi.refresh(refreshToken)
+// Refresh token: automático en el interceptor de apiClient ante un 401.
+// El refresh token viaja en una cookie httpOnly (no accesible a JS); el
+// interceptor hace POST /auth/refresh sin body (withCredentials) y actualiza
+// el access token en el store. No se invoca manualmente.
 
-// Logout (envía el refresh token para que el back lo revoque)
-await authApi.logout(refreshToken)
+// Logout (el back lee y revoca el refresh token de la cookie httpOnly)
+await authApi.logout()
 
 // Logout de todos los dispositivos
 await authApi.logoutAll()

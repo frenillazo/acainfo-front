@@ -20,15 +20,9 @@ export const authApi = {
     return response.data
   },
 
-  refresh: async (refreshToken: string): Promise<AuthResponse> => {
-    const response = await apiClient.post<AuthResponse>('/auth/refresh', {
-      refreshToken,
-    })
-    return response.data
-  },
-
-  logout: async (refreshToken: string | null): Promise<void> => {
-    await apiClient.post('/auth/logout', { refreshToken })
+  logout: async (): Promise<void> => {
+    // Sin body: el refresh token viaja en la cookie httpOnly (withCredentials).
+    await apiClient.post('/auth/logout')
   },
 
   logoutAll: async (): Promise<void> => {

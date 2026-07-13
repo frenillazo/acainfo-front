@@ -5,12 +5,12 @@ import type { User, AuthResponse } from '../types/auth.types'
 interface AuthStore {
   user: User | null
   accessToken: string | null
-  refreshToken: string | null
   termsAccepted: boolean | null
 
   // Actions
   setAuth: (response: AuthResponse, user?: User) => void
   setUser: (user: User) => void
+  setAccessToken: (token: string) => void
   setTermsAccepted: (accepted: boolean) => void
   clearAuth: () => void
 
@@ -19,20 +19,19 @@ interface AuthStore {
   hasRole: (role: string) => boolean
 }
 
+// El refresh token NO vive aquí: lo gestiona el back en una cookie httpOnly.
+// El access token es la única fuente de verdad de sesión en el front (store
+// persistido en 'auth-storage'); el interceptor de apiClient lo lee/actualiza.
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       user: null,
       accessToken: null,
-      refreshToken: null,
       termsAccepted: null,
 
       setAuth: (response, user) => {
-        localStorage.setItem('accessToken', response.accessToken)
-        localStorage.setItem('refreshToken', response.refreshToken)
         set({
           accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
           termsAccepted: response.termsAccepted,
           user: user ?? get().user,
         })
@@ -40,15 +39,14 @@ export const useAuthStore = create<AuthStore>()(
 
       setUser: (user) => set({ user }),
 
+      setAccessToken: (token) => set({ accessToken: token }),
+
       setTermsAccepted: (accepted) => set({ termsAccepted: accepted }),
 
       clearAuth: () => {
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
         set({
           user: null,
           accessToken: null,
-          refreshToken: null,
           termsAccepted: null,
         })
       },
@@ -66,7 +64,6 @@ export const useAuthStore = create<AuthStore>()(
       partialize: (state) => ({
         user: state.user,
         accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
         termsAccepted: state.termsAccepted,
       }),
     }

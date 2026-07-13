@@ -50,9 +50,8 @@ export const useAuth = () => {
   // Logout
   const logout = async () => {
     try {
-      // localStorage es la fuente de verdad del token: el interceptor de
-      // refresh de apiClient rota tokens ahí sin actualizar el store
-      await authApi.logout(localStorage.getItem('refreshToken'))
+      // El refresh token viaja en la cookie httpOnly; el back la lee y revoca.
+      await authApi.logout()
     } finally {
       clearAuth()
       queryClient.clear()

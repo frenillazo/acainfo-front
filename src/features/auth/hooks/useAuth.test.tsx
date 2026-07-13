@@ -49,36 +49,27 @@ describe('useAuth.logout', () => {
     useAuthStore.setState({
       user: null,
       accessToken: null,
-      refreshToken: null,
       termsAccepted: null,
     })
     vi.mocked(authApi.getMe).mockResolvedValue(user)
     vi.mocked(authApi.logout).mockResolvedValue(undefined)
   })
 
-  it('envía el refresh token de localStorage, no el del store (el interceptor rota tokens solo en localStorage)', async () => {
-    // Regresión del fix 11-jul-2026: tras un refresh silencioso el store
-    // conserva el token viejo ya revocado; el vigente vive en localStorage
-    localStorage.setItem('accessToken', 'access-rotado')
-    localStorage.setItem('refreshToken', 'refresh-rotado-vigente')
-    useAuthStore.setState({
-      user,
-      accessToken: 'access-viejo',
-      refreshToken: 'refresh-viejo-revocado',
-    })
+  it('llama a authApi.logout sin argumentos: el refresh token viaja en la cookie httpOnly', async () => {
+    // El refresh token ya no es accesible a JS (cookie httpOnly); el back lo
+    // lee de la cookie y lo revoca. El front no envía ningún token en el body.
+    useAuthStore.setState({ user, accessToken: 'access' })
 
     const { result } = renderHook(() => useAuth(), { wrapper })
     await act(async () => {
       await result.current.logout()
     })
 
-    expect(authApi.logout).toHaveBeenCalledWith('refresh-rotado-vigente')
+    expect(authApi.logout).toHaveBeenCalledWith()
   })
 
-  it('limpia el estado y localStorage aunque la petición de logout falle', async () => {
-    localStorage.setItem('accessToken', 'access')
-    localStorage.setItem('refreshToken', 'refresh')
-    useAuthStore.setState({ user, accessToken: 'access', refreshToken: 'refresh' })
+  it('limpia el estado aunque la petición de logout falle', async () => {
+    useAuthStore.setState({ user, accessToken: 'access' })
     vi.mocked(authApi.logout).mockRejectedValue(new Error('network'))
 
     const { result } = renderHook(() => useAuth(), { wrapper })
@@ -88,7 +79,5 @@ describe('useAuth.logout', () => {
 
     expect(useAuthStore.getState().accessToken).toBeNull()
     expect(useAuthStore.getState().user).toBeNull()
-    expect(localStorage.getItem('accessToken')).toBeNull()
-    expect(localStorage.getItem('refreshToken')).toBeNull()
   })
 })
