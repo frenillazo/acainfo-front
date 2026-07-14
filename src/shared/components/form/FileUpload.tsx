@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { cn } from '@/shared/utils/cn'
+import { formatFileSize } from '@/shared/utils/formatters'
 import { Upload, X, FileText } from 'lucide-react'
 import { IconButton } from '../ui/IconButton'
 
@@ -12,14 +13,6 @@ interface FileUploadProps {
   maxSize?: number
   disabled?: boolean
   helperText?: string
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
 }
 
 export function FileUpload({

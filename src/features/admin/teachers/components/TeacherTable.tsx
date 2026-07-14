@@ -9,6 +9,7 @@ import {
   type Column,
 } from '@/shared/components/ui'
 import { USER_STATUS_CONFIG } from '@/shared/config/badgeConfig'
+import { formatDate } from '@/shared/utils/formatters'
 
 interface TeacherTableProps {
   teachers: Teacher[]
@@ -51,7 +52,7 @@ export function TeacherTable({
       header: 'Creado',
       render: (teacher) => (
         <span className="text-sm text-gray-500">
-          {new Date(teacher.createdAt).toLocaleDateString('es-ES')}
+          {formatDate(teacher.createdAt)}
         </span>
       ),
     },

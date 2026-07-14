@@ -67,3 +67,28 @@ export function dateToDayIndex(date: string): number {
   const day = new Date(date).getDay() - 1 // domingo=0 → -1
   return day < 0 ? 6 : day
 }
+
+/** Lunes (00:00) de la semana a la que pertenece la fecha. */
+export function getWeekStart(date: Date): Date {
+  const d = new Date(date)
+  const day = d.getDay()
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1) // domingo pertenece a la semana anterior
+  d.setDate(diff)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+/** Sábado... último día mostrado: weekStart + 6 (domingo). */
+export function getWeekEnd(weekStart: Date): Date {
+  const d = new Date(weekStart)
+  d.setDate(d.getDate() + 6)
+  return d
+}
+
+/** "13 jul - 19 jul 2026" — rótulo del navegador de semanas. */
+export function formatWeekRange(weekStart: Date): string {
+  const weekEnd = getWeekEnd(weekStart)
+  const startStr = weekStart.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+  const endStr = weekEnd.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+  return `${startStr} - ${endStr}`
+}

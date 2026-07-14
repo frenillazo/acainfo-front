@@ -1,5 +1,6 @@
 import type { Course, ScheduleSummary } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
+import { formatDateShort } from '@/shared/utils/formatters'
 import { DAY_OF_WEEK_SHORT_LABELS } from '@/shared/types/api.types'
 import { Card } from '@/shared/components/ui'
 import { Clock } from 'lucide-react'
@@ -16,9 +17,7 @@ function formatScheduleSummary(schedules: ScheduleSummary[]): string[] {
 }
 
 function formatDateRange(startDate: string, endDate: string): string {
-  const fmt = (iso: string) =>
-    new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
-  return `${fmt(startDate)} — ${fmt(endDate)}`
+  return `${formatDateShort(startDate)} — ${formatDateShort(endDate)}`
 }
 
 interface CourseCardProps {

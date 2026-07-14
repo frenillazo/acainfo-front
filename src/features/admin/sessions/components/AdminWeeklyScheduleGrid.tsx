@@ -6,6 +6,7 @@ import { cn } from '@/shared/utils/cn'
 import { MoreHorizontal } from 'lucide-react'
 import { WeekGrid } from '@/shared/components/schedule/WeekGrid'
 import { dateToDayIndex } from '@/shared/components/schedule/weekGridUtils'
+import { formatTime } from '@/shared/utils/formatters'
 
 interface AdminWeeklyScheduleGridProps {
   sessions: Session[]
@@ -23,10 +24,6 @@ const STATUS_COLORS: Record<string, { bg: string; label: string }> = {
   COMPLETED: { bg: 'bg-green-500', label: 'Completada' },
   CANCELLED: { bg: 'bg-red-400', label: 'Cancelada' },
   POSTPONED: { bg: 'bg-orange-400', label: 'Pospuesta' },
-}
-
-function formatTime(time: string): string {
-  return time.substring(0, 5)
 }
 
 type GridSession = Session & { dayIndex: number }

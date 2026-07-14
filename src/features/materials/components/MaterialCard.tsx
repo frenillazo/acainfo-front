@@ -4,6 +4,7 @@ import { getFileIcon, CATEGORY_ICONS } from '../types/material.types'
 import { cn } from '@/shared/utils/cn'
 import { Card } from '@/shared/components/ui'
 import { Eye, EyeOff, Pencil, Ban, Check } from 'lucide-react'
+import { formatDate } from '@/shared/utils/formatters'
 
 interface MaterialCardProps {
   material: Material
@@ -112,7 +113,7 @@ export function MaterialCard({
 
           <div className="mt-2 text-xs text-gray-400">
             Subido por {material.uploadedByName} •{' '}
-            {new Date(material.uploadedAt).toLocaleDateString()}
+            {formatDate(material.uploadedAt)}
           </div>
         </div>
 

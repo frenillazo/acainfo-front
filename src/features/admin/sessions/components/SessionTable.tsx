@@ -1,21 +1,13 @@
 import { Link } from 'react-router-dom'
 import type { Session } from '../../types/admin.types'
 import { ConfigBadge } from '@/shared/components/ui'
+import { formatDateWithWeekday as formatDate } from '@/shared/utils/formatters'
 import { SESSION_STATUS_CONFIG, SESSION_TYPE_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 
 interface SessionTableProps {
   sessions: Session[]
   isLoading?: boolean
-}
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('es-ES', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-  })
 }
 
 export function SessionTable({ sessions, isLoading }: SessionTableProps) {

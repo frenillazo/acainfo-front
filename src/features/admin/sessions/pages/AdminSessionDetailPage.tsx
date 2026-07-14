@@ -8,6 +8,7 @@ import {
   useDeleteSession,
 } from '../hooks/useAdminSessions'
 import { ConfigBadge } from '@/shared/components/ui'
+import { formatDateFull as formatDate } from '@/shared/utils/formatters'
 import { SESSION_STATUS_CONFIG, SESSION_TYPE_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { ClassroomBadge } from '../../schedules/components/ClassroomBadge'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
@@ -98,16 +99,6 @@ export function AdminSessionDetailPage() {
         <ErrorState error={error} title="Error al cargar la sesión" />
       </div>
     )
-  }
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('es-ES', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
   }
 
   return (

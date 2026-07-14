@@ -9,6 +9,7 @@ import {
   dateToDayIndex,
 } from '@/shared/components/schedule/weekGridUtils'
 import { CLASSROOM_LABELS } from '@/shared/config/domainConstants'
+import { formatTime } from '@/shared/utils/formatters'
 
 interface StudentWeeklyScheduleGridProps {
   sessions: (Session | StudentSession)[]
@@ -17,10 +18,6 @@ interface StudentWeeklyScheduleGridProps {
 
 function isStudentSession(session: Session | StudentSession): session is StudentSession {
   return 'isAlternative' in session
-}
-
-function formatTime(time: string): string {
-  return time.substring(0, 5)
 }
 
 type GridSession = (Session | StudentSession) & { dayIndex: number; zIndex: number }

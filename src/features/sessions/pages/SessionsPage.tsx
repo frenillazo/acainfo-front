@@ -8,31 +8,10 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { ChevronLeft, ChevronRight, Calendar, List, Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
+import { getWeekStart, getWeekEnd, formatWeekRange } from '@/shared/components/schedule/weekGridUtils'
 import type { StudentSession } from '../types/session.types'
 
 type ViewMode = 'calendar' | 'list'
-
-function getWeekStart(date: Date): Date {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1) // Adjust when day is Sunday
-  d.setDate(diff)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
-
-function getWeekEnd(weekStart: Date): Date {
-  const d = new Date(weekStart)
-  d.setDate(d.getDate() + 6)
-  return d
-}
-
-function formatWeekRange(weekStart: Date): string {
-  const weekEnd = getWeekEnd(weekStart)
-  const startStr = weekStart.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
-  const endStr = weekEnd.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
-  return `${startStr} - ${endStr}`
-}
 
 export function SessionsPage() {
   const { user } = useAuthStore()

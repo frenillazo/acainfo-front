@@ -17,6 +17,8 @@ import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
+import { formatISODate } from '@/shared/utils/formatters'
+import { getWeekStart, getWeekEnd, formatWeekRange } from '@/shared/components/schedule/weekGridUtils'
 import type { SessionStatus, SessionType, SessionMode, SessionFilters } from '../../types/admin.types'
 
 const SESSION_STATUSES: { key: SessionStatus | ''; label: string }[] = [
@@ -40,32 +42,6 @@ const SESSION_MODES: { key: SessionMode | ''; label: string }[] = [
   { key: 'ONLINE', label: 'Online' },
   { key: 'DUAL', label: 'Dual' },
 ]
-
-function getWeekStart(date: Date): Date {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
-  d.setDate(diff)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
-
-function getWeekEnd(weekStart: Date): Date {
-  const d = new Date(weekStart)
-  d.setDate(d.getDate() + 6)
-  return d
-}
-
-function formatLocalDate(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
-
-function formatWeekRange(weekStart: Date): string {
-  const weekEnd = getWeekEnd(weekStart)
-  const startStr = weekStart.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
-  const endStr = weekEnd.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
-  return `${startStr} - ${endStr}`
-}
 
 export function AdminSessionsPage() {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
@@ -94,8 +70,8 @@ export function AdminSessionsPage() {
         size: 200,
         sortBy: 'date',
         sortDirection: 'ASC',
-        dateFrom: formatLocalDate(weekStart),
-        dateTo: formatLocalDate(getWeekEnd(weekStart)),
+        dateFrom: formatISODate(weekStart),
+        dateTo: formatISODate(getWeekEnd(weekStart)),
         ...(selectedStatus && { status: selectedStatus }),
         ...(selectedType && { type: selectedType }),
         ...(selectedMode && { mode: selectedMode }),

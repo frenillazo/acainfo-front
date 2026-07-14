@@ -11,6 +11,7 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { formatDateTimeLong } from '@/shared/utils/formatters'
 
 export function AdminCourseDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -258,13 +259,7 @@ export function AdminCourseDetailPage() {
                 Fecha de creación
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(course.createdAt).toLocaleDateString('es-ES', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {formatDateTimeLong(course.createdAt)}
               </dd>
             </div>
             <div>
@@ -272,13 +267,7 @@ export function AdminCourseDetailPage() {
                 Última actualización
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(course.updatedAt).toLocaleDateString('es-ES', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {formatDateTimeLong(course.updatedAt)}
               </dd>
             </div>
           </dl>

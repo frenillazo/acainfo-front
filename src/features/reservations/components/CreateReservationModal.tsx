@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
 import { cn } from '@/shared/utils/cn'
+import { formatDateWithWeekdayLong as formatDate, formatTime } from '@/shared/utils/formatters'
 import { useCreateReservation } from '../hooks/useReservationMutations'
 import { ReservationMode } from '../types/reservation.types'
 import type { Session } from '@/features/sessions/types/session.types'
@@ -38,11 +39,6 @@ export function CreateReservationModal({
       { onSuccess: () => onClose() }
     )
   }
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
-
-  const formatTime = (time: string) => time.substring(0, 5)
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Reservar Plaza" size="sm">

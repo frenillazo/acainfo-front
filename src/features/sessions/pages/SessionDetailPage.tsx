@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useSession } from '../hooks/useSessions'
 import { ConfigBadge } from '@/shared/components/ui'
+import { formatDateFull as formatDate, formatTime } from '@/shared/utils/formatters'
 import { SESSION_STATUS_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
@@ -53,18 +54,6 @@ export function SessionDetailPage() {
       </div>
     )
   }
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('es-ES', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
-  }
-
-  const formatTime = (time: string) => time.substring(0, 5)
 
   const visualStatus = getVisualSessionStatus(session)
   const isUpcoming = visualStatus === 'scheduled'

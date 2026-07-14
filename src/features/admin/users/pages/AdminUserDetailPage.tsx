@@ -9,6 +9,7 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import type { User } from '@/features/auth'
+import { formatDateTimeLong } from '@/shared/utils/formatters'
 
 export function AdminUserDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -133,13 +134,7 @@ export function AdminUserDetailPage() {
                   Fecha de creación
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {new Date(user.createdAt).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {formatDateTimeLong(user.createdAt)}
                 </dd>
               </div>
               <div>
@@ -147,13 +142,7 @@ export function AdminUserDetailPage() {
                   Última actualización
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {new Date(user.updatedAt).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {formatDateTimeLong(user.updatedAt)}
                 </dd>
               </div>
             </dl>

@@ -3,6 +3,8 @@ import { Card, ConfigBadge } from '@/shared/components/ui'
 import { SESSION_STATUS_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { cn } from '@/shared/utils/cn'
 import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
+import { formatDateFull as formatDate, formatTime } from '@/shared/utils/formatters'
+import { CLASSROOM_LABELS } from '@/shared/config/domainConstants'
 
 interface SessionCardProps {
   session: Session | StudentSession
@@ -14,32 +16,7 @@ function isStudentSession(session: Session | StudentSession): session is Student
 
 export function SessionCard({ session }: SessionCardProps) {
   const isAlternative = isStudentSession(session) && session.isAlternative
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('es-ES', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })
-  }
-
-  const formatTime = (timeString: string) => {
-    return timeString.substring(0, 5) // HH:mm
-  }
-
-  const getClassroomLabel = (classroom: string) => {
-    const labels: Record<string, string> = {
-      AULA_101: 'Aula 101',
-      AULA_102: 'Aula 102',
-      AULA_201: 'Aula 201',
-      AULA_202: 'Aula 202',
-      LAB_A: 'Laboratorio A',
-      LAB_B: 'Laboratorio B',
-      ONLINE_MEET: 'Online (Meet)',
-    }
-    return labels[classroom] || classroom
-  }
+  const getClassroomLabel = (classroom: string) => CLASSROOM_LABELS[classroom] ?? classroom
 
   const visualStatus = getVisualSessionStatus(session)
   const isUpcoming = visualStatus === 'scheduled'

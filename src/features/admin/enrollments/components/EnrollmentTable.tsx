@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Enrollment } from '@/features/enrollments/types/enrollment.types'
 import { EnrollmentStatusBadge } from '@/features/enrollments/components/EnrollmentStatusBadge'
+import { formatDate } from '@/shared/utils/formatters'
 import {
   DataTable,
   TextCell,
@@ -64,7 +65,7 @@ export function EnrollmentTable({
       header: 'Fecha',
       render: (enrollment) => (
         <span className="text-sm text-gray-500">
-          {new Date(enrollment.enrolledAt).toLocaleDateString('es-ES')}
+          {formatDate(enrollment.enrolledAt)}
         </span>
       ),
     },

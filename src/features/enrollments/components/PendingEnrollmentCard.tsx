@@ -4,6 +4,7 @@ import { Card, Button } from '@/shared/components/ui'
 import { useApproveEnrollment, useRejectEnrollment } from '../hooks/useEnrollments'
 import { cn } from '@/shared/utils/cn'
 import { Clock, User, BookOpen, AlertCircle } from 'lucide-react'
+import { formatDateTimeShort } from '@/shared/utils/formatters'
 
 interface PendingEnrollmentCardProps {
   enrollment: Enrollment
@@ -82,12 +83,7 @@ export function PendingEnrollmentCard({ enrollment }: PendingEnrollmentCardProps
           <Clock className="h-4 w-4" />
           <span>
             Solicitado el{' '}
-            {new Date(enrollment.enrolledAt).toLocaleDateString('es-ES', {
-              day: 'numeric',
-              month: 'short',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
+            {formatDateTimeShort(enrollment.enrolledAt)}
           </span>
         </div>
 

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
 import { cn } from '@/shared/utils/cn'
+import { formatDateWithWeekday as formatDate, formatTime } from '@/shared/utils/formatters'
 import { useSessionsBySubject } from '@/features/sessions/hooks/useSessions'
 import { useSwitchSession } from '../hooks/useReservationMutations'
 import { useSessionReservations } from '../hooks/useReservations'
@@ -49,11 +50,6 @@ export function SwitchSessionModal({
       { onSuccess: () => onClose() }
     )
   }
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
-
-  const formatTime = (time: string) => time.substring(0, 5)
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Cambiar Sesion" size="lg">
@@ -122,11 +118,6 @@ function SessionOption({
 }) {
   const { data: reservations } = useSessionReservations(session.id)
   const inPersonCount = (reservations ?? []).filter((r) => r.isConfirmed && r.isInPerson).length
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
-
-  const formatTime = (time: string) => time.substring(0, 5)
 
   return (
     <button

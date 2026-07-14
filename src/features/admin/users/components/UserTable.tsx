@@ -3,6 +3,7 @@ import type { User } from '../../types/admin.types'
 import { RoleBadge } from './RoleBadge'
 import { ConfigBadge } from '@/shared/components/ui'
 import { USER_STATUS_CONFIG } from '@/shared/config/badgeConfig'
+import { formatDate } from '@/shared/utils/formatters'
 
 type SelectionMode = 'none' | 'deactivate' | 'activate'
 
@@ -162,7 +163,7 @@ export function UserTable({
                   <ConfigBadge config={USER_STATUS_CONFIG} value={user.status} fallback="PENDING_ACTIVATION" />
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                  {new Date(user.createdAt).toLocaleDateString('es-ES')}
+                  {formatDate(user.createdAt)}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
                   <Link

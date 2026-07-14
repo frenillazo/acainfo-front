@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
 import { cn } from '@/shared/utils/cn'
+import { formatDateWithWeekdayLong as formatDate, formatTime } from '@/shared/utils/formatters'
 import { useCreateReservation } from '@/features/reservations/hooks/useReservationMutations'
 import { ReservationMode } from '@/features/reservations/types/reservation.types'
 import type { UpcomingSessionSummary } from '../types/student.types'
@@ -34,11 +35,6 @@ export function QuickReserveModal({
       { onSuccess: () => onClose() }
     )
   }
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
-
-  const formatTime = (time: string) => time.substring(0, 5)
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Reservar Plaza" size="sm">

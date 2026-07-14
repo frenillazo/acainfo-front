@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuthStore } from '../store/authStore'
 import { ProfileEditForm } from '../components/ProfileEditForm'
 import { ChangePasswordForm } from '../components/ChangePasswordForm'
+import { formatDateLong } from '@/shared/utils/formatters'
 
 export function ProfilePage() {
   const user = useAuthStore((state) => state.user)
@@ -9,12 +10,12 @@ export function ProfilePage() {
   const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null)
 
   const handleProfileSuccess = () => {
-    setShowSuccessMessage('Profile updated successfully!')
+    setShowSuccessMessage('Perfil actualizado correctamente')
     setTimeout(() => setShowSuccessMessage(null), 5000)
   }
 
   const handlePasswordSuccess = () => {
-    setShowSuccessMessage('Password changed successfully!')
+    setShowSuccessMessage('Contraseña cambiada correctamente')
     setTimeout(() => setShowSuccessMessage(null), 5000)
     // Optionally switch back to profile tab
     setActiveTab('profile')
@@ -23,7 +24,7 @@ export function ProfilePage() {
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-500">Please log in to view your profile.</p>
+        <p className="text-gray-500">Inicia sesión para ver tu perfil.</p>
       </div>
     )
   }
@@ -33,9 +34,9 @@ export function ProfilePage() {
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Mi perfil</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Manage your account settings and preferences
+            Gestiona los datos de tu cuenta
           </p>
         </div>
 
@@ -64,7 +65,7 @@ export function ProfilePage() {
                   onClick={() => setShowSuccessMessage(null)}
                   className="inline-flex rounded-md bg-green-50 p-1.5 text-green-500 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
                 >
-                  <span className="sr-only">Dismiss</span>
+                  <span className="sr-only">Cerrar</span>
                   <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path
                       fillRule="evenodd"
@@ -123,7 +124,7 @@ export function ProfilePage() {
                     : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                 }`}
               >
-                Profile Information
+                Datos del perfil
               </button>
               <button
                 onClick={() => setActiveTab('password')}
@@ -133,7 +134,7 @@ export function ProfilePage() {
                     : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                 }`}
               >
-                Change Password
+                Cambiar contraseña
               </button>
             </nav>
           </div>
@@ -144,10 +145,10 @@ export function ProfilePage() {
           {activeTab === 'profile' && (
             <div>
               <h3 className="mb-4 text-lg font-medium text-gray-900">
-                Edit Profile Information
+                Editar datos del perfil
               </h3>
               <p className="mb-6 text-sm text-gray-500">
-                Update your first and last name. Your email address cannot be changed.
+                Actualiza tu nombre y apellidos. El email no se puede cambiar.
               </p>
               <ProfileEditForm onSuccess={handleProfileSuccess} />
             </div>
@@ -155,10 +156,9 @@ export function ProfilePage() {
 
           {activeTab === 'password' && (
             <div>
-              <h3 className="mb-4 text-lg font-medium text-gray-900">Change Password</h3>
+              <h3 className="mb-4 text-lg font-medium text-gray-900">Cambiar contraseña</h3>
               <p className="mb-6 text-sm text-gray-500">
-                Enter your current password and choose a new password. Your new password
-                must be at least 6 characters long.
+                Introduce tu contraseña actual y elige una nueva de al menos 6 caracteres.
               </p>
               <ChangePasswordForm onSuccess={handlePasswordSuccess} />
             </div>
@@ -167,26 +167,18 @@ export function ProfilePage() {
 
         {/* Account Info */}
         <div className="mt-6 rounded-lg bg-white p-6 shadow">
-          <h3 className="mb-4 text-lg font-medium text-gray-900">Account Information</h3>
+          <h3 className="mb-4 text-lg font-medium text-gray-900">Información de la cuenta</h3>
           <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <dt className="text-sm font-medium text-gray-500">Account Created</dt>
+              <dt className="text-sm font-medium text-gray-500">Cuenta creada</dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(user.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                {formatDateLong(user.createdAt)}
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
+              <dt className="text-sm font-medium text-gray-500">Última actualización</dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(user.updatedAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                {formatDateLong(user.updatedAt)}
               </dd>
             </div>
           </dl>

@@ -9,6 +9,7 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { formatDateTimeLong } from '@/shared/utils/formatters'
 
 export function AdminEnrollmentDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -202,13 +203,7 @@ export function AdminEnrollmentDetailPage() {
                 Fecha de inscripción
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(enrollment.enrolledAt).toLocaleDateString('es-ES', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {formatDateTimeLong(enrollment.enrolledAt)}
               </dd>
             </div>
             {enrollment.promotedAt && (
@@ -217,13 +212,7 @@ export function AdminEnrollmentDetailPage() {
                   Fecha de promoción
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {new Date(enrollment.promotedAt).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {formatDateTimeLong(enrollment.promotedAt)}
                 </dd>
               </div>
             )}
@@ -233,26 +222,14 @@ export function AdminEnrollmentDetailPage() {
                   Fecha de retiro
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900">
-                  {new Date(enrollment.withdrawnAt).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {formatDateTimeLong(enrollment.withdrawnAt)}
                 </dd>
               </div>
             )}
             <div>
               <dt className="text-sm font-medium text-gray-500">Creación</dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(enrollment.createdAt).toLocaleDateString('es-ES', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {formatDateTimeLong(enrollment.createdAt)}
               </dd>
             </div>
             <div>
@@ -260,13 +237,7 @@ export function AdminEnrollmentDetailPage() {
                 Última actualización
               </dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(enrollment.updatedAt).toLocaleDateString('es-ES', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {formatDateTimeLong(enrollment.updatedAt)}
               </dd>
             </div>
           </dl>
