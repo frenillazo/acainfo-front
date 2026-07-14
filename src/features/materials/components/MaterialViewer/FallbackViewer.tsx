@@ -1,6 +1,6 @@
 import type { Material } from '../../types/material.types'
 import { getFileIcon } from '../../types/material.types'
-import { Download } from 'lucide-react'
+import { Ban, Download } from 'lucide-react'
 
 interface FallbackViewerProps {
   material: Material
@@ -27,20 +27,33 @@ export function FallbackViewer({ material, onDownload }: FallbackViewerProps) {
         <span>{material.fileSizeFormatted}</span>
       </div>
 
-      {/* Message */}
-      <p className="mt-6 max-w-sm text-sm text-gray-600">
-        Este tipo de archivo no puede visualizarse en el navegador. Puedes descargarlo para verlo en
-        tu dispositivo.
-      </p>
-
-      {/* Download button */}
-      <button
-        onClick={onDownload}
-        className="mt-6 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
-        <Download className="h-5 w-5" />
-        Descargar archivo
-      </button>
+      {/* Message + download (solo si el material permite descarga) */}
+      {material.downloadDisabled ? (
+        <>
+          <p className="mt-6 max-w-sm text-sm text-gray-600">
+            Este tipo de archivo no puede visualizarse en el navegador y su descarga está
+            deshabilitada.
+          </p>
+          <span className="mt-6 inline-flex items-center gap-2 rounded-lg bg-red-100 px-6 py-3 text-sm font-medium text-red-700">
+            <Ban className="h-5 w-5" />
+            Descarga deshabilitada
+          </span>
+        </>
+      ) : (
+        <>
+          <p className="mt-6 max-w-sm text-sm text-gray-600">
+            Este tipo de archivo no puede visualizarse en el navegador. Puedes descargarlo para
+            verlo en tu dispositivo.
+          </p>
+          <button
+            onClick={onDownload}
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            <Download className="h-5 w-5" />
+            Descargar archivo
+          </button>
+        </>
+      )}
     </div>
   )
 }

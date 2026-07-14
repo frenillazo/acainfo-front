@@ -1,7 +1,7 @@
 import type { Material, ViewerType } from '../../types/material.types'
 import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
 import { MaterialViewer } from './MaterialViewer'
-import { Download, X } from 'lucide-react'
+import { Ban, Download, X } from 'lucide-react'
 
 interface MaterialViewerModalProps {
   isOpen: boolean
@@ -51,13 +51,20 @@ export function MaterialViewerModal({
           <X className="h-4 w-4" />
           Cerrar
         </button>
-        <button
-          onClick={onDownload}
-          className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          <Download className="h-4 w-4" />
-          Descargar
-        </button>
+        {material.downloadDisabled ? (
+          <span className="inline-flex items-center gap-2 rounded-md bg-red-100 px-4 py-2 text-sm font-medium text-red-700">
+            <Ban className="h-4 w-4" />
+            Descarga deshabilitada
+          </span>
+        ) : (
+          <button
+            onClick={onDownload}
+            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            <Download className="h-4 w-4" />
+            Descargar
+          </button>
+        )}
       </ModalFooter>
     </Modal>
   )

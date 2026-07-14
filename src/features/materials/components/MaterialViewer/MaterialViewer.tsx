@@ -55,7 +55,7 @@ export function MaterialViewer({
 
   switch (viewerType) {
     case 'pdf':
-      return <PdfViewer content={content as Blob} />
+      return <PdfViewer content={content as Blob} allowDownload={!material.downloadDisabled} />
     case 'code':
       return <CodeViewer content={content as string} language={material.fileExtension} />
     case 'image':
