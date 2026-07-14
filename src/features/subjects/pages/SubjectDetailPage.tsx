@@ -5,12 +5,12 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { CourseCard } from '../components/CourseCard'
 import type { Course } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
-import { useMaterials } from '@/features/materials/hooks/useMaterials'
+import { useMaterialsBySubject } from '@/features/materials/hooks/useMaterials'
+import { useDownloadMaterial } from '@/features/materials/hooks/useMaterialMutations'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
-import { useEffect } from 'react'
 import { useCheckInterest, useMarkInterest, useRemoveInterest } from '../hooks/useSubjectInterest'
 import { HandMetal, Lock } from 'lucide-react'
 
@@ -44,23 +44,11 @@ export function SubjectDetailPage() {
   const { hasPendingEnrollmentForSubject } = usePendingEnrollmentsByStudent(userId)
   const subjectHasPendingRequest = hasPendingEnrollmentForSubject(subjectId)
 
-  // Materials
-  const {
-    materials,
-    isLoading: isLoadingMaterials,
-    download,
-    isDownloading,
-    getBySubjectId,
-  } = useMaterials()
+  // Materials (TanStack Query: se cargan y refrescan solos)
+  const { data: materials = [], isLoading: isLoadingMaterials } = useMaterialsBySubject(subjectId)
+  const downloadMutation = useDownloadMaterial()
 
   const courses = coursesData?.content ?? []
-
-  // Load materials when subject is loaded
-  useEffect(() => {
-    if (subjectId) {
-      getBySubjectId(subjectId)
-    }
-  }, [subjectId, getBySubjectId])
 
   const handleEnroll = async (course: Course) => {
     if (!user?.id) return
@@ -241,8 +229,8 @@ export function SubjectDetailPage() {
               <MaterialCard
                 key={material.id}
                 material={material}
-                onDownload={download}
-                isDownloading={isDownloading}
+                onDownload={(id, filename) => downloadMutation.mutate({ id, filename })}
+                isDownloading={downloadMutation.isPending}
               />
             ))}
           </div>

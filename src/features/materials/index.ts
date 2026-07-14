@@ -6,7 +6,15 @@ export { FILE_CATEGORIES, getFileCategory, getFileIcon, getViewerType, CODE_LANG
 export { materialApi } from './services/materialApi'
 
 // Hooks
-export { useMaterials } from './hooks/useMaterials'
+export { materialKeys, useMaterialsList, useMaterialsBySubject, useRecentMaterials } from './hooks/useMaterials'
+export {
+  useUploadMaterial,
+  useDeleteMaterial,
+  useUpdateMaterial,
+  useBatchSetDownloadDisabled,
+  useBatchSetVisibility,
+  useDownloadMaterial,
+} from './hooks/useMaterialMutations'
 export { useMaterialViewer } from './hooks/useMaterialViewer'
 
 // Components

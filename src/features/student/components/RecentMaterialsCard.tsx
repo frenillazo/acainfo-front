@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
 import { FileText, Download } from 'lucide-react'
 import { materialApi } from '@/features/materials/services/materialApi'
+import { useRecentMaterials } from '@/features/materials/hooks/useMaterials'
 import type { Material } from '@/features/materials/types/material.types'
 import { formatDate } from '@/shared/utils/formatters'
 import { Spinner, Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui'
@@ -16,10 +16,7 @@ export function RecentMaterialsCard() {
   // Get active enrollment subject IDs to filter materials
   const { activeSubjectIds, isLoading: isLoadingEnrollments } = useActiveEnrollmentSubjectIds(userId)
 
-  const { data: allMaterials, isLoading: isLoadingMaterials, error } = useQuery({
-    queryKey: ['materials', 'recent'],
-    queryFn: () => materialApi.getRecent(3),
-  })
+  const { data: allMaterials, isLoading: isLoadingMaterials, error } = useRecentMaterials(3)
 
   // Filter materials to only show those from subjects with active enrollment
   const materials = useMemo(() => {

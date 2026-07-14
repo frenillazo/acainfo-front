@@ -1,29 +1,42 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAuthStore } from '@/features/auth'
-import { useMaterials } from '../hooks/useMaterials'
+import { useMaterialsList } from '../hooks/useMaterials'
+import {
+  useUploadMaterial,
+  useDeleteMaterial,
+  useDownloadMaterial,
+} from '../hooks/useMaterialMutations'
 import { useMaterialViewer } from '../hooks/useMaterialViewer'
 import { MaterialCard } from '../components/MaterialCard'
 import { MaterialUploadForm } from '../components/MaterialUploadForm'
 import { MaterialViewerModal } from '../components/MaterialViewer'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 import type { Material, UploadMaterialRequest } from '../types/material.types'
 
 export function MaterialsPage() {
   const user = useAuthStore((state) => state.user)
   const isAdminOrTeacher = user?.roles.some((r) => r === 'ADMIN' || r === 'TEACHER')
 
-  const {
-    materials,
-    pageData,
-    isLoading,
-    isUploading,
-    isDownloading,
-    error,
-    clearError,
-    upload,
-    download,
-    deleteMaterial,
-    getAll,
-  } = useMaterials()
+  const [showUploadForm, setShowUploadForm] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedExtension, setSelectedExtension] = useState('')
+
+  // Los filtros forman parte de la query key: cambiar página/búsqueda/tipo
+  // refetchea solo, sin recargas manuales.
+  const { data: pageData, isLoading, error: listError } = useMaterialsList({
+    page: currentPage,
+    size: 12,
+    searchTerm: searchTerm || undefined,
+    fileExtension: selectedExtension || undefined,
+    sortBy: 'uploadedAt',
+    sortDirection: 'DESC',
+  })
+  const materials = pageData?.content ?? []
+
+  const uploadMutation = useUploadMaterial()
+  const deleteMutation = useDeleteMaterial()
+  const downloadMutation = useDownloadMaterial()
 
   const {
     isOpen: viewerOpen,
@@ -36,34 +49,24 @@ export function MaterialsPage() {
     closeViewer,
   } = useMaterialViewer()
 
-  const [showUploadForm, setShowUploadForm] = useState(false)
-  const [currentPage, setCurrentPage] = useState(0)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedExtension, setSelectedExtension] = useState('')
-
-  // Load materials on mount and when filters change
-  useEffect(() => {
-    loadMaterials()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, searchTerm, selectedExtension])
-
-  const loadMaterials = () => {
-    getAll({
-      page: currentPage,
-      size: 12,
-      searchTerm: searchTerm || undefined,
-      fileExtension: selectedExtension || undefined,
-      sortBy: 'uploadedAt',
-      sortDirection: 'DESC',
-    })
+  const mutationError = uploadMutation.error ?? deleteMutation.error ?? downloadMutation.error
+  const error = mutationError
+    ? getApiErrorMessage(mutationError, 'No se pudo completar la operación')
+    : listError
+      ? getApiErrorMessage(listError, 'No se pudieron cargar los materiales')
+      : null
+  const clearError = () => {
+    uploadMutation.reset()
+    deleteMutation.reset()
+    downloadMutation.reset()
   }
 
   const handleUpload = async (metadata: UploadMaterialRequest, file: File) => {
-    const material = await upload(metadata, file)
-    if (material) {
+    try {
+      await uploadMutation.mutateAsync({ metadata, file })
       setShowUploadForm(false)
-      // Reload to show new material
-      loadMaterials()
+    } catch {
+      // el error se muestra en el banner vía uploadMutation.error
     }
   }
 
@@ -73,26 +76,21 @@ export function MaterialsPage() {
 
   const handleViewerDownload = () => {
     if (viewerMaterial) {
-      download(viewerMaterial.id, viewerMaterial.originalFilename)
+      downloadMutation.mutate({ id: viewerMaterial.id, filename: viewerMaterial.originalFilename })
     }
   }
 
-  const handleDownload = async (id: number, filename: string) => {
-    await download(id, filename)
+  const handleDownload = (id: number, filename: string) => {
+    downloadMutation.mutate({ id, filename })
   }
 
-  const handleDelete = async (id: number) => {
-    const success = await deleteMaterial(id)
-    if (success) {
-      // Reload list
-      loadMaterials()
-    }
+  const handleDelete = (id: number) => {
+    deleteMutation.mutate(id)
   }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     setCurrentPage(0) // Reset to first page
-    loadMaterials()
   }
 
   const handlePageChange = (newPage: number) => {
@@ -109,9 +107,9 @@ export function MaterialsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Materials</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Materiales</h1>
           <p className="mt-1 text-sm text-gray-500">
-            View and download course materials
+            Consulta y descarga el material de tus asignaturas
           </p>
         </div>
 
@@ -120,7 +118,7 @@ export function MaterialsPage() {
             onClick={() => setShowUploadForm(!showUploadForm)}
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            {showUploadForm ? 'Cancel' : 'Upload Material'}
+            {showUploadForm ? 'Cancelar' : 'Subir material'}
           </button>
         )}
       </div>
@@ -128,11 +126,11 @@ export function MaterialsPage() {
       {/* Upload Form */}
       {showUploadForm && isAdminOrTeacher && (
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Upload New Material</h2>
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Subir nuevo material</h2>
           <MaterialUploadForm
             onSubmit={handleUpload}
             onCancel={() => setShowUploadForm(false)}
-            isLoading={isUploading}
+            isLoading={uploadMutation.isPending}
           />
         </div>
       )}
@@ -162,7 +160,7 @@ export function MaterialsPage() {
                 onClick={clearError}
                 className="inline-flex rounded-md bg-red-50 p-1.5 text-red-500 hover:bg-red-100"
               >
-                <span className="sr-only">Dismiss</span>
+                <span className="sr-only">Cerrar</span>
                 <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path
                     fillRule="evenodd"
@@ -184,7 +182,7 @@ export function MaterialsPage() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search materials..."
+              placeholder="Buscar materiales..."
               className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
@@ -198,7 +196,7 @@ export function MaterialsPage() {
               }}
               className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
-              <option value="">All types</option>
+              <option value="">Todos los tipos</option>
               {extensions.map((ext) => (
                 <option key={ext} value={ext}>
                   .{ext}
@@ -211,7 +209,7 @@ export function MaterialsPage() {
             type="submit"
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
-            Search
+            Buscar
           </button>
         </form>
       </div>
@@ -236,11 +234,11 @@ export function MaterialsPage() {
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No materials found</h3>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">No hay materiales</h3>
           <p className="mt-1 text-sm text-gray-500">
             {searchTerm || selectedExtension
-              ? 'Try adjusting your filters'
-              : 'No materials have been uploaded yet'}
+              ? 'Prueba a ajustar los filtros'
+              : 'Todavía no se ha subido ningún material'}
           </p>
         </div>
       ) : (
@@ -254,7 +252,7 @@ export function MaterialsPage() {
                 onDownload={handleDownload}
                 onDelete={handleDelete}
                 canDelete={isAdminOrTeacher}
-                isDownloading={isDownloading}
+                isDownloading={downloadMutation.isPending}
               />
             ))}
           </div>
@@ -268,31 +266,31 @@ export function MaterialsPage() {
                   disabled={pageData.first}
                   className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Previous
+                  Anterior
                 </button>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={pageData.last}
                   className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Next
+                  Siguiente
                 </button>
               </div>
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Showing{' '}
+                    Mostrando{' '}
                     <span className="font-medium">
                       {pageData.page * pageData.size + 1}
                     </span>{' '}
-                    to{' '}
+                    a{' '}
                     <span className="font-medium">
                       {Math.min(
                         (pageData.page + 1) * pageData.size,
                         pageData.totalElements
                       )}
                     </span>{' '}
-                    of <span className="font-medium">{pageData.totalElements}</span> results
+                    de <span className="font-medium">{pageData.totalElements}</span> resultados
                   </p>
                 </div>
                 <div>
@@ -302,14 +300,14 @@ export function MaterialsPage() {
                       disabled={pageData.first}
                       className="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Previous
+                      Anterior
                     </button>
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={pageData.last}
                       className="relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Next
+                      Siguiente
                     </button>
                   </nav>
                 </div>

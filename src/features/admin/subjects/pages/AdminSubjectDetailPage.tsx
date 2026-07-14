@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   useAdminSubject,
   useArchiveSubject,
@@ -7,8 +7,15 @@ import {
 } from '../hooks/useAdminSubjects'
 import { ConfigBadge } from '@/shared/components/ui'
 import { SUBJECT_STATUS_CONFIG, DEGREE_CONFIG } from '@/shared/config/badgeConfig'
-import { useMaterials } from '@/features/materials/hooks/useMaterials'
-import { useMaterialAdmin } from '@/features/materials/hooks/useMaterialAdmin'
+import { useMaterialsBySubject } from '@/features/materials/hooks/useMaterials'
+import {
+  useUploadMaterial,
+  useDeleteMaterial,
+  useDownloadMaterial,
+  useUpdateMaterial,
+  useBatchSetDownloadDisabled,
+  useBatchSetVisibility,
+} from '@/features/materials/hooks/useMaterialMutations'
 import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { MaterialUploadForm } from '@/features/materials/components/MaterialUploadForm'
@@ -43,23 +50,14 @@ export function AdminSubjectDetailPage() {
   const [viewMode, setViewMode] = useState<'list' | 'grouped'>('grouped')
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null)
-  const {
-    materials,
-    isLoading: isLoadingMaterials,
-    isUploading,
-    download,
-    isDownloading,
-    deleteMaterial,
-    upload,
-    getBySubjectId,
-  } = useMaterials()
-  const {
-    isUpdating,
-    isBatching,
-    update: updateMaterial,
-    batchSetDownloadDisabled,
-    batchSetVisibility,
-  } = useMaterialAdmin()
+  // TanStack Query: la lista se carga sola y las mutaciones la invalidan
+  const { data: materials = [], isLoading: isLoadingMaterials } = useMaterialsBySubject(subjectId)
+  const uploadMutation = useUploadMaterial()
+  const deleteMaterialMutation = useDeleteMaterial()
+  const downloadMutation = useDownloadMaterial()
+  const updateMutation = useUpdateMaterial()
+  const batchDownloadMutation = useBatchSetDownloadDisabled()
+  const batchVisibilityMutation = useBatchSetVisibility()
 
   const {
     isOpen: viewerOpen,
@@ -71,13 +69,6 @@ export function AdminSubjectDetailPage() {
     openViewer,
     closeViewer,
   } = useMaterialViewer()
-
-  // Load materials when subject is loaded
-  useEffect(() => {
-    if (subjectId) {
-      getBySubjectId(subjectId)
-    }
-  }, [subjectId, getBySubjectId])
 
   const handleArchive = async () => {
     const confirmed = await confirm({
@@ -108,11 +99,11 @@ export function AdminSubjectDetailPage() {
   }
 
   const handleUploadMaterial = async (metadata: UploadMaterialRequest, file: File) => {
-    const result = await upload(metadata, file)
-    if (result) {
+    try {
+      await uploadMutation.mutateAsync({ metadata, file })
       setShowUploadForm(false)
-      // Reload materials
-      getBySubjectId(subjectId)
+    } catch {
+      // el formulario queda abierto; el error se refleja en la mutación
     }
   }
 
@@ -124,11 +115,7 @@ export function AdminSubjectDetailPage() {
       variant: 'danger',
     })
     if (confirmed) {
-      const success = await deleteMaterial(materialId)
-      if (success) {
-        // Reload materials
-        getBySubjectId(subjectId)
-      }
+      deleteMaterialMutation.mutate(materialId)
     }
   }
 
@@ -138,7 +125,7 @@ export function AdminSubjectDetailPage() {
 
   const handleViewerDownload = () => {
     if (viewerMaterial) {
-      download(viewerMaterial.id, viewerMaterial.originalFilename)
+      downloadMutation.mutate({ id: viewerMaterial.id, filename: viewerMaterial.originalFilename })
     }
   }
 
@@ -161,11 +148,6 @@ export function AdminSubjectDetailPage() {
     setSelectedIds(new Set())
   }
 
-  const refreshAfterBatch = async () => {
-    handleClearSelection()
-    await getBySubjectId(subjectId)
-  }
-
   const handleBatchDownload = async (disabled: boolean) => {
     const ids = Array.from(selectedIds)
     if (ids.length === 0) return
@@ -177,8 +159,12 @@ export function AdminSubjectDetailPage() {
       variant: disabled ? 'danger' : 'warning',
     })
     if (!confirmed) return
-    const updated = await batchSetDownloadDisabled(ids, disabled)
-    if (updated > 0) await refreshAfterBatch()
+    try {
+      await batchDownloadMutation.mutateAsync({ ids, disabled })
+      handleClearSelection()
+    } catch {
+      // la selección se conserva para poder reintentar
+    }
   }
 
   const handleBatchVisibility = async (visible: boolean) => {
@@ -192,18 +178,20 @@ export function AdminSubjectDetailPage() {
       variant: visible ? 'warning' : 'danger',
     })
     if (!confirmed) return
-    const updated = await batchSetVisibility(ids, visible)
-    if (updated > 0) await refreshAfterBatch()
+    try {
+      await batchVisibilityMutation.mutateAsync({ ids, visible })
+      handleClearSelection()
+    } catch {
+      // la selección se conserva para poder reintentar
+    }
   }
 
-  const handleToggleDownloadDisabled = async (id: number, disabled: boolean) => {
-    const result = await updateMaterial(id, { downloadDisabled: disabled })
-    if (result) await getBySubjectId(subjectId)
+  const handleToggleDownloadDisabled = (id: number, disabled: boolean) => {
+    updateMutation.mutate({ id, payload: { downloadDisabled: disabled } })
   }
 
-  const handleToggleVisibility = async (id: number, visible: boolean) => {
-    const result = await updateMaterial(id, { visible })
-    if (result) await getBySubjectId(subjectId)
+  const handleToggleVisibility = (id: number, visible: boolean) => {
+    updateMutation.mutate({ id, payload: { visible } })
   }
 
   const handleEdit = (material: Material) => {
@@ -211,10 +199,11 @@ export function AdminSubjectDetailPage() {
   }
 
   const handleSaveEdit = async (id: number, payload: UpdateMaterialRequest) => {
-    const result = await updateMaterial(id, payload)
-    if (result) {
+    try {
+      await updateMutation.mutateAsync({ id, payload })
       setEditingMaterial(null)
-      await getBySubjectId(subjectId)
+    } catch {
+      // el modal queda abierto para reintentar
     }
   }
 
@@ -462,7 +451,7 @@ export function AdminSubjectDetailPage() {
               subjectId={subjectId}
               onSubmit={handleUploadMaterial}
               onCancel={() => setShowUploadForm(false)}
-              isLoading={isUploading}
+              isLoading={uploadMutation.isPending}
             />
           </div>
         )}
@@ -473,10 +462,10 @@ export function AdminSubjectDetailPage() {
             <MaterialsGroupedByCategory
               materials={materials}
               onView={handleView}
-              onDownload={download}
+              onDownload={(id, filename) => downloadMutation.mutate({ id, filename })}
               onDelete={handleDeleteMaterial}
               canDelete={true}
-              isDownloading={isDownloading}
+              isDownloading={downloadMutation.isPending}
               isAdminMode={true}
               selectedIds={selectedIds}
               onSelectChange={handleSelectChange}
@@ -491,10 +480,10 @@ export function AdminSubjectDetailPage() {
                   key={material.id}
                   material={material}
                   onView={handleView}
-                  onDownload={download}
+                  onDownload={(id, filename) => downloadMutation.mutate({ id, filename })}
                   onDelete={handleDeleteMaterial}
                   canDelete={true}
-                  isDownloading={isDownloading}
+                  isDownloading={downloadMutation.isPending}
                   isAdminMode={true}
                   selected={selectedIds.has(material.id)}
                   onSelectChange={handleSelectChange}
@@ -525,7 +514,7 @@ export function AdminSubjectDetailPage() {
       <MaterialBatchActionBar
         selectedCount={selectedIds.size}
         totalCount={materials.length}
-        isLoading={isBatching}
+        isLoading={batchDownloadMutation.isPending || batchVisibilityMutation.isPending}
         onSelectAll={handleSelectAll}
         onClearSelection={handleClearSelection}
         onDisableDownload={() => handleBatchDownload(true)}
@@ -538,7 +527,7 @@ export function AdminSubjectDetailPage() {
         key={editingMaterial?.id ?? 'none'}
         isOpen={editingMaterial !== null}
         material={editingMaterial}
-        isSaving={isUpdating}
+        isSaving={updateMutation.isPending}
         onClose={() => setEditingMaterial(null)}
         onSave={handleSaveEdit}
       />

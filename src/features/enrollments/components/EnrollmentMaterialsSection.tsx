@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
 import { FileText, Download, FolderOpen, Eye } from 'lucide-react'
 import { materialApi } from '@/features/materials/services/materialApi'
+import { useMaterialsBySubject } from '@/features/materials/hooks/useMaterials'
 import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
 import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
 import type { Material, MaterialCategory } from '@/features/materials/types/material.types'
@@ -26,10 +26,7 @@ const CATEGORY_CONFIG: Record<MaterialCategory, { label: string; emoji: string }
 export function EnrollmentMaterialsSection({ subjectId, subjectName }: EnrollmentMaterialsSectionProps) {
   const [downloadingId, setDownloadingId] = useState<number | null>(null)
 
-  const { data: materials, isLoading, error } = useQuery({
-    queryKey: ['materials', 'subject', subjectId],
-    queryFn: () => materialApi.getBySubjectId(subjectId),
-  })
+  const { data: materials, isLoading, error } = useMaterialsBySubject(subjectId)
 
   const {
     isOpen: viewerOpen,

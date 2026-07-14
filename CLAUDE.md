@@ -22,10 +22,10 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 ## Patrones
 
 - Services: objeto `xxxApi` usando `apiClient` — la baseURL YA incluye `/api`, las rutas de los servicios NO llevan ese prefijo.
-- Hooks: `useXxx` (queries) / `useXxxMutations` / `useEnrichedXxx` (agregación). `sessions` y `reservations` usan key factories exportadas (`sessionKeys`, `reservationKeys`); el resto, arrays inline.
+- Hooks: `useXxx` (queries) / `useXxxMutations` / `useEnrichedXxx` (agregación). `sessions`, `reservations` y `materials` usan key factories exportadas (`sessionKeys`, `reservationKeys`, `materialKeys`); el resto, arrays inline.
 - Estado visual de sesiones: SIEMPRE `getVisualSessionStatus()` (`shared/utils/sessionStatus.ts`), nunca `session.status` directo (el back no transiciona estados automáticamente).
 - Formularios: RHF + zodResolver. Badges: `ConfigBadge` + `badgeConfig.ts`.
-- Excepción heredada: la feature `materials` usa hooks imperativos con useState (sin TanStack Query) — migrar a Query cuando se toque.
+- La feature `materials` usa TanStack Query desde el 14-jul-2026 (`useMaterialsList/BySubject/Recent` + `useMaterialMutations`; las mutaciones invalidan `materialKeys.all` — nada de recargas manuales).
 
 ## Trampas
 
