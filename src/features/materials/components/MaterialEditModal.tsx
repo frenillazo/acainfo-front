@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
 import { currentAcademicYear, formatAcademicYear } from '@/shared/utils/formatters'
+import { useMaterialFoldersBySubject } from '../hooks/useMaterialFolders'
 import type { Material, UpdateMaterialRequest } from '../types/material.types'
 
 interface MaterialEditModalProps {
@@ -30,6 +31,9 @@ export function MaterialEditModal({
   const [academicYear, setAcademicYear] = useState(
     material?.academicYear ?? currentAcademicYear()
   )
+  // '' = sin carpeta (raíz); al guardar se traduce a clearFolder: true
+  const [folderId, setFolderId] = useState<number | ''>(material?.folderId ?? '')
+  const { data: folders = [] } = useMaterialFoldersBySubject(material?.subjectId ?? 0)
 
   if (!material) return null
 
@@ -51,6 +55,8 @@ export function MaterialEditModal({
       visible,
       downloadDisabled,
       academicYear,
+      // null en folderId sería "no cambiar" para el back: mover a raíz va como clearFolder
+      ...(folderId === '' ? { clearFolder: true } : { folderId }),
     })
   }
 
@@ -99,6 +105,22 @@ export function MaterialEditModal({
             Los estudiantes solo ven material del curso académico actual (
             {formatAcademicYear(current)}).
           </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Carpeta</label>
+          <select
+            value={folderId}
+            onChange={(e) => setFolderId(e.target.value === '' ? '' : Number(e.target.value))}
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          >
+            <option value="">Sin carpeta (raíz de la asignatura)</option>
+            {folders.map((folder) => (
+              <option key={folder.id} value={folder.id}>
+                {folder.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="rounded-md border border-gray-200 bg-gray-50 p-3">

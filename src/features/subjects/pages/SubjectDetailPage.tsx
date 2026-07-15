@@ -6,8 +6,11 @@ import { CourseCard } from '../components/CourseCard'
 import type { Course } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
 import { useMaterialsBySubject } from '@/features/materials/hooks/useMaterials'
+import { useMaterialFoldersBySubject } from '@/features/materials/hooks/useMaterialFolders'
 import { useDownloadMaterial } from '@/features/materials/hooks/useMaterialMutations'
-import { MaterialCard } from '@/features/materials/components/MaterialCard'
+import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
+import { MaterialsGroupedByFolder } from '@/features/materials/components/MaterialsGroupedByFolder'
+import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
@@ -46,7 +49,19 @@ export function SubjectDetailPage() {
 
   // Materials (TanStack Query: se cargan y refrescan solos)
   const { data: materials = [], isLoading: isLoadingMaterials } = useMaterialsBySubject(subjectId)
+  const { data: folders = [] } = useMaterialFoldersBySubject(subjectId)
   const downloadMutation = useDownloadMaterial()
+
+  const {
+    isOpen: viewerOpen,
+    material: viewerMaterial,
+    content: viewerContent,
+    viewerType,
+    isLoading: viewerLoading,
+    error: viewerError,
+    openViewer,
+    closeViewer,
+  } = useMaterialViewer()
 
   const courses = coursesData?.content ?? []
 
@@ -224,16 +239,13 @@ export function SubjectDetailPage() {
             </p>
           </div>
         ) : materials.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {materials.map((material) => (
-              <MaterialCard
-                key={material.id}
-                material={material}
-                onDownload={(id, filename) => downloadMutation.mutate({ id, filename })}
-                isDownloading={downloadMutation.isPending}
-              />
-            ))}
-          </div>
+          <MaterialsGroupedByFolder
+            materials={materials}
+            folders={folders}
+            onView={openViewer}
+            onDownload={(id, filename) => downloadMutation.mutate({ id, filename })}
+            isDownloading={downloadMutation.isPending}
+          />
         ) : (
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
             <p className="text-gray-500">
@@ -242,6 +254,24 @@ export function SubjectDetailPage() {
           </div>
         )}
       </section>
+
+      <MaterialViewerModal
+        isOpen={viewerOpen}
+        material={viewerMaterial}
+        content={viewerContent}
+        viewerType={viewerType}
+        isLoading={viewerLoading}
+        error={viewerError}
+        onClose={closeViewer}
+        onDownload={() => {
+          if (viewerMaterial) {
+            downloadMutation.mutate({
+              id: viewerMaterial.id,
+              filename: viewerMaterial.originalFilename,
+            })
+          }
+        }}
+      />
     </div>
   )
 }

@@ -1,31 +1,11 @@
-// Material categories enum
-export enum MaterialCategory {
-  TEORIA = 'TEORIA',
-  EJERCICIOS = 'EJERCICIOS',
-  EXAMENES = 'EXAMENES',
-  PROYECTOS = 'PROYECTOS',
-  LABORATORIOS = 'LABORATORIOS',
-  OTROS = 'OTROS',
-}
-
-// Category labels for UI
-export const CATEGORY_LABELS: Record<MaterialCategory, string> = {
-  [MaterialCategory.TEORIA]: 'Teoría',
-  [MaterialCategory.EJERCICIOS]: 'Ejercicios',
-  [MaterialCategory.EXAMENES]: 'Exámenes',
-  [MaterialCategory.PROYECTOS]: 'Proyectos',
-  [MaterialCategory.LABORATORIOS]: 'Laboratorios',
-  [MaterialCategory.OTROS]: 'Otros',
-}
-
-// Category icons
-export const CATEGORY_ICONS: Record<MaterialCategory, string> = {
-  [MaterialCategory.TEORIA]: '📚',
-  [MaterialCategory.EJERCICIOS]: '✏️',
-  [MaterialCategory.EXAMENES]: '📝',
-  [MaterialCategory.PROYECTOS]: '🚀',
-  [MaterialCategory.LABORATORIOS]: '🔬',
-  [MaterialCategory.OTROS]: '📁',
+// Carpeta de materiales por asignatura (un solo nivel; null en Material.folderId = raíz)
+export interface MaterialFolder {
+  id: number
+  subjectId: number
+  name: string
+  position: number
+  createdAt: string
+  updatedAt: string
 }
 
 // Material entity with enriched data from backend
@@ -35,8 +15,8 @@ export interface Material {
   uploadedById: number
   name: string
   description: string | null
-  category: MaterialCategory
-  categoryDisplayName: string
+  // Carpeta a la que pertenece (null = raíz de la asignatura)
+  folderId: number | null
   // Año de inicio del curso académico (2025 = curso "2025-26", corte sep→ago)
   academicYear: number
   originalFilename: string
@@ -57,6 +37,7 @@ export interface Material {
   // Enriched data from related entities
   subjectName: string
   uploadedByName: string
+  folderName: string | null
 }
 
 // Filters for listing materials
@@ -77,16 +58,29 @@ export interface UploadMaterialRequest {
   subjectId: number
   name: string
   description?: string | null
-  category?: MaterialCategory
+  folderId?: number | null
 }
 
 // Admin: update single material (all fields optional, null keeps the current value)
+// Mover a raíz = clearFolder: true (null en folderId significa "no cambiar", patrón clearYear)
 export interface UpdateMaterialRequest {
   name?: string
   description?: string | null
   visible?: boolean
   downloadDisabled?: boolean
   academicYear?: number
+  folderId?: number
+  clearFolder?: boolean
+}
+
+// Carpetas: requests espejo de los DTOs del back
+export interface CreateMaterialFolderRequest {
+  name: string
+}
+
+export interface UpdateMaterialFolderRequest {
+  name?: string
+  position?: number
 }
 
 // Admin: batch operations

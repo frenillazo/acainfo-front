@@ -6,10 +6,10 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 
 ## Verificación
 
-- `npx tsc --noEmit` — pasa. `strict: true` + noUnusedLocals/Parameters activos en tsconfig.app.json (15-jul-2026). Único flag relajado: `erasableSyntaxOnly: false` (hay enums TS en material/reservation.types).
+- `npx tsc --noEmit` — pasa. `strict: true` + noUnusedLocals/Parameters activos en tsconfig.app.json (15-jul-2026). Único flag relajado: `erasableSyntaxOnly: false` (hay enums TS en reservation.types; el de material murió con las carpetas, 15-jul-2026).
 - `npm run build` (tsc -b && vite build) — pasa.
 - `npm run lint` — **0 errores / 0 warnings** (baseline eliminado 13-jul-2026) y bloqueante en CI; mantenerlo a 0. Errores de API: helper `getApiErrorMessage` (`shared/utils/apiError.ts`), nada de `catch (err: any)`. En formularios RHF usar `useWatch`, no `watch()` (el plugin react-hooks lo marca como incompatible).
-- `npm run test:run` — **37 tests** (vitest + testing-library sobre jsdom) que deben estar SIEMPRE en verde; CI los exige. Tests co-locados (`*.test.ts(x)` junto al código), **sin globals** (imports explícitos de vitest); setup en `src/test/setup.ts` (jest-dom + `afterEach(cleanup)` — obligatorio: sin globals testing-library no auto-limpia). jsdom 27 (Node local 22.23 desde 15-jul-2026, alineado con el CI; los formatters componen fecha+hora a mano porque el patrón de unión de Intl es-ES cambia entre versiones de ICU).
+- `npm run test:run` — **49 tests** (vitest + testing-library sobre jsdom) que deben estar SIEMPRE en verde; CI los exige. Tests co-locados (`*.test.ts(x)` junto al código), **sin globals** (imports explícitos de vitest); setup en `src/test/setup.ts` (jest-dom + `afterEach(cleanup)` — obligatorio: sin globals testing-library no auto-limpia). jsdom 27 (Node local 22.23 desde 15-jul-2026, alineado con el CI; los formatters componen fecha+hora a mano porque el patrón de unión de Intl es-ES cambia entre versiones de ICU).
 - Verificación manual: `npm run dev` contra el back en perfil dev (usuarios seed, contraseña "password"), probar como STUDENT y como ADMIN.
 
 ## Arquitectura real
@@ -26,6 +26,7 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 - Estado visual de sesiones: SIEMPRE `getVisualSessionStatus()` (`shared/utils/sessionStatus.ts`), nunca `session.status` directo (el back no transiciona estados automáticamente).
 - Formularios: RHF + zodResolver. Badges: `ConfigBadge` + `badgeConfig.ts`.
 - La feature `materials` usa TanStack Query desde el 14-jul-2026 (`useMaterialsList/BySubject/Recent` + `useMaterialMutations`; las mutaciones invalidan `materialKeys.all` — nada de recargas manuales).
+- **Carpetas de materiales** (15-jul-2026, sustituyen a las categorías): `materialFolderKeys` + `useMaterialFolders.ts` (query + mutaciones que invalidan carpetas Y materiales), `MaterialsGroupedByFolder` (carpetas por `position` + pseudo-grupo "Sin carpeta"; `showEmptyFolders` solo admin), `FolderSelector` en el upload y `MaterialFolderManager` en `AdminSubjectDetailPage`. Mover a raíz en el PATCH = `clearFolder: true` (null en `folderId` es "no cambiar").
 
 ## Trampas
 

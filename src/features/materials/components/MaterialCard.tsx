@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import type { Material } from '../types/material.types'
-import { getFileIcon, CATEGORY_ICONS } from '../types/material.types'
+import { getFileIcon } from '../types/material.types'
 import { cn } from '@/shared/utils/cn'
 import { Card } from '@/shared/components/ui'
-import { Eye, EyeOff, Pencil, Ban, Check } from 'lucide-react'
+import { Eye, EyeOff, Pencil, Ban, Check, Folder } from 'lucide-react'
 import { formatAcademicYear, formatDate } from '@/shared/utils/formatters'
 
 interface MaterialCardProps {
@@ -13,6 +13,9 @@ interface MaterialCardProps {
   onDelete?: (id: number) => void
   canDelete?: boolean
   isDownloading?: boolean
+  // Badge con el nombre de la carpeta: SOLO en vistas planas (búsqueda global,
+  // modo "Lista" del admin); dentro de una carpeta es redundante
+  showFolderBadge?: boolean
   // ===== Admin mode (only enabled in AdminSubjectDetailPage) =====
   isAdminMode?: boolean
   selected?: boolean
@@ -29,6 +32,7 @@ export function MaterialCard({
   onDelete,
   canDelete = false,
   isDownloading = false,
+  showFolderBadge = false,
   isAdminMode = false,
   selected = false,
   onSelectChange,
@@ -84,9 +88,11 @@ export function MaterialCard({
           )}
 
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-            <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-blue-700">
-              {CATEGORY_ICONS[material.category]} {material.categoryDisplayName}
-            </span>
+            {showFolderBadge && material.folderName && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-blue-700">
+                <Folder className="h-3 w-3" /> {material.folderName}
+              </span>
+            )}
             <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5">
               .{material.fileExtension}
             </span>

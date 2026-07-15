@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import type { UploadMaterialRequest } from '../types/material.types'
-import { MaterialCategory } from '../types/material.types'
-import { CategorySelector } from './CategorySelector'
+import { FolderSelector } from './FolderSelector'
 import {
   FileUpload,
   FormFieldControlled,
@@ -29,7 +28,7 @@ export function MaterialUploadForm({
     subjectId: subjectId || 0,
     name: '',
     description: '',
-    category: MaterialCategory.OTROS,
+    folderId: null,
   })
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [validationErrors, setValidationErrors] = useState<{
@@ -38,21 +37,24 @@ export function MaterialUploadForm({
     file?: string
   }>({})
 
+  // Las carpetas son por asignatura: la fijada por el padre o la elegida en el form
+  const effectiveSubjectId = subjectId || formData.subjectId || 0
+
   const validateForm = (): boolean => {
     const errors: { subjectId?: string; name?: string; file?: string } = {}
 
     if (!formData.subjectId || formData.subjectId === 0) {
-      errors.subjectId = 'Please select a subject'
+      errors.subjectId = 'Selecciona una asignatura'
     }
 
     if (!formData.name.trim()) {
-      errors.name = 'Material name is required'
+      errors.name = 'El nombre del material es obligatorio'
     } else if (formData.name.length > 200) {
-      errors.name = 'Name must not exceed 200 characters'
+      errors.name = 'El nombre no puede exceder 200 caracteres'
     }
 
     if (!selectedFile) {
-      errors.file = 'Please select a file to upload'
+      errors.file = 'Selecciona un archivo para subir'
     }
 
     setValidationErrors(errors)
@@ -91,17 +93,19 @@ export function MaterialUploadForm({
       {/* Subject Selection (if not pre-selected) */}
       {!subjectId && subjects.length > 0 && (
         <FormSelectControlled
-          label="Subject"
+          label="Asignatura"
           name="subjectId"
           value={formData.subjectId.toString()}
           onChange={(value) =>
             setFormData((prev) => ({
               ...prev,
               subjectId: parseInt(value),
+              // Al cambiar de asignatura la carpeta elegida deja de ser válida
+              folderId: null,
             }))
           }
           options={subjectOptions}
-          placeholder="Select a subject..."
+          placeholder="Selecciona una asignatura..."
           error={validationErrors.subjectId}
           disabled={isLoading}
         />
@@ -109,17 +113,17 @@ export function MaterialUploadForm({
 
       {/* File Upload Area */}
       <FileUpload
-        label="File"
+        label="Archivo"
         value={selectedFile}
         onChange={handleFileChange}
         error={validationErrors.file}
         disabled={isLoading}
-        helperText="Any file type up to 10MB"
+        helperText="Cualquier tipo de archivo hasta 10MB"
       />
 
       {/* Material Name */}
       <FormFieldControlled
-        label="Material Name"
+        label="Nombre del material"
         name="name"
         type="text"
         value={formData.name}
@@ -127,26 +131,27 @@ export function MaterialUploadForm({
         maxLength={200}
         error={validationErrors.name}
         disabled={isLoading}
-        placeholder="e.g., Chapter 3 - Calculus Notes"
+        placeholder="p. ej., Tema 3 - Apuntes de Cálculo"
       />
 
-      {/* Category Selection */}
-      <CategorySelector
-        value={formData.category || MaterialCategory.OTROS}
-        onChange={(category) => setFormData((prev) => ({ ...prev, category }))}
+      {/* Folder Selection */}
+      <FolderSelector
+        subjectId={effectiveSubjectId}
+        value={formData.folderId ?? null}
+        onChange={(folderId) => setFormData((prev) => ({ ...prev, folderId }))}
         disabled={isLoading}
       />
 
       {/* Description (Optional) */}
       <FormTextareaControlled
-        label="Description (Optional)"
+        label="Descripción (opcional)"
         name="description"
         value={formData.description || ''}
         onChange={(value) => setFormData((prev) => ({ ...prev, description: value }))}
         rows={3}
         maxLength={500}
         disabled={isLoading}
-        placeholder="Add a brief description of the material..."
+        placeholder="Añade una breve descripción del material..."
       />
 
       {/* Actions */}
@@ -155,10 +160,10 @@ export function MaterialUploadForm({
           type="submit"
           disabled={!selectedFile}
           isLoading={isLoading}
-          loadingText="Uploading..."
+          loadingText="Subiendo..."
           className="flex-1"
         >
-          Upload Material
+          Subir material
         </Button>
 
         {onCancel && (
@@ -168,7 +173,7 @@ export function MaterialUploadForm({
             onClick={onCancel}
             disabled={isLoading}
           >
-            Cancel
+            Cancelar
           </Button>
         )}
       </div>

@@ -17,9 +17,11 @@ import {
   useBatchSetVisibility,
 } from '@/features/materials/hooks/useMaterialMutations'
 import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
+import { useMaterialFoldersBySubject } from '@/features/materials/hooks/useMaterialFolders'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { MaterialUploadForm } from '@/features/materials/components/MaterialUploadForm'
-import { MaterialsGroupedByCategory } from '@/features/materials/components/MaterialsGroupedByCategory'
+import { MaterialsGroupedByFolder } from '@/features/materials/components/MaterialsGroupedByFolder'
+import { MaterialFolderManager } from '@/features/materials/components/MaterialFolderManager'
 import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
 import { MaterialBatchActionBar } from '@/features/materials/components/MaterialBatchActionBar'
 import { MaterialEditModal } from '@/features/materials/components/MaterialEditModal'
@@ -52,6 +54,7 @@ export function AdminSubjectDetailPage() {
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null)
   // TanStack Query: la lista se carga sola y las mutaciones la invalidan
   const { data: materials = [], isLoading: isLoadingMaterials } = useMaterialsBySubject(subjectId)
+  const { data: folders = [] } = useMaterialFoldersBySubject(subjectId)
   const uploadMutation = useUploadMaterial()
   const deleteMaterialMutation = useDeleteMaterial()
   const downloadMutation = useDownloadMaterial()
@@ -414,7 +417,7 @@ export function AdminSubjectDetailPage() {
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  Por Categorías
+                  Por Carpetas
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
@@ -456,11 +459,18 @@ export function AdminSubjectDetailPage() {
           </div>
         )}
 
+        {/* Gestión de carpetas (crear/renombrar/reordenar/borrar) */}
+        <div className="mb-6">
+          <MaterialFolderManager subjectId={subjectId} />
+        </div>
+
         {/* Materials List or Grouped View */}
         {materials.length > 0 ? (
           viewMode === 'grouped' ? (
-            <MaterialsGroupedByCategory
+            <MaterialsGroupedByFolder
               materials={materials}
+              folders={folders}
+              showEmptyFolders={true}
               onView={handleView}
               onDownload={(id, filename) => downloadMutation.mutate({ id, filename })}
               onDelete={handleDeleteMaterial}
@@ -484,6 +494,7 @@ export function AdminSubjectDetailPage() {
                   onDelete={handleDeleteMaterial}
                   canDelete={true}
                   isDownloading={downloadMutation.isPending}
+                  showFolderBadge={true}
                   isAdminMode={true}
                   selected={selectedIds.has(material.id)}
                   onSelectChange={handleSelectChange}

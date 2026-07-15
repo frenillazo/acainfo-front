@@ -253,6 +253,7 @@ export function MaterialsPage() {
                 onDelete={handleDelete}
                 canDelete={isAdminOrTeacher}
                 isDownloading={downloadMutation.isPending}
+                showFolderBadge={true}
               />
             ))}
           </div>
