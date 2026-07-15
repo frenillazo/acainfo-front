@@ -1,10 +1,11 @@
 // Types
-export type { Material, MaterialFolder, MaterialFilters, UploadMaterialRequest, CanDownloadResponse, ViewerType, ViewerState } from './types/material.types'
+export type { Material, MaterialFolder, MaterialFilters, UploadMaterialRequest, CanDownloadResponse, ViewerType, ViewerState, MaterialAiJob, MaterialAiJobType, MaterialAiJobStatus, GenerateAiMaterialRequest } from './types/material.types'
 export { FILE_CATEGORIES, getFileCategory, getFileIcon, getViewerType, CODE_LANGUAGE_MAP } from './types/material.types'
 
 // Services
 export { materialApi } from './services/materialApi'
 export { materialFolderApi } from './services/materialFolderApi'
+export { materialAiApi } from './services/materialAiApi'
 
 // Hooks
 export { materialKeys, useMaterialsList, useMaterialsBySubject, useRecentMaterials } from './hooks/useMaterials'
@@ -15,6 +16,12 @@ export {
   useUpdateMaterialFolder,
   useDeleteMaterialFolder,
 } from './hooks/useMaterialFolders'
+export {
+  materialAiKeys,
+  useAiJob,
+  useGenerateAiMaterial,
+  useTranscribeAiMaterial,
+} from './hooks/useMaterialAi'
 export {
   useUploadMaterial,
   useDeleteMaterial,

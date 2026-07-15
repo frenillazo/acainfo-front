@@ -432,6 +432,13 @@ export function AdminSubjectDetailPage() {
               </div>
             )}
 
+            <Link
+              to={`/admin/subjects/${subjectId}/materials/generate`}
+              className="rounded-md bg-violet-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-violet-700"
+            >
+              Generar con IA
+            </Link>
+
             {!showUploadForm && (
               <button
                 onClick={() => setShowUploadForm(true)}

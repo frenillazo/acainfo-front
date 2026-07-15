@@ -103,6 +103,33 @@ export interface CanDownloadResponse {
   canDownload: boolean
 }
 
+// ============================================
+// Generador/transcriptor LaTeX con IA (espejo de MaterialAiJobResponse)
+// ============================================
+
+export type MaterialAiJobType = 'GENERATE' | 'TRANSCRIBE'
+
+export type MaterialAiJobStatus = 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED'
+
+export interface MaterialAiJob {
+  id: number
+  type: MaterialAiJobType
+  subjectId: number
+  sourceMaterialId: number | null
+  status: MaterialAiJobStatus
+  errorMessage: string | null
+  resultMaterialId: number | null
+  createdAt: string
+  updatedAt: string
+}
+
+// Parte metadata del multipart de POST /materials/ai/generate (+ N imágenes)
+export interface GenerateAiMaterialRequest {
+  subjectId: number
+  folderId?: number | null
+  exerciseCount?: number
+}
+
 // Common file type categories
 export const FILE_CATEGORIES = {
   DOCUMENT: ['pdf', 'doc', 'docx', 'txt', 'odt'],

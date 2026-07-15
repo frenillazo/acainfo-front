@@ -1,4 +1,5 @@
 export { FileUpload } from './FileUpload'
+export { MultiFileUpload } from './MultiFileUpload'
 export { FormField } from './FormField'
 export { FormFieldControlled } from './FormFieldControlled'
 export { FormSelect, type SelectOption } from './FormSelect'

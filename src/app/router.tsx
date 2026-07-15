@@ -217,6 +217,10 @@ export const router = createBrowserRouter([
         ...lazyPage(() => import('@/features/admin/subjects/pages/AdminSubjectEditPage'), 'AdminSubjectEditPage'),
       },
       {
+        path: 'subjects/:id/materials/generate',
+        ...lazyPage(() => import('@/features/admin/subjects/pages/AdminMaterialGeneratePage'), 'AdminMaterialGeneratePage'),
+      },
+      {
         path: 'demand',
         ...lazyPage(() => import('@/features/admin/pages/AdminDemandPage'), 'AdminDemandPage'),
       },
