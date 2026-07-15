@@ -20,13 +20,19 @@ const updateTeacherSchema = z.object({
 type CreateTeacherFormData = z.infer<typeof createTeacherSchema>
 type UpdateTeacherFormData = z.infer<typeof updateTeacherSchema>
 
-interface TeacherFormProps {
-  teacher?: Teacher
-  onSubmit: (data: CreateTeacherFormData | UpdateTeacherFormData) => void
+interface TeacherFormBaseProps {
   isSubmitting?: boolean
   error?: Error | null
   onCancel?: () => void
 }
+
+// Props discriminadas por modo: cada página recibe el tipo exacto de su submit
+// (con la unión plana, strictFunctionTypes rechaza los handlers concretos).
+type TeacherFormProps = TeacherFormBaseProps &
+  (
+    | { teacher?: undefined; onSubmit: (data: CreateTeacherFormData) => void }
+    | { teacher: Teacher; onSubmit: (data: UpdateTeacherFormData) => void }
+  )
 
 export function TeacherForm({
   teacher,

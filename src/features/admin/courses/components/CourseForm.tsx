@@ -53,13 +53,19 @@ const updateCourseSchema = z
 type CreateCourseFormData = z.infer<typeof createCourseSchema>
 type UpdateCourseFormData = z.infer<typeof updateCourseSchema>
 
-interface CourseFormProps {
-  course?: Course
-  onSubmit: (data: CreateCourseFormData | UpdateCourseFormData) => void
+interface CourseFormBaseProps {
   isSubmitting?: boolean
   error?: Error | null
   onCancel?: () => void
 }
+
+// Props discriminadas por modo: cada página recibe el tipo exacto de su submit
+// (con la unión plana, strictFunctionTypes rechaza los handlers concretos).
+type CourseFormProps = CourseFormBaseProps &
+  (
+    | { course?: undefined; onSubmit: (data: CreateCourseFormData) => void }
+    | { course: Course; onSubmit: (data: UpdateCourseFormData) => void }
+  )
 
 const statusOptions = [
   { value: 'OPEN', label: 'Abierto' },

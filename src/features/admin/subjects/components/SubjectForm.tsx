@@ -34,15 +34,21 @@ const updateSubjectSchema = z.object({
 })
 
 type CreateSubjectFormData = z.infer<typeof createSubjectSchema>
-type UpdateSubjectFormData = z.infer<typeof updateSubjectSchema>
+export type UpdateSubjectFormData = z.infer<typeof updateSubjectSchema>
 
-interface SubjectFormProps {
-  subject?: Subject
-  onSubmit: (data: CreateSubjectFormData | UpdateSubjectFormData) => void
+interface SubjectFormBaseProps {
   isSubmitting?: boolean
   error?: Error | null
   onCancel?: () => void
 }
+
+// Props discriminadas por modo: cada página recibe el tipo exacto de su submit
+// (con la unión plana, strictFunctionTypes rechaza los handlers concretos).
+type SubjectFormProps = SubjectFormBaseProps &
+  (
+    | { subject?: undefined; onSubmit: (data: CreateSubjectFormData) => void }
+    | { subject: Subject; onSubmit: (data: UpdateSubjectFormData) => void }
+  )
 
 const degreeOptions: { value: Degree | ''; label: string }[] = [
   { value: '', label: 'Selecciona un grado' },

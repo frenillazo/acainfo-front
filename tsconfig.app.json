@@ -16,13 +16,14 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Linting - relaxed for testing deployment */
-    "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    /* false: los enums TS de material/reservation.types no son erasable syntax */
     "erasableSyntaxOnly": false,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": false,
+    "noUncheckedSideEffectImports": true,
 
     /* Paths */
     "baseUrl": ".",

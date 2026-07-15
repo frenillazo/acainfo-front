@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { enrollmentApi } from '../services/enrollmentApi'
-import type { EnrollRequest, ChangeCourseRequest, RejectEnrollmentRequest } from '../types/enrollment.types'
+import type { Enrollment, EnrollRequest, ChangeCourseRequest, RejectEnrollmentRequest } from '../types/enrollment.types'
 import { useMemo } from 'react'
 
 export const useEnrollments = (studentId: number) => {
@@ -139,7 +139,7 @@ export const useEnrolledSubjectIds = (studentId: number) => {
   }, [enrollments])
 
   const enrollmentsBySubjectId = useMemo(() => {
-    if (!enrollments) return new Map<number, typeof enrollments[0]>()
+    if (!enrollments) return new Map<number, Enrollment>()
     return new Map(
       enrollments
         .filter((e) => ENROLLED_STATUSES.includes(e.status))
@@ -168,7 +168,7 @@ export const usePendingEnrollmentsByStudent = (studentId: number) => {
   const { data: enrollments, isLoading, error } = useEnrollments(studentId)
 
   const pendingByCourseId = useMemo(() => {
-    if (!enrollments) return new Map<number, typeof enrollments[0]>()
+    if (!enrollments) return new Map<number, Enrollment>()
     const pending = enrollments.filter((e) => e.status === 'PENDING_APPROVAL')
     return new Map(pending.map((e) => [e.courseId, e]))
   }, [enrollments])
