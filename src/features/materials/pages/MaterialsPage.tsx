@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useAuthStore } from '@/features/auth'
+import { useSubjects } from '@/features/subjects/hooks/useSubjects'
 import { useMaterialsList } from '../hooks/useMaterials'
 import {
   useUploadMaterial,
@@ -12,6 +13,37 @@ import { MaterialUploadForm } from '../components/MaterialUploadForm'
 import { MaterialViewerModal } from '../components/MaterialViewer'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 import type { Material, UploadMaterialRequest } from '../types/material.types'
+
+interface UploadMaterialPanelProps {
+  onSubmit: (metadata: UploadMaterialRequest, file: File) => Promise<void>
+  onCancel: () => void
+  isLoading: boolean
+}
+
+// Componente aparte para que la query de asignaturas solo corra con el panel
+// abierto (esta página también la ven estudiantes, que no suben material)
+function UploadMaterialPanel({ onSubmit, onCancel, isLoading }: UploadMaterialPanelProps) {
+  const { data: subjectsPage } = useSubjects({ size: 100 })
+  const subjects = useMemo(
+    () =>
+      (subjectsPage?.content ?? [])
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name, 'es')),
+    [subjectsPage]
+  )
+
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <h2 className="mb-4 text-lg font-semibold text-gray-900">Subir nuevo material</h2>
+      <MaterialUploadForm
+        subjects={subjects}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+        isLoading={isLoading}
+      />
+    </div>
+  )
+}
 
 export function MaterialsPage() {
   const user = useAuthStore((state) => state.user)
@@ -125,14 +157,11 @@ export function MaterialsPage() {
 
       {/* Upload Form */}
       {showUploadForm && isAdminOrTeacher && (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Subir nuevo material</h2>
-          <MaterialUploadForm
-            onSubmit={handleUpload}
-            onCancel={() => setShowUploadForm(false)}
-            isLoading={uploadMutation.isPending}
-          />
-        </div>
+        <UploadMaterialPanel
+          onSubmit={handleUpload}
+          onCancel={() => setShowUploadForm(false)}
+          isLoading={uploadMutation.isPending}
+        />
       )}
 
       {/* Error Message */}

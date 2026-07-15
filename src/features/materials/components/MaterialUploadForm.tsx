@@ -90,8 +90,9 @@ export function MaterialUploadForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Subject Selection (if not pre-selected) */}
-      {!subjectId && subjects.length > 0 && (
+      {/* Subject Selection (if not pre-selected). Se monta aunque la lista aún
+          esté cargando: si no, el error de validación no tendría dónde mostrarse */}
+      {!subjectId && (
         <FormSelectControlled
           label="Asignatura"
           name="subjectId"
