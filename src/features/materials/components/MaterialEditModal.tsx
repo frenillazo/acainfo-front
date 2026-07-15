@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
+import { currentAcademicYear, formatAcademicYear } from '@/shared/utils/formatters'
 import type { Material, UpdateMaterialRequest } from '../types/material.types'
 
 interface MaterialEditModalProps {
@@ -26,8 +27,21 @@ export function MaterialEditModal({
   const [description, setDescription] = useState(material?.description ?? '')
   const [visible, setVisible] = useState(material?.visible ?? true)
   const [downloadDisabled, setDownloadDisabled] = useState(material?.downloadDisabled ?? false)
+  const [academicYear, setAcademicYear] = useState(
+    material?.academicYear ?? currentAcademicYear()
+  )
 
   if (!material) return null
+
+  // El submit envía todos los campos: si el año del material quedara fuera del
+  // rango ±4 y no estuviera entre las opciones, el select lo re-etiquetaría
+  // silenciosamente al guardar — por eso se une siempre a las opciones.
+  const current = currentAcademicYear()
+  const yearOptions = Array.from({ length: 9 }, (_, i) => current - 4 + i)
+  if (!yearOptions.includes(material.academicYear)) {
+    yearOptions.push(material.academicYear)
+    yearOptions.sort((a, b) => a - b)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,6 +50,7 @@ export function MaterialEditModal({
       description: description.trim(),
       visible,
       downloadDisabled,
+      academicYear,
     })
   }
 
@@ -65,6 +80,25 @@ export function MaterialEditModal({
             maxLength={1000}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Curso académico</label>
+          <select
+            value={academicYear}
+            onChange={(e) => setAcademicYear(Number(e.target.value))}
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          >
+            {yearOptions.map((year) => (
+              <option key={year} value={year}>
+                {formatAcademicYear(year)}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-gray-500">
+            Los estudiantes solo ven material del curso académico actual (
+            {formatAcademicYear(current)}).
+          </p>
         </div>
 
         <div className="rounded-md border border-gray-200 bg-gray-50 p-3">

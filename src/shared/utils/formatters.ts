@@ -74,6 +74,20 @@ export const formatTime = (timeStr: string): string => {
   return timeStr
 }
 
+/** Año de inicio → etiqueta del curso académico: 2025 → "2025-26". */
+export const formatAcademicYear = (startYear: number): string =>
+  `${startYear}-${String((startYear + 1) % 100).padStart(2, '0')}`
+
+/**
+ * Año de inicio del curso académico actual, con el MISMO corte sep→ago que el
+ * back (AcademicYear.current): mes >= septiembre → año natural; si no, el anterior.
+ * OJO: getMonth() es 0-index, septiembre es 8.
+ */
+export const currentAcademicYear = (): number => {
+  const now = new Date()
+  return now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1
+}
+
 export const formatCurrency = (amount: number): string =>
   new Intl.NumberFormat('es-ES', {
     style: 'currency',

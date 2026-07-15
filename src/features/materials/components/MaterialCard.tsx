@@ -4,7 +4,7 @@ import { getFileIcon, CATEGORY_ICONS } from '../types/material.types'
 import { cn } from '@/shared/utils/cn'
 import { Card } from '@/shared/components/ui'
 import { Eye, EyeOff, Pencil, Ban, Check } from 'lucide-react'
-import { formatDate } from '@/shared/utils/formatters'
+import { formatAcademicYear, formatDate } from '@/shared/utils/formatters'
 
 interface MaterialCardProps {
   material: Material
@@ -98,6 +98,9 @@ export function MaterialCard({
           {/* Admin status badges */}
           {isAdminMode && (
             <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+              <span className="inline-flex items-center rounded-full bg-indigo-100 px-2 py-0.5 text-indigo-700">
+                {formatAcademicYear(material.academicYear)}
+              </span>
               {!material.visible && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-2 py-0.5 text-gray-700">
                   <EyeOff className="h-3 w-3" /> Oculto

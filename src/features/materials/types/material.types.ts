@@ -37,6 +37,8 @@ export interface Material {
   description: string | null
   category: MaterialCategory
   categoryDisplayName: string
+  // Año de inicio del curso académico (2025 = curso "2025-26", corte sep→ago)
+  academicYear: number
   originalFilename: string
   fileExtension: string
   mimeType: string
@@ -63,6 +65,7 @@ export interface MaterialFilters {
   uploadedById?: number
   fileExtension?: string
   searchTerm?: string
+  academicYear?: number
   page?: number
   size?: number
   sortBy?: string
@@ -83,6 +86,7 @@ export interface UpdateMaterialRequest {
   description?: string | null
   visible?: boolean
   downloadDisabled?: boolean
+  academicYear?: number
 }
 
 // Admin: batch operations

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
   formatDateShort,
   formatDateWithWeekday,
@@ -8,6 +8,8 @@ import {
   formatDateTimeShort,
   formatISODate,
   formatTime,
+  formatAcademicYear,
+  currentAcademicYear,
   formatCurrency,
   formatFileSize,
 } from './formatters'
@@ -50,6 +52,37 @@ describe('formatTime', () => {
   it('recorta los segundos', () => {
     expect(formatTime('08:30:00')).toBe('08:30')
     expect(formatTime('16:00')).toBe('16:00')
+  })
+})
+
+describe('formatAcademicYear', () => {
+  it('compone la etiqueta del curso desde el año de inicio', () => {
+    expect(formatAcademicYear(2025)).toBe('2025-26')
+    expect(formatAcademicYear(2029)).toBe('2029-30')
+  })
+})
+
+describe('currentAcademicYear', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('el 31 de agosto sigue siendo el curso anterior', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 7, 31, 12, 0, 0))
+    expect(currentAcademicYear()).toBe(2025)
+  })
+
+  it('el 1 de septiembre arranca el curso nuevo', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 8, 1, 0, 0, 0))
+    expect(currentAcademicYear()).toBe(2026)
+  })
+
+  it('en primavera el curso es el del año anterior', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 1, 15, 12, 0, 0))
+    expect(currentAcademicYear()).toBe(2025)
   })
 })
 
