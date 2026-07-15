@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { SubjectForm, type UpdateSubjectFormData } from '../components/SubjectForm'
 import { useAdminSubject, useUpdateSubject } from '../hooks/useAdminSubjects'
+import type { UpdateSubjectRequest } from '../../types/admin.types'
 
 export function AdminSubjectEditPage() {
   const { id } = useParams<{ id: string }>()
@@ -10,10 +11,15 @@ export function AdminSubjectEditPage() {
   const { data: subject, isLoading, error: loadError } = useAdminSubject(subjectId)
   const { mutate: updateSubject, isPending, error: updateError } = useUpdateSubject()
 
-  const handleSubmit = (data: UpdateSubjectFormData) => {
-    // El back ignora year null (no hay "limpiar año" en la API): se omite.
+  const handleSubmit = (formData: UpdateSubjectFormData) => {
+    // year null = "Sin asignar": la API lo expresa con clearYear (un year:null JSON es indistinguible de omitirlo)
+    const data: UpdateSubjectRequest = {
+      name: formData.name,
+      status: formData.status,
+      ...(formData.year == null ? { clearYear: true } : { year: formData.year }),
+    }
     updateSubject(
-      { id: subjectId, data: { ...data, year: data.year ?? undefined } },
+      { id: subjectId, data },
       {
         onSuccess: () => {
           navigate(`/admin/subjects/${subjectId}`)

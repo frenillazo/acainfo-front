@@ -163,6 +163,8 @@ export interface CreateSubjectRequest {
 export interface UpdateSubjectRequest {
   name?: string
   year?: number
+  /** true = dejar el curso "sin asignar" (year null); tiene prioridad sobre year */
+  clearYear?: boolean
   status?: SubjectStatus
 }
 

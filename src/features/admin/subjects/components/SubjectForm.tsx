@@ -20,7 +20,15 @@ const createSubjectSchema = z.object({
   degree: z.enum(['INGENIERIA_INFORMATICA', 'INGENIERIA_INDUSTRIAL'] as const, {
     message: 'Selecciona un grado',
   }),
-  year: z.coerce.number().min(1).max(4).optional(),
+  // El select emite '' para "Sin asignar": sin preprocess, coerce lo convierte en 0 y falla min(1)
+  year: z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.coerce
+      .number()
+      .min(1, 'El curso debe estar entre 1 y 4')
+      .max(4, 'El curso debe estar entre 1 y 4')
+      .optional()
+  ),
 })
 
 const updateSubjectSchema = z.object({
@@ -29,7 +37,16 @@ const updateSubjectSchema = z.object({
     .min(1, 'El nombre es requerido')
     .max(100, 'El nombre no puede exceder 100 caracteres')
     .optional(),
-  year: z.coerce.number().min(1).max(4).optional().nullable(),
+  // '' ("Sin asignar") se convierte en null: la página lo traduce a clearYear para la API
+  year: z.preprocess(
+    (value) => (value === '' ? null : value),
+    z.coerce
+      .number()
+      .min(1, 'El curso debe estar entre 1 y 4')
+      .max(4, 'El curso debe estar entre 1 y 4')
+      .nullable()
+      .optional()
+  ),
   status: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED']).optional(),
 })
 
@@ -123,6 +140,7 @@ export function SubjectForm({
           label="Curso"
           options={yearOptions}
           defaultValue={subject.year ?? ''}
+          error={errors.year?.message}
         />
 
         <FormSelect
@@ -186,6 +204,7 @@ export function SubjectForm({
         {...register('year')}
         label="Curso (opcional)"
         options={yearOptions}
+        error={errors.year?.message}
       />
 
       {error && (
