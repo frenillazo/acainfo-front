@@ -42,24 +42,25 @@ export const formatDateFull = (dateStr: string): string =>
     day: 'numeric',
   })
 
+// Las variantes fecha+hora componen las dos partes con separador propio: el
+// patrón de unión de Intl en es-ES depende de la versión de ICU (", " en
+// ICU ≤75, " a las " en ICU 78) y rompía la salida entre entornos.
+
 /** "13 de julio de 2026, 16:00" — timestamps de auditoría en páginas de detalle. */
-export const formatDateTimeLong = (dateStr: string): string =>
-  new Date(dateStr).toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+export const formatDateTimeLong = (dateStr: string): string => {
+  const d = new Date(dateStr)
+  const date = d.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })
+  const time = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+  return `${date}, ${time}`
+}
 
 /** "13 jul, 16:00" — timestamp compacto para cards. */
-export const formatDateTimeShort = (dateStr: string): string =>
-  new Date(dateStr).toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+export const formatDateTimeShort = (dateStr: string): string => {
+  const d = new Date(dateStr)
+  const date = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+  const time = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+  return `${date}, ${time}`
+}
 
 /** Date → "yyyy-MM-dd" en hora LOCAL (para query params de la API). */
 export const formatISODate = (d: Date): string =>
