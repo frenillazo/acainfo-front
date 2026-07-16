@@ -123,7 +123,7 @@ export function MaterialCard({
             </div>
           )}
 
-          <div className="mt-2 text-xs text-gray-400">
+          <div className="mt-2 text-xs text-gray-500">
             Subido por {material.uploadedByName} •{' '}
             {formatDate(material.uploadedAt)}
           </div>
@@ -144,7 +144,7 @@ export function MaterialCard({
             className={cn(
               'rounded-md p-2 text-blue-600 hover:bg-blue-50',
               'disabled:cursor-not-allowed disabled:opacity-50',
-              downloadBlocked && 'text-gray-400 hover:bg-transparent'
+              downloadBlocked && 'text-gray-500 hover:bg-transparent'
             )}
             title={downloadBlocked ? 'Descarga deshabilitada' : 'Descargar'}
           >
@@ -186,7 +186,7 @@ export function MaterialCard({
                 onClick={() => onToggleVisibility?.(material.id, !material.visible)}
                 className={cn(
                   'rounded-md p-2 hover:bg-gray-100',
-                  material.visible ? 'text-gray-700' : 'text-gray-400'
+                  material.visible ? 'text-gray-700' : 'text-gray-500'
                 )}
                 title={material.visible ? 'Ocultar a estudiantes' : 'Mostrar a estudiantes'}
               >

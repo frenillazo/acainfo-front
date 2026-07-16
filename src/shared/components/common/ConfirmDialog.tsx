@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { AlertTriangle, AlertCircle, Info, CheckCircle } from 'lucide-react'
+import { useFocusTrap } from '@/shared/hooks/useFocusTrap'
 import { Button, type ButtonVariant } from '../ui/Button'
 
 export interface ConfirmDialogProps {
@@ -38,25 +40,43 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const panelRef = useFocusTrap<HTMLDivElement>(isOpen)
+
+  // Escape cerraba el Modal base pero no éste: dos diálogos que se ven igual y
+  // responden distinto al teclado. Mientras la acción está en vuelo no se cierra
+  // (igual que el botón Cancelar, que se deshabilita).
+  useEffect(() => {
+    if (!isOpen || isLoading) return
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onCancel()
+    }
+    document.addEventListener('keydown', onEscape)
+    return () => document.removeEventListener('keydown', onEscape)
+  }, [isOpen, isLoading, onCancel])
+
   if (!isOpen) return null
 
   return (
     <div
       className="fixed inset-0 z-50 overflow-y-auto"
-      aria-labelledby="modal-title"
+      aria-labelledby="confirm-dialog-title"
       role="dialog"
       aria-modal="true"
     >
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-gray-500/75 transition-opacity"
-        onClick={onCancel}
+        onClick={isLoading ? undefined : onCancel}
         aria-hidden="true"
       />
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white shadow-xl transition-all">
+        <div
+          ref={panelRef}
+          tabIndex={-1}
+          className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white shadow-xl transition-all"
+        >
           <div className="p-6">
             <div className="flex items-start gap-4">
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100">
@@ -65,11 +85,13 @@ export function ConfirmDialog({
               <div className="flex-1">
                 <h3
                   className="text-lg font-semibold text-gray-900"
-                  id="modal-title"
+                  id="confirm-dialog-title"
                 >
                   {title}
                 </h3>
-                <p className="mt-2 text-sm text-gray-600">{message}</p>
+                {/* whitespace-pre-line: hay mensajes con \n\n cuya aclaración
+                    (p.ej. el batch de usuarios) salía pegada en una línea. */}
+                <p className="mt-2 whitespace-pre-line text-sm text-gray-600">{message}</p>
               </div>
             </div>
           </div>

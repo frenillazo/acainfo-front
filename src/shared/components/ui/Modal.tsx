@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/shared/utils/cn'
+import { useFocusTrap } from '@/shared/hooks/useFocusTrap'
 import { X } from 'lucide-react'
 
 const modalVariants = cva(
@@ -46,6 +47,8 @@ export function Modal({
   closeOnEscape = true,
   className,
 }: ModalProps) {
+  const panelRef = useFocusTrap<HTMLDivElement>(isOpen)
+
   const handleEscape = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape' && closeOnEscape) {
@@ -85,7 +88,7 @@ export function Modal({
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className={cn(modalVariants({ size }), className)}>
+        <div ref={panelRef} tabIndex={-1} className={cn(modalVariants({ size }), className)}>
           {/* Header */}
           {(title || showCloseButton) && (
             <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">

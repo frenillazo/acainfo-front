@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/shared/utils/cn'
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
 
 // Carousel images from public/carousel/
 const carouselImages = [
@@ -25,6 +26,10 @@ const placeholderGradients = [
 export function LandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [imagesLoaded, setImagesLoaded] = useState<boolean[]>([])
+  const [carouselPaused, setCarouselPaused] = useState(false)
+  // Quien pide menos movimiento no debería tener un carrusel saltando solo
+  // cada 5s (WCAG 2.2.2): se queda quieto y navegable con los puntos.
+  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
 
   useEffect(() => {
     // Check which images exist
@@ -49,11 +54,12 @@ export function LandingPage() {
   }, [])
 
   useEffect(() => {
+    if (prefersReducedMotion || carouselPaused) return
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % carouselImages.length)
     }, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [prefersReducedMotion, carouselPaused])
 
   return (
     <div className="min-h-screen bg-white">
@@ -120,7 +126,13 @@ export function LandingPage() {
       </nav>
 
       {/* Hero Section with Carousel */}
-      <section className="relative h-screen pt-16">
+      <section
+        className="relative h-screen pt-16"
+        onMouseEnter={() => setCarouselPaused(true)}
+        onMouseLeave={() => setCarouselPaused(false)}
+        onFocus={() => setCarouselPaused(true)}
+        onBlur={() => setCarouselPaused(false)}
+      >
         {/* Carousel Background */}
         <div className="absolute inset-0 overflow-hidden">
           {carouselImages.map((src, index) => (
@@ -134,7 +146,7 @@ export function LandingPage() {
               {imagesLoaded[index] ? (
                 <img
                   src={src}
-                  alt={`Slide ${index + 1}`}
+                  alt=""
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -185,14 +197,20 @@ export function LandingPage() {
           {carouselImages.map((_, index) => (
             <button
               key={index}
+              type="button"
               onClick={() => setCurrentSlide(index)}
+              // El punto mide 8px, muy por debajo del mínimo táctil de 24px
+              // (WCAG 2.5.8): el área pulsable se agranda con un pseudo-elemento
+              // sin tocar el aspecto.
               className={cn(
-                'h-2 rounded-full transition-all',
+                'relative h-2 rounded-full transition-all',
+                'before:absolute before:left-1/2 before:top-1/2 before:h-6 before:w-6 before:-translate-x-1/2 before:-translate-y-1/2 before:content-[""]',
                 currentSlide === index
                   ? 'w-8 bg-white'
                   : 'w-2 bg-white/50 hover:bg-white/75'
               )}
-              aria-label={`Ir a slide ${index + 1}`}
+              aria-label={`Ir a la imagen ${index + 1} de ${carouselImages.length}`}
+              aria-current={currentSlide === index}
             />
           ))}
         </div>

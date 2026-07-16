@@ -96,13 +96,18 @@ export function AdminWeeklyScheduleGrid({
                     {session.subjectCode}
                   </span>
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation()
                       setContextMenu({ session, position: { x: e.clientX, y: e.clientY } })
                     }}
-                    className="ml-1 shrink-0 rounded p-0.5 opacity-0 transition-opacity hover:bg-white/20 group-hover:opacity-100"
+                    // opacity-0 + group-hover dejaba un botón invisible al
+                    // enfocarlo con teclado, e inexistente en táctil (no hay hover):
+                    // en pantallas sin ratón se muestra siempre.
+                    aria-label={`Acciones de la sesión de ${session.subjectCode}`}
+                    className="ml-1 flex h-6 w-6 shrink-0 items-center justify-center rounded opacity-100 transition-opacity hover:bg-white/20 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-white lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100"
                   >
-                    <MoreHorizontal className="h-3.5 w-3.5" />
+                    <MoreHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
                   </button>
                 </div>
                 <div className="truncate text-[10px] opacity-90">

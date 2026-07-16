@@ -24,7 +24,7 @@ export function MainLayout() {
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <Header onMenuClick={() => setSidebarOpen(true)} menuOpen={sidebarOpen} />
 
         <main ref={mainRef} className="flex-1 overflow-y-auto p-4 sm:p-6">
           <Outlet />

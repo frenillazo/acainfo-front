@@ -148,7 +148,7 @@ export function WeekGrid<T extends WeekGridItem>({
             {GRID_HOURS.map((hour) => (
               <div
                 key={hour}
-                className="border-b border-gray-100 pr-2 text-right text-xs text-gray-400"
+                className="border-b border-gray-100 pr-2 text-right text-xs text-gray-500"
                 style={{ height: `${HOUR_HEIGHT}px` }}
               >
                 {hour.toString().padStart(2, '0')}:00

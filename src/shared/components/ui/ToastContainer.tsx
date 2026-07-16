@@ -52,7 +52,7 @@ export function ToastContainer() {
               type="button"
               onClick={() => removeToast(t.id)}
               aria-label="Cerrar aviso"
-              className="-m-1 flex-shrink-0 rounded-md p-1 opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-current"
+              className="-m-1 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-current"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>

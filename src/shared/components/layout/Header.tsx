@@ -5,12 +5,15 @@ import { cn } from '@/shared/utils/cn'
 
 interface HeaderProps {
   onMenuClick?: () => void
+  /** Estado del sidebar móvil, para anunciarlo en la hamburguesa. */
+  menuOpen?: boolean
 }
 
-export function Header({ onMenuClick }: HeaderProps) {
+export function Header({ onMenuClick, menuOpen = false }: HeaderProps) {
   const { user, logout } = useAuth()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
   const location = useLocation()
 
   // Close dropdown when clicking outside
@@ -30,6 +33,20 @@ export function Header({ onMenuClick }: HeaderProps) {
     }
   }, [dropdownOpen])
 
+  // Solo se cerraba con el ratón: con teclado no había forma de salir del menú
+  // que contiene la única vía a "Cerrar sesión".
+  useEffect(() => {
+    if (!dropdownOpen) return
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setDropdownOpen(false)
+        triggerRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', onEscape)
+    return () => document.removeEventListener('keydown', onEscape)
+  }, [dropdownOpen])
+
   const profilePath = location.pathname.startsWith('/admin') ? '/admin/profile' : '/dashboard/profile'
 
   return (
@@ -44,6 +61,8 @@ export function Header({ onMenuClick }: HeaderProps) {
               'hover:bg-gray-100 hover:text-gray-600'
             )}
             aria-label="Abrir menú de navegación"
+            aria-expanded={menuOpen}
+            aria-controls="sidebar-nav"
           >
             <svg
               className="h-6 w-6"
@@ -66,6 +85,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           {user && (
             <div className="relative" ref={dropdownRef}>
               <button
+                ref={triggerRef}
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className={cn(
                   'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700',

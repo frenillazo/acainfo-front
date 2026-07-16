@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '@/features/auth'
 import { usePendingEnrollmentsCount } from '@/features/enrollments/hooks/usePendingEnrollmentsCount'
@@ -149,6 +150,24 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     pendingEnrollments: usePendingEnrollmentsCount(isAdminSection && hasRole('ADMIN')),
   }
 
+  const navRef = useRef<HTMLElement>(null)
+
+  // `open` solo puede ser true en móvil: la hamburguesa que lo activa es
+  // lg:hidden.
+  useEffect(() => {
+    if (!open) return
+
+    // Al abrirlo con la hamburguesa, el foco entra en el menú...
+    navRef.current?.querySelector('a')?.focus()
+
+    // ...y Escape lo cierra, como cualquier capa modal.
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onEscape)
+    return () => document.removeEventListener('keydown', onEscape)
+  }, [open, onClose])
+
   return (
     <>
       {/* Mobile overlay */}
@@ -162,8 +181,15 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transition-transform duration-300 lg:static lg:translate-x-0',
-          open ? 'translate-x-0' : '-translate-x-full'
+          'fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transition-transform duration-300',
+          // `invisible` (visibility: hidden) saca del orden de tabulación: el
+          // sidebar cerrado en móvil solo se apartaba con -translate-x-full y
+          // sus ~10 enlaces invisibles se tabulaban en TODAS las páginas.
+          // Se resuelve con clases y no con matchMedia a propósito: que el
+          // breakpoint lo decida el navegador y no un estado de JS que puede
+          // quedarse obsoleto y dejar el menú inservible en escritorio.
+          'lg:visible lg:static lg:translate-x-0',
+          open ? 'visible translate-x-0' : 'invisible -translate-x-full'
         )}
       >
         <div className="flex h-20 items-center justify-between border-b border-gray-200 px-3">
@@ -186,7 +212,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </button>
         </div>
 
-        <nav className="mt-6 px-3">
+        <nav ref={navRef} id="sidebar-nav" className="mt-6 px-3">
           <ul className="space-y-1">
             {filteredNavigation.map((item) => (
               <li key={item.name}>

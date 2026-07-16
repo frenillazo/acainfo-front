@@ -1,6 +1,12 @@
 import { useState, useRef, useCallback } from 'react'
+import { Pencil, X } from 'lucide-react'
 import type { Schedule, DayOfWeek, Classroom, CreateScheduleRequest } from '../../types/admin.types'
 import { cn } from '@/shared/utils/cn'
+import { Alert } from '@/shared/components/ui/Alert'
+import { Button } from '@/shared/components/ui/Button'
+import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
+import { FormFieldControlled } from '@/shared/components/form/FormFieldControlled'
+import { FormSelectControlled } from '@/shared/components/form/FormSelectControlled'
 import { WeekGrid } from '@/shared/components/schedule/WeekGrid'
 import {
   GRID_CLASSROOMS,
@@ -26,96 +32,117 @@ interface WeeklyScheduleGridProps {
   readOnly?: boolean
 }
 
-interface CreateScheduleModalProps {
+const DAY_LABELS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+
+interface ScheduleFormValues {
+  dayIndex: number
+  startTime: string
+  endTime: string
+  classroom: Classroom
+}
+
+interface ScheduleFormModalProps {
+  mode: 'create' | 'edit'
+  initial: ScheduleFormValues
   onClose: () => void
-  onSubmit: (data: { startTime: string; endTime: string; classroom: Classroom }) => void
-  defaultStartTime: string
-  defaultEndTime: string
-  defaultClassroom: Classroom
-  dayLabel: string
+  onSubmit: (data: ScheduleFormValues) => void
   isSubmitting?: boolean
 }
 
-// Montado solo mientras está abierto: el estado inicial se toma de las props
-// de ESTA apertura (día/aula/hora de la celda clicada).
-function CreateScheduleModal({
+/**
+ * Crear y editar un horario por formulario. Antes solo existía el modal de
+ * creación, que se abría clicando una celda, y mover un bloque de día/hora/aula
+ * era exclusivamente drag&drop: sin ratón (teclado o pantalla táctil) el editor
+ * era inoperable.
+ *
+ * Montado solo mientras está abierto: el estado inicial sale de las props de
+ * ESTA apertura.
+ */
+function ScheduleFormModal({
+  mode,
+  initial,
   onClose,
   onSubmit,
-  defaultStartTime,
-  defaultEndTime,
-  defaultClassroom,
-  dayLabel,
   isSubmitting,
-}: CreateScheduleModalProps) {
-  const [startTime, setStartTime] = useState(defaultStartTime)
-  const [endTime, setEndTime] = useState(defaultEndTime)
-  const [classroom, setClassroom] = useState<Classroom>(defaultClassroom)
+}: ScheduleFormModalProps) {
+  const [dayIndex, setDayIndex] = useState(initial.dayIndex)
+  const [startTime, setStartTime] = useState(initial.startTime)
+  const [endTime, setEndTime] = useState(initial.endTime)
+  const [classroom, setClassroom] = useState<Classroom>(initial.classroom)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit({ startTime, endTime, classroom })
+    // Nadie validaba esto: el back lo rechazaba y el aviso aparecía al fondo
+    // de la página, con el modal ya cerrado y las horas perdidas.
+    if (timeToMinutes(endTime) <= timeToMinutes(startTime)) {
+      setError('La hora de fin debe ser posterior a la de inicio.')
+      return
+    }
+    setError(null)
+    onSubmit({ dayIndex, startTime, endTime, classroom })
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-        <h3 className="mb-4 text-lg font-semibold">Nuevo horario - {dayLabel}</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Hora inicio</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Hora fin</label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                required
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Aula</label>
-            <select
-              value={classroom}
-              onChange={(e) => setClassroom(e.target.value as Classroom)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            >
-              {GRID_CLASSROOMS.map((c) => (
-                <option key={c} value={c}>
-                  {CLASSROOM_LABELS[c]}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-            >
-              {isSubmitting ? 'Creando...' : 'Crear'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Modal
+      isOpen
+      onClose={onClose}
+      title={mode === 'create' ? 'Nuevo horario' : 'Editar horario'}
+      size="md"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <FormSelectControlled
+          label="Día"
+          name="schedule-day"
+          value={String(dayIndex)}
+          onChange={(value) => setDayIndex(Number(value))}
+          options={DAY_LABELS.map((label, index) => ({ value: String(index), label }))}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormFieldControlled
+            label="Hora inicio"
+            name="schedule-start"
+            type="time"
+            value={startTime}
+            onChange={setStartTime}
+            required
+          />
+          <FormFieldControlled
+            label="Hora fin"
+            name="schedule-end"
+            type="time"
+            value={endTime}
+            onChange={setEndTime}
+            required
+          />
+        </div>
+
+        <FormSelectControlled
+          label="Aula"
+          name="schedule-classroom"
+          value={classroom}
+          onChange={(value) => setClassroom(value as Classroom)}
+          options={GRID_CLASSROOMS.map((c) => ({ value: c, label: CLASSROOM_LABELS[c] }))}
+        />
+
+        {error && <Alert variant="error" message={error} />}
+
+        <ModalFooter className="-mx-6 -mb-6 mt-6">
+          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            isLoading={isSubmitting}
+            loadingText="Guardando..."
+          >
+            {mode === 'create' ? 'Crear' : 'Guardar'}
+          </Button>
+        </ModalFooter>
+      </form>
+    </Modal>
   )
 }
 
@@ -128,14 +155,15 @@ export function WeeklyScheduleGrid({
   onUpdateSchedule,
   onDeleteSchedule,
   isCreating,
+  isUpdating,
   readOnly,
 }: WeeklyScheduleGridProps) {
-  const [modalState, setModalState] = useState<{
-    dayIndex: number
-    classroom: Classroom
-    start: string
-    end: string
-  } | null>(null)
+  // null = formulario cerrado; el modo distingue crear de editar.
+  const [formState, setFormState] = useState<
+    | { mode: 'create'; initial: ScheduleFormValues }
+    | { mode: 'edit'; scheduleId: number; initial: ScheduleFormValues }
+    | null
+  >(null)
   const draggedScheduleRef = useRef<Schedule | null>(null)
 
   const items: GridSchedule[] = schedules
@@ -144,22 +172,46 @@ export function WeeklyScheduleGrid({
 
   const handleCellClick = useCallback((dayIndex: number, classroom: Classroom, startTime: string) => {
     const endTime = minutesToTime(timeToMinutes(startTime) + 120) // 2h por defecto
-    setModalState({ dayIndex, classroom, start: startTime, end: endTime })
+    setFormState({ mode: 'create', initial: { dayIndex, classroom, startTime, endTime } })
   }, [])
 
-  const handleCreateSubmit = useCallback(
-    (data: { startTime: string; endTime: string; classroom: Classroom }) => {
-      if (!modalState) return
-      onCreateSchedule({
-        courseId,
-        dayOfWeek: indexToDayOfWeek(modalState.dayIndex) as DayOfWeek,
+  const openCreateForm = useCallback(() => {
+    setFormState({
+      mode: 'create',
+      initial: { dayIndex: 0, classroom: GRID_CLASSROOMS[0], startTime: '16:00', endTime: '18:00' },
+    })
+  }, [])
+
+  const openEditForm = useCallback((schedule: GridSchedule) => {
+    setFormState({
+      mode: 'edit',
+      scheduleId: schedule.id,
+      initial: {
+        dayIndex: schedule.dayIndex,
+        classroom: schedule.classroom,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+      },
+    })
+  }, [])
+
+  const handleFormSubmit = useCallback(
+    (data: ScheduleFormValues) => {
+      if (!formState) return
+      const payload = {
+        dayOfWeek: indexToDayOfWeek(data.dayIndex) as DayOfWeek,
         startTime: data.startTime,
         endTime: data.endTime,
         classroom: data.classroom,
-      })
-      setModalState(null)
+      }
+      if (formState.mode === 'create') {
+        onCreateSchedule({ courseId, ...payload })
+      } else {
+        onUpdateSchedule(formState.scheduleId, payload)
+      }
+      setFormState(null)
     },
-    [courseId, modalState, onCreateSchedule]
+    [courseId, formState, onCreateSchedule, onUpdateSchedule]
   )
 
   const handleCellDrop = useCallback(
@@ -189,6 +241,14 @@ export function WeeklyScheduleGrid({
 
   return (
     <>
+      {!readOnly && (
+        <div className="mb-3 flex justify-end">
+          <Button variant="secondary" size="sm" onClick={openCreateForm}>
+            Nuevo horario
+          </Button>
+        </div>
+      )}
+
       <WeekGrid
         items={items}
         legend={GRID_CLASSROOMS.map((c) => (
@@ -200,7 +260,7 @@ export function WeeklyScheduleGrid({
         footerText={
           readOnly
             ? undefined
-            : 'Haz clic en una celda para crear un horario en esa aula. Arrastra los bloques para moverlos de hora o de aula.'
+            : 'Haz clic en una celda para crear un horario en esa aula, o arrastra los bloques para moverlos. También puedes usar "Nuevo horario" y el lápiz de cada bloque.'
         }
         onCellClick={readOnly ? undefined : handleCellClick}
         onCellDrop={readOnly ? undefined : handleCellDrop}
@@ -225,32 +285,43 @@ export function WeeklyScheduleGrid({
                 <div className="truncate opacity-80">{schedule.classroomDisplayName}</div>
               </div>
               {!readOnly && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDeleteSchedule(schedule.id)
-                  }}
-                  className="ml-1 flex-shrink-0 opacity-70 hover:opacity-100"
-                >
-                  ×
-                </button>
+                <div className="ml-1 flex flex-shrink-0 items-center">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      openEditForm(schedule)
+                    }}
+                    aria-label={`Editar horario del ${DAY_LABELS[schedule.dayIndex]} a las ${schedule.startTime}`}
+                    className="flex h-6 w-6 items-center justify-center rounded opacity-70 hover:bg-white/20 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white"
+                  >
+                    <Pencil className="h-3 w-3" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDeleteSchedule(schedule.id)
+                    }}
+                    aria-label={`Eliminar horario del ${DAY_LABELS[schedule.dayIndex]} a las ${schedule.startTime}`}
+                    className="flex h-6 w-6 items-center justify-center rounded opacity-70 hover:bg-white/20 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-white"
+                  >
+                    <X className="h-3 w-3" aria-hidden="true" />
+                  </button>
+                </div>
               )}
             </div>
           </div>
         )}
       />
 
-      {modalState && (
-        <CreateScheduleModal
-          onClose={() => setModalState(null)}
-          onSubmit={handleCreateSubmit}
-          defaultStartTime={modalState.start}
-          defaultEndTime={modalState.end}
-          defaultClassroom={modalState.classroom}
-          dayLabel={
-            ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][modalState.dayIndex]
-          }
-          isSubmitting={isCreating}
+      {formState && (
+        <ScheduleFormModal
+          mode={formState.mode}
+          initial={formState.initial}
+          onClose={() => setFormState(null)}
+          onSubmit={handleFormSubmit}
+          isSubmitting={formState.mode === 'create' ? isCreating : isUpdating}
         />
       )}
     </>

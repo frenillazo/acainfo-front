@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useFocusTrap } from '@/shared/hooks/useFocusTrap'
 import { Button } from '../ui/Button'
 import { FormFieldControlled } from '../form/FormFieldControlled'
 
@@ -28,6 +29,20 @@ export function PromptDialog({
   onCancel,
 }: PromptDialogProps) {
   const [value, setValue] = useState('')
+  const panelRef = useFocusTrap<HTMLDivElement>(isOpen)
+
+  // Escape cierra, como en el Modal base (mientras no haya acción en vuelo).
+  useEffect(() => {
+    if (!isOpen || isLoading) return
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onCancel()
+        setValue('')
+      }
+    }
+    document.addEventListener('keydown', onEscape)
+    return () => document.removeEventListener('keydown', onEscape)
+  }, [isOpen, isLoading, onCancel])
 
   if (!isOpen) return null
 
@@ -44,24 +59,28 @@ export function PromptDialog({
   return (
     <div
       className="fixed inset-0 z-50 overflow-y-auto"
-      aria-labelledby="modal-title"
+      aria-labelledby="prompt-dialog-title"
       role="dialog"
       aria-modal="true"
     >
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-gray-500/75 transition-opacity"
-        onClick={handleCancel}
+        onClick={isLoading ? undefined : handleCancel}
         aria-hidden="true"
       />
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white shadow-xl transition-all">
+        <div
+          ref={panelRef}
+          tabIndex={-1}
+          className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white shadow-xl transition-all"
+        >
           <div className="p-6">
             <h3
               className="text-lg font-semibold text-gray-900"
-              id="modal-title"
+              id="prompt-dialog-title"
             >
               {title}
             </h3>
