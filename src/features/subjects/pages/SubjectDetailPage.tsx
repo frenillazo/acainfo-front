@@ -116,6 +116,7 @@ export function SubjectDetailPage() {
   return (
     <div className="space-y-6">
       <Breadcrumbs
+        homeHref="/dashboard"
         items={[
           { label: 'Asignaturas', href: '/dashboard/subjects' },
           { label: subject.name },

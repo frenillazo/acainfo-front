@@ -78,6 +78,7 @@ export function EnrollmentDetailPage() {
   return (
     <div className="space-y-6">
       <Breadcrumbs
+        homeHref="/dashboard"
         items={[
           { label: 'Inscripciones', href: '/dashboard/enrollments' },
           { label: enrollment.subjectName },

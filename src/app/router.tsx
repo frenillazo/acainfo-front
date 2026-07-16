@@ -12,7 +12,10 @@ import {
 import { LandingPage } from '@/features/landing'
 import { TermsPage } from '@/features/legal'
 import { MainLayout } from '@/shared/components/layout'
+import { LoadingScreen } from '@/shared/components/common'
 import { NotFoundPage } from './NotFoundPage'
+import { RootLayout } from './RootLayout'
+import { RouteErrorPage } from './RouteErrorPage'
 
 /**
  * Helper to create a lazy route from a module with a named export.
@@ -25,6 +28,16 @@ function lazyPage(importFn: () => Promise<Record<string, unknown>>, exportName: 
 }
 
 export const router = createBrowserRouter([
+  {
+    // Envuelve TODA la app para que ninguna ruta caiga en la pantalla de error
+    // por defecto de React Router (en inglés y sin salida) y para que el título
+    // de la pestaña y el progreso de navegación funcionen en todas.
+    element: <RootLayout />,
+    errorElement: <RouteErrorPage />,
+    // Las rutas son lazy: sin esto, un F5 en /dashboard/sessions/42 deja la
+    // pantalla en blanco hasta que baja el chunk.
+    HydrateFallback: LoadingScreen,
+    children: [
   // Public routes (eagerly loaded — needed immediately)
   {
     path: '/',
@@ -231,9 +244,11 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // 404
-  {
-    path: '*',
-    element: <NotFoundPage />,
+      // 404
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      },
+    ],
   },
 ])

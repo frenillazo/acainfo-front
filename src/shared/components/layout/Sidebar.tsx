@@ -121,6 +121,15 @@ const adminNavigation: NavItem[] = [
     href: '/admin/demand',
     icon: <ClipboardList className={ICON_CLASS} />,
   },
+  {
+    // El menú de alumno lleva a /admin, pero no había vuelta: desde admin solo
+    // se salía editando la URL.
+    name: 'Volver a mi panel',
+    href: '/dashboard',
+    icon: <Home className={ICON_CLASS} />,
+    roles: ['STUDENT'],
+    end: true,
+  },
 ]
 
 export function Sidebar({ open, onClose }: SidebarProps) {

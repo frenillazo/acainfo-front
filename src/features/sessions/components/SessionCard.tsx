@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { Session, StudentSession } from '../types/session.types'
 import { Card, ConfigBadge } from '@/shared/components/ui'
 import { SESSION_STATUS_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
@@ -23,6 +24,10 @@ export function SessionCard({ session }: SessionCardProps) {
   const isInProgress = visualStatus === 'in_progress'
 
   return (
+    // La card ya tenía hover de elemento clicable pero no llevaba a ningún
+    // sitio, y la reserva vive en el detalle: desde la vista Lista (la única
+    // usable en móvil) no había forma de llegar.
+    <Link to={`/dashboard/sessions/${session.id}`} className="block">
     <Card
       variant="interactive"
       padding="sm"
@@ -125,5 +130,6 @@ export function SessionCard({ session }: SessionCardProps) {
         </div>
       )}
     </Card>
+    </Link>
   )
 }

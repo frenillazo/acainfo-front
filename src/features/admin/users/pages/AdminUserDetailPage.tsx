@@ -72,7 +72,17 @@ export function AdminUserDetailPage() {
               <p className="text-gray-500">{user.email}</p>
             </div>
           </div>
-          <ConfigBadge config={USER_STATUS_CONFIG} value={user.status} fallback="PENDING_ACTIVATION" />
+          <div className="flex items-center gap-3">
+            {/* La gestión de inscripciones es el uso principal de la app, pero
+                desde la ficha del alumno no había camino (el inverso sí existe). */}
+            <Link
+              to={`/admin/enrollments?studentEmail=${encodeURIComponent(user.email)}`}
+              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Ver inscripciones
+            </Link>
+            <ConfigBadge config={USER_STATUS_CONFIG} value={user.status} fallback="PENDING_ACTIVATION" />
+          </div>
         </div>
       </div>
 

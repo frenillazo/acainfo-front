@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
 import type { Course, ScheduleSummary } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
-import { formatDateShort } from '@/shared/utils/formatters'
+import { formatCurrency, formatDateShort } from '@/shared/utils/formatters'
 import { DAY_OF_WEEK_SHORT_LABELS } from '@/shared/types/api.types'
 import { Card } from '@/shared/components/ui'
-import { Clock } from 'lucide-react'
+import { Clock, Euro } from 'lucide-react'
 
 function formatScheduleSummary(schedules: ScheduleSummary[]): string[] {
   if (!schedules || schedules.length === 0) {
@@ -101,6 +101,13 @@ export function CourseCard({ course, onEnroll, isEnrolling, pendingEnrollmentId 
             {course.availableSeats} plaza{course.availableSeats !== 1 ? 's' : ''} disponible
             {course.availableSeats !== 1 ? 's' : ''}
           </p>
+        )}
+
+        {course.pricePerMonth !== null && (
+          <div className="flex items-center gap-2 text-sm">
+            <Euro className="h-4 w-4 flex-shrink-0 text-gray-400" aria-hidden="true" />
+            <span className="text-gray-700">{formatCurrency(course.pricePerMonth)} al mes</span>
+          </div>
         )}
 
         <div className="flex items-start gap-2 text-sm">

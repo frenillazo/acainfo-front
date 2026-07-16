@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
-import { Folder, FolderOpen } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { ChevronDown, Folder, FolderOpen } from 'lucide-react'
 import type { Material, MaterialFolder } from '../types/material.types'
+import { cn } from '@/shared/utils/cn'
 import { MaterialCard } from './MaterialCard'
 
 interface MaterialsGroupedByFolderProps {
@@ -81,6 +82,19 @@ export function MaterialsGroupedByFolder({
     return result
   }, [materials, folders, showEmptyFolders])
 
+  // Plegadas por clave. Abiertas por defecto: quien entra a una asignatura suele
+  // venir a por lo último, y plegar es la excepción (buscar en carpetas viejas).
+  const [collapsedKeys, setCollapsedKeys] = useState<Set<string>>(new Set())
+
+  const toggleFolder = (key: string) => {
+    setCollapsedKeys((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
   if (groups.length === 0) {
     return (
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
@@ -91,46 +105,67 @@ export function MaterialsGroupedByFolder({
 
   return (
     <div className="space-y-6">
-      {groups.map((group) => (
-        <div key={group.key} className="space-y-3" data-testid={`group-${group.key}`}>
-          {/* Folder Header */}
-          <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
-            {group.isRoot ? (
-              <FolderOpen className="h-5 w-5 text-gray-400" />
-            ) : (
-              <Folder className="h-5 w-5 text-blue-600" />
-            )}
-            <h3 className="text-lg font-semibold text-gray-900">{group.name}</h3>
-            <span className="text-sm text-gray-500">({group.materials.length})</span>
-          </div>
-
-          {/* Materials Grid */}
-          {group.materials.length === 0 ? (
-            <p className="text-sm text-gray-400">Carpeta vacía</p>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {group.materials.map((material) => (
-                <MaterialCard
-                  key={material.id}
-                  material={material}
-                  onView={onView}
-                  onDownload={onDownload}
-                  onDelete={onDelete}
-                  canDelete={canDelete}
-                  isDownloading={isDownloading}
-                  isAdminMode={isAdminMode}
-                  selected={selectedIds?.has(material.id) ?? false}
-                  onSelectChange={onSelectChange}
-                  onToggleDownloadDisabled={onToggleDownloadDisabled}
-                  onToggleVisibility={onToggleVisibility}
-                  onEdit={onEdit}
-                  onTranscribe={onTranscribe}
+      {groups.map((group) => {
+        const isCollapsed = collapsedKeys.has(group.key)
+        const contentId = `materials-${group.key}`
+        return (
+          <div key={group.key} className="space-y-3" data-testid={`group-${group.key}`}>
+            {/* Folder Header: patrón de acordeón (botón DENTRO del heading) */}
+            <h3 className="border-b border-gray-200 pb-2">
+              <button
+                type="button"
+                onClick={() => toggleFolder(group.key)}
+                aria-expanded={!isCollapsed}
+                aria-controls={contentId}
+                className="flex w-full items-center gap-2 rounded-sm text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              >
+                <ChevronDown
+                  className={cn(
+                    'h-4 w-4 flex-shrink-0 text-gray-500 transition-transform',
+                    isCollapsed && '-rotate-90'
+                  )}
+                  aria-hidden="true"
                 />
-              ))}
+                {group.isRoot ? (
+                  <FolderOpen className="h-5 w-5 flex-shrink-0 text-gray-500" aria-hidden="true" />
+                ) : (
+                  <Folder className="h-5 w-5 flex-shrink-0 text-blue-600" aria-hidden="true" />
+                )}
+                <span className="text-lg font-semibold text-gray-900">{group.name}</span>
+                <span className="text-sm font-normal text-gray-500">({group.materials.length})</span>
+              </button>
+            </h3>
+
+            {/* Materials Grid */}
+            <div id={contentId} hidden={isCollapsed}>
+              {group.materials.length === 0 ? (
+                <p className="text-sm text-gray-500">Carpeta vacía</p>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.materials.map((material) => (
+                    <MaterialCard
+                      key={material.id}
+                      material={material}
+                      onView={onView}
+                      onDownload={onDownload}
+                      onDelete={onDelete}
+                      canDelete={canDelete}
+                      isDownloading={isDownloading}
+                      isAdminMode={isAdminMode}
+                      selected={selectedIds?.has(material.id) ?? false}
+                      onSelectChange={onSelectChange}
+                      onToggleDownloadDisabled={onToggleDownloadDisabled}
+                      onToggleVisibility={onToggleVisibility}
+                      onEdit={onEdit}
+                      onTranscribe={onTranscribe}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+          </div>
+        )
+      })}
     </div>
   )
 }

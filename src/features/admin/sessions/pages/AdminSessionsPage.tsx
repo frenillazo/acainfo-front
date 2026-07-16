@@ -178,14 +178,14 @@ export function AdminSessionsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Sesiones</h1>
           <p className="mt-1 text-sm text-gray-500">
             Gestiona las sesiones de clase
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {/* View toggle */}
           <div className="flex items-center rounded-lg border border-gray-200 bg-white p-1">
             <button
@@ -213,17 +213,14 @@ export function AdminSessionsPage() {
               Semanal
             </button>
           </div>
+          {/* No hay "Nueva sesión": /admin/sessions/new no existe y su enlace
+              caía en sessions/:id -> parseInt('new')=NaN -> pantalla de error.
+              Las sesiones se generan desde los horarios del curso. */}
           <Link
             to="/admin/sessions/generate"
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Generar sesiones
-          </Link>
-          <Link
-            to="/admin/sessions/new"
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
-            Nueva sesion
+            Generar sesiones
           </Link>
         </div>
       </div>

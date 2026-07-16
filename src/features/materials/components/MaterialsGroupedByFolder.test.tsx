@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest'
-import { render, screen, cleanup, within } from '@testing-library/react'
+import { render, screen, cleanup, within, fireEvent } from '@testing-library/react'
 import { MaterialsGroupedByFolder } from './MaterialsGroupedByFolder'
 import type { Material, MaterialFolder } from '../types/material.types'
 
@@ -110,5 +110,61 @@ describe('MaterialsGroupedByFolder', () => {
   it('sin materiales ni carpetas que mostrar, enseña el estado vacío', () => {
     render(<MaterialsGroupedByFolder materials={[]} folders={folders} />)
     expect(screen.getByText('Todavía no hay materiales')).toBeInTheDocument()
+  })
+
+  describe('plegado de carpetas', () => {
+    const materials: Material[] = [
+      { ...baseMaterial, id: 3, name: 'Apuntes teoría', folderId: 1, folderName: 'Teoría' },
+      { ...baseMaterial, id: 2, name: 'Examen 2025', folderId: 2, folderName: 'Exámenes' },
+    ]
+
+    it('las carpetas nacen abiertas: lo último subido se ve sin tocar nada', () => {
+      render(<MaterialsGroupedByFolder materials={materials} folders={folders} />)
+
+      expect(screen.getByRole('button', { name: /Teoría/ })).toHaveAttribute(
+        'aria-expanded',
+        'true'
+      )
+      expect(screen.getByText('Apuntes teoría')).toBeVisible()
+    })
+
+    it('al plegar una carpeta oculta su contenido y lo refleja en aria-expanded', () => {
+      render(<MaterialsGroupedByFolder materials={materials} folders={folders} />)
+
+      fireEvent.click(screen.getByRole('button', { name: /Teoría/ }))
+
+      const toggle = screen.getByRole('button', { name: /Teoría/ })
+      expect(toggle).toHaveAttribute('aria-expanded', 'false')
+      expect(screen.getByText('Apuntes teoría')).not.toBeVisible()
+    })
+
+    it('cada carpeta se pliega por su cuenta', () => {
+      render(<MaterialsGroupedByFolder materials={materials} folders={folders} />)
+
+      fireEvent.click(screen.getByRole('button', { name: /Teoría/ }))
+
+      expect(screen.getByText('Apuntes teoría')).not.toBeVisible()
+      expect(screen.getByText('Examen 2025')).toBeVisible()
+    })
+
+    it('vuelve a abrirse al pulsar de nuevo', () => {
+      render(<MaterialsGroupedByFolder materials={materials} folders={folders} />)
+
+      const toggle = () => screen.getByRole('button', { name: /Teoría/ })
+      fireEvent.click(toggle())
+      fireEvent.click(toggle())
+
+      expect(toggle()).toHaveAttribute('aria-expanded', 'true')
+      expect(screen.getByText('Apuntes teoría')).toBeVisible()
+    })
+
+    it('el botón controla el contenedor que oculta (aria-controls apunta a algo real)', () => {
+      render(<MaterialsGroupedByFolder materials={materials} folders={folders} />)
+
+      const controlsId = screen.getByRole('button', { name: /Teoría/ }).getAttribute('aria-controls')
+      expect(document.getElementById(controlsId!)).toContainElement(
+        screen.getByText('Apuntes teoría')
+      )
+    })
   })
 })
