@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import type { Material } from '../types/material.types'
-import { getFileIcon } from '../types/material.types'
+import { MaterialFileIcon } from './MaterialFileIcon'
 import { cn } from '@/shared/utils/cn'
 import { Card } from '@/shared/components/ui'
 import { Eye, EyeOff, Pencil, Ban, Check, Folder, Sparkles } from 'lucide-react'
@@ -43,8 +42,6 @@ export function MaterialCard({
   onEdit,
   onTranscribe,
 }: MaterialCardProps) {
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-
   const handleView = () => {
     onView?.(material)
   }
@@ -55,8 +52,10 @@ export function MaterialCard({
   }
 
   const handleDelete = () => {
+    // La confirmación la pone el padre (ConfirmDialog): esta card tenía además
+    // su propio mini-confirm inline, así que borrar pedía confirmar dos veces
+    // en admin y solo una —la pequeña— en la página global.
     onDelete?.(material.id)
-    setShowDeleteConfirm(false)
   }
 
   const downloadBlocked = material.downloadDisabled
@@ -76,8 +75,8 @@ export function MaterialCard({
         )}
 
         {/* File Icon */}
-        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 text-2xl">
-          {getFileIcon(material.fileExtension)}
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50">
+          <MaterialFileIcon extension={material.fileExtension} className="h-6 w-6 text-blue-600" />
         </div>
 
         {/* Content */}
@@ -217,9 +216,9 @@ export function MaterialCard({
 
           {canDelete && (
             <>
-              {!showDeleteConfirm ? (
+              {(
                 <button
-                  onClick={() => setShowDeleteConfirm(true)}
+                  onClick={handleDelete}
                   className="rounded-md p-2 text-red-600 hover:bg-red-50"
                   title="Eliminar"
                 >
@@ -237,21 +236,6 @@ export function MaterialCard({
                     />
                   </svg>
                 </button>
-              ) : (
-                <div className="flex flex-col gap-1">
-                  <button
-                    onClick={handleDelete}
-                    className="rounded-md bg-red-600 px-2 py-1 text-xs text-white hover:bg-red-700"
-                  >
-                    Confirmar
-                  </button>
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-700 hover:bg-gray-50"
-                  >
-                    Cancelar
-                  </button>
-                </div>
               )}
             </>
           )}

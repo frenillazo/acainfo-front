@@ -40,21 +40,21 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
     } = {}
 
     if (!formData.currentPassword) {
-      errors.currentPassword = 'Current password is required'
+      errors.currentPassword = 'La contraseña actual es obligatoria'
     }
 
     if (!formData.newPassword) {
-      errors.newPassword = 'New password is required'
-    } else if (formData.newPassword.length < 6) {
-      errors.newPassword = 'New password must be at least 6 characters'
+      errors.newPassword = 'La nueva contraseña es obligatoria'
+    } else if (formData.newPassword.length < 8) {
+      errors.newPassword = 'La nueva contraseña debe tener al menos 8 caracteres'
     } else if (formData.newPassword === formData.currentPassword) {
-      errors.newPassword = 'New password must be different from current password'
+      errors.newPassword = 'La nueva contraseña debe ser distinta de la actual'
     }
 
     if (!formData.confirmPassword) {
-      errors.confirmPassword = 'Please confirm your new password'
+      errors.confirmPassword = 'Confirma la nueva contraseña'
     } else if (formData.newPassword !== formData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match'
+      errors.confirmPassword = 'Las contraseñas no coinciden'
     }
 
     setValidationErrors(errors)
@@ -98,7 +98,7 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <PasswordField
-        label="Current Password"
+        label="Contraseña actual"
         name="currentPassword"
         value={formData.currentPassword}
         onChange={(value) => handleChange('currentPassword', value)}
@@ -108,19 +108,19 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
       />
 
       <PasswordField
-        label="New Password"
+        label="Nueva contraseña"
         name="newPassword"
         value={formData.newPassword}
         onChange={(value) => handleChange('newPassword', value)}
         minLength={6}
         error={validationErrors.newPassword}
-        helperText="Minimum 6 characters"
+        helperText="Mínimo 8 caracteres"
         disabled={isLoading}
         autoComplete="new-password"
       />
 
       <PasswordField
-        label="Confirm New Password"
+        label="Confirmar nueva contraseña"
         name="confirmPassword"
         value={formData.confirmPassword}
         onChange={(value) => handleChange('confirmPassword', value)}
@@ -135,7 +135,7 @@ export function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswordFormPr
         <Button
           type="submit"
           isLoading={isLoading}
-          loadingText="Changing Password..."
+          loadingText="Cambiando..."
           className="flex-1"
         >
           Change Password

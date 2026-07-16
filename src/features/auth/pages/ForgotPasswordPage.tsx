@@ -6,9 +6,10 @@ import { z } from 'zod'
 import { authApi } from '../services/authApi'
 import { FormField } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
+import { Logo } from '@/shared/components/ui/Logo'
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email('Email invalido'),
+  email: z.string().email('Email inválido'),
 })
 
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
@@ -50,20 +51,14 @@ export function ForgotPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <Link to="/" className="flex flex-col items-center gap-3 group">
-            <img src="/logo.png" alt="AcaInfo" className="h-20 w-20 object-contain" />
-            <h1
-              className="text-3xl font-semibold tracking-wide text-gray-800 group-hover:text-blue-600 transition-colors"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              AcaInfo
-            </h1>
+          <Link to="/" className="inline-block">
+            <Logo size="lg" stacked />
           </Link>
           <h2 className="mt-6 text-2xl font-semibold text-gray-900">
-            Recuperar contrasena
+            Recuperar contraseña
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Introduce tu email y te enviaremos un enlace para restablecer tu contrasena
+            Introduce tu email y te enviaremos un enlace para restablecer tu contraseña
           </p>
         </div>
 
@@ -90,13 +85,13 @@ export function ForgotPasswordPage() {
               </h3>
               <p className="mt-2 text-sm text-gray-600">
                 Si el email esta registrado, recibiras un enlace para restablecer tu
-                contrasena. Revisa tambien la carpeta de spam.
+                contraseña. Revisa tambien la carpeta de spam.
               </p>
               <Link
                 to="/login"
                 className="mt-6 inline-block rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
               >
-                Volver al inicio de sesion
+                Volver al inicio de sesión
               </Link>
             </div>
           ) : (
@@ -130,7 +125,7 @@ export function ForgotPasswordPage() {
                   to="/login"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
-                  Volver al inicio de sesion
+                  Volver al inicio de sesión
                 </Link>
               </div>
             </>

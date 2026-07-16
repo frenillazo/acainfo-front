@@ -1,3 +1,16 @@
+import {
+  File,
+  FileArchive,
+  FileAudio,
+  FileCode,
+  FileImage,
+  FileSpreadsheet,
+  FileText,
+  FileVideo,
+  Presentation,
+  type LucideIcon,
+} from 'lucide-react'
+
 // Carpeta de materiales por asignatura (un solo nivel; null en Material.folderId = raíz)
 export interface MaterialFolder {
   id: number
@@ -153,28 +166,33 @@ export function getFileCategory(extension: string): string {
   return 'OTHER'
 }
 
-// Helper to get file icon based on extension
-export function getFileIcon(extension: string): string {
+/**
+ * Icono del material (el componente de lucide, no JSX: este fichero es .ts).
+ *
+ * Eran emoji, la única iconografía del codebase fuera de lucide: cambiaban de
+ * aspecto según el sistema operativo y no heredaban color ni tamaño óptico.
+ */
+export function getFileIcon(extension: string): LucideIcon {
   const category = getFileCategory(extension)
   switch (category) {
     case 'DOCUMENT':
-      return '📄'
+      return FileText
     case 'SPREADSHEET':
-      return '📊'
+      return FileSpreadsheet
     case 'PRESENTATION':
-      return '📽️'
+      return Presentation
     case 'IMAGE':
-      return '🖼️'
+      return FileImage
     case 'VIDEO':
-      return '🎥'
+      return FileVideo
     case 'AUDIO':
-      return '🎵'
+      return FileAudio
     case 'CODE':
-      return '💻'
+      return FileCode
     case 'ARCHIVE':
-      return '📦'
+      return FileArchive
     default:
-      return '📁'
+      return File
   }
 }
 

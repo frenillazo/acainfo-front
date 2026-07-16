@@ -71,6 +71,12 @@ export function StudentWeeklyScheduleGrid({ sessions, weekStart }: StudentWeekly
   return (
     <WeekGrid
       items={items}
+      // Solo las aulas donde el alumno tiene clase: `uniqueClassrooms` ya se
+      // calculaba para la leyenda pero no se pasaba, así que el grid partía
+      // SIEMPRE cada día en Portal 1 | Portal 2 | Virtual y comprimía sus
+      // bloques a un tercio de columna en una rejilla medio vacía. Con un solo
+      // curso —el caso normal— el día pasa a ser una columna entera.
+      classrooms={uniqueClassrooms.length > 0 ? uniqueClassrooms : undefined}
       weekStart={weekStart}
       legend={legend}
       footerText="Haz clic en una sesión para ver más detalles."

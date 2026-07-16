@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/shared/utils/cn'
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
+import { Logo } from '@/shared/components/ui/Logo'
 
 // Carousel images from public/carousel/
 const carouselImages = [
@@ -67,10 +68,7 @@ export function LandingPage() {
       <nav className="fixed top-0 z-50 w-full bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="AcaInfo" className="h-8 w-auto" />
-              <span className="text-xl font-bold text-blue-600">AcaInfo</span>
-            </div>
+            <Logo size="sm" />
             <div className="flex items-center gap-2 sm:gap-4">
               {/* Contact info - hidden on very small screens */}
               <div className="hidden md:flex items-center gap-3 text-sm text-gray-600">
@@ -613,10 +611,7 @@ export function LandingPage() {
       <footer className="bg-gray-900 py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="AcaInfo" className="h-8 w-auto" />
-              <span className="text-xl font-bold text-white">AcaInfo</span>
-            </div>
+            <Logo size="sm" className="[&>span]:text-white" />
             <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
               <a href="#nosotros" className="hover:text-white transition-colors">
                 Sobre nosotros

@@ -63,7 +63,7 @@ export function AdminSubjectEditPage() {
         </p>
       </div>
 
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <SubjectForm
           subject={subject}
           onSubmit={handleSubmit}

@@ -1,5 +1,5 @@
 import type { Material } from '../../types/material.types'
-import { getFileIcon } from '../../types/material.types'
+import { MaterialFileIcon } from '../MaterialFileIcon'
 import { Ban, Download } from 'lucide-react'
 
 interface FallbackViewerProps {
@@ -11,8 +11,8 @@ export function FallbackViewer({ material, onDownload }: FallbackViewerProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
       {/* Large file icon */}
-      <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-gray-100 text-5xl">
-        {getFileIcon(material.fileExtension)}
+      <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-gray-100">
+        <MaterialFileIcon extension={material.fileExtension} className="h-12 w-12 text-gray-500" />
       </div>
 
       {/* File info */}

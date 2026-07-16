@@ -12,19 +12,11 @@ import { useAuth } from '@/features/auth'
 import { useEnrollments } from '@/features/enrollments/hooks/useEnrollments'
 import { ArrowLeft, Calendar, Clock, MapPin, User, BookOpen } from 'lucide-react'
 import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
+// Fuente única: el mapa local traía aulas que no existen en el dominio
+// (AULA_101, LAB_A, ONLINE_MEET...), resto de antes de la migración.
+import { CLASSROOM_LABELS } from '@/shared/config/domainConstants'
 
-const CLASSROOM_LABELS: Record<string, string> = {
-  AULA_PORTAL1: 'Aula Portal 1',
-  AULA_PORTAL2: 'Aula Portal 2',
-  AULA_VIRTUAL: 'Aula Virtual',
-  AULA_101: 'Aula 101',
-  AULA_102: 'Aula 102',
-  AULA_201: 'Aula 201',
-  AULA_202: 'Aula 202',
-  LAB_A: 'Laboratorio A',
-  LAB_B: 'Laboratorio B',
-  ONLINE_MEET: 'Online (Meet)',
-}
+
 
 export function SessionDetailPage() {
   const { id } = useParams<{ id: string }>()

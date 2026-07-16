@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { authApi } from '../services/authApi'
+import { Logo } from '@/shared/components/ui/Logo'
 
 type VerificationStatus = 'loading' | 'success' | 'error'
 
@@ -24,7 +25,7 @@ export function VerifyEmailPage() {
         // Redirect to login after 3 seconds
         setTimeout(() => {
           navigate('/login', {
-            state: { message: 'Email verificado correctamente. Ya puedes iniciar sesion.' },
+            state: { message: 'Email verificado correctamente. Ya puedes iniciar sesión.' },
           })
         }, 3000)
       } catch (error: unknown) {
@@ -33,7 +34,7 @@ export function VerifyEmailPage() {
           const axiosError = error as { response?: { data?: { message?: string } } }
           setErrorMessage(
             axiosError.response?.data?.message ||
-              'Token invalido o expirado'
+              'Token inválido o expirado'
           )
         } else {
           setErrorMessage('Error al verificar el email')
@@ -48,14 +49,8 @@ export function VerifyEmailPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <Link to="/" className="flex flex-col items-center gap-3 group">
-            <img src="/logo.png" alt="AcaInfo" className="h-20 w-20 object-contain" />
-            <h1
-              className="text-3xl font-semibold tracking-wide text-gray-800 group-hover:text-blue-600 transition-colors"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              AcaInfo
-            </h1>
+          <Link to="/" className="inline-block">
+            <Logo size="lg" stacked />
           </Link>
         </div>
 
@@ -98,13 +93,13 @@ export function VerifyEmailPage() {
                 Tu cuenta ha sido activada correctamente.
               </p>
               <p className="mt-4 text-sm text-gray-500">
-                Redirigiendo al inicio de sesion...
+                Redirigiendo al inicio de sesión...
               </p>
               <Link
                 to="/login"
                 className="mt-6 inline-block rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
               >
-                Ir a iniciar sesion
+                Ir a iniciar sesión
               </Link>
             </>
           )}
@@ -138,7 +133,7 @@ export function VerifyEmailPage() {
                   to="/login"
                   className="block w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                 >
-                  Ir a iniciar sesion
+                  Ir a iniciar sesión
                 </Link>
                 <Link
                   to="/register"

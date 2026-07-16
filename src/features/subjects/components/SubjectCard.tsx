@@ -75,7 +75,11 @@ export function SubjectCard({ subject }: SubjectCardProps) {
                   : 'bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600',
                 (isToggling || isCheckingInterest) && 'opacity-50 cursor-not-allowed'
               )}
-              title={isInterested ? 'Quitar interés' : 'Marcar interés'}
+              title={
+                isInterested
+                  ? 'Ya has dicho que te renta: quitar'
+                  : 'Dile a la academia que te interesa esta asignatura (no es una inscripción)'
+              }
             >
               <HandMetal
                 className={cn('h-3.5 w-3.5', isInterested && 'fill-current')}

@@ -3,7 +3,8 @@ import { Badge, type BadgeVariant } from './Badge'
 export interface BadgeConfigEntry {
   label: string
   variant: BadgeVariant
-  icon?: string
+  /** Icono de lucide (el componente, no JSX): antes esto era un emoji. */
+  icon?: React.ComponentType<{ className?: string }>
 }
 
 interface ConfigBadgeProps<T extends string> {
@@ -22,9 +23,11 @@ export function ConfigBadge<T extends string>({
   const entry = config[value] ?? (fallback ? config[fallback] : undefined)
   if (!entry) return null
 
+  const Icon = entry.icon
+
   return (
     <Badge variant={entry.variant} className={className}>
-      {entry.icon && <span className="mr-1">{entry.icon}</span>}
+      {Icon && <Icon className="mr-1 h-3.5 w-3.5" />}
       {entry.label}
     </Badge>
   )

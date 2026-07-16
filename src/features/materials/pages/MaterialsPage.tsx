@@ -12,6 +12,8 @@ import { MaterialCard } from '../components/MaterialCard'
 import { MaterialUploadForm } from '../components/MaterialUploadForm'
 import { MaterialViewerModal } from '../components/MaterialViewer'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
+import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { Material, UploadMaterialRequest } from '../types/material.types'
 
 interface UploadMaterialPanelProps {
@@ -46,6 +48,7 @@ function UploadMaterialPanel({ onSubmit, onCancel, isLoading }: UploadMaterialPa
 }
 
 export function MaterialsPage() {
+  const { dialogProps, confirm } = useConfirmDialog()
   const user = useAuthStore((state) => state.user)
   const isAdminOrTeacher = user?.roles.some((r) => r === 'ADMIN' || r === 'TEACHER')
 
@@ -116,8 +119,21 @@ export function MaterialsPage() {
     downloadMutation.mutate({ id, filename })
   }
 
-  const handleDelete = (id: number) => {
-    deleteMutation.mutate(id)
+  const handleDelete = async (id: number) => {
+    // Aquí solo confirmaba el mini-confirm de la card, que ya no existe: sin
+    // esto, borrar material sería un clic sin vuelta atrás.
+    const material = materials.find((m) => m.id === id)
+    const confirmed = await confirm({
+      title: 'Eliminar material',
+      message: material
+        ? `¿Eliminar "${material.name}"? Esta acción no se puede deshacer.`
+        : '¿Eliminar este material? Esta acción no se puede deshacer.',
+      confirmLabel: 'Sí, eliminar',
+      variant: 'danger',
+    })
+    if (confirmed) {
+      deleteMutation.mutate(id)
+    }
   }
 
   const handleSearch = (e: React.FormEvent) => {
@@ -358,6 +374,8 @@ export function MaterialsPage() {
         onClose={closeViewer}
         onDownload={handleViewerDownload}
       />
+
+      <ConfirmDialog {...dialogProps} isLoading={deleteMutation.isPending} />
     </div>
   )
 }

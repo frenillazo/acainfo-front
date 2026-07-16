@@ -50,19 +50,19 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
     const errors: { firstName?: string; lastName?: string; phoneNumber?: string } = {}
 
     if (!formData.firstName.trim()) {
-      errors.firstName = 'First name is required'
+      errors.firstName = 'El nombre es obligatorio'
     } else if (formData.firstName.length > 50) {
-      errors.firstName = 'First name must not exceed 50 characters'
+      errors.firstName = 'El nombre no puede pasar de 50 caracteres'
     }
 
     if (!formData.lastName.trim()) {
-      errors.lastName = 'Last name is required'
+      errors.lastName = 'Los apellidos son obligatorios'
     } else if (formData.lastName.length > 50) {
-      errors.lastName = 'Last name must not exceed 50 characters'
+      errors.lastName = 'Los apellidos no pueden pasar de 50 caracteres'
     }
 
     if (formData.phoneNumber && formData.phoneNumber.length > 20) {
-      errors.phoneNumber = 'Phone number must not exceed 20 characters'
+      errors.phoneNumber = 'El teléfono no puede pasar de 20 caracteres'
     }
 
     setValidationErrors(errors)
@@ -101,7 +101,7 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <FormFieldControlled
-        label="First Name"
+        label="Nombre"
         name="firstName"
         type="text"
         value={formData.firstName}
@@ -112,7 +112,7 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
       />
 
       <FormFieldControlled
-        label="Last Name"
+        label="Apellidos"
         name="lastName"
         type="text"
         value={formData.lastName}
@@ -123,7 +123,7 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
       />
 
       <FormFieldControlled
-        label="Phone Number"
+        label="Teléfono"
         name="phoneNumber"
         type="tel"
         value={formData.phoneNumber || ''}
@@ -140,10 +140,10 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
           type="submit"
           disabled={!hasChanges}
           isLoading={isLoading}
-          loadingText="Updating..."
+          loadingText="Guardando..."
           className="flex-1"
         >
-          Update Profile
+          Guardar cambios
         </Button>
 
         {onCancel && (
@@ -153,7 +153,7 @@ export function ProfileEditForm({ onSuccess, onCancel }: ProfileEditFormProps) {
             onClick={onCancel}
             disabled={isLoading}
           >
-            Cancel
+            Cancelar
           </Button>
         )}
       </div>

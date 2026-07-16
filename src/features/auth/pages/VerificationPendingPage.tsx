@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { authApi } from '../services/authApi'
+import { Logo } from '@/shared/components/ui/Logo'
 
 export function VerificationPendingPage() {
   const location = useLocation()
@@ -33,14 +34,8 @@ export function VerificationPendingPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <Link to="/" className="flex flex-col items-center gap-3 group">
-            <img src="/logo.png" alt="AcaInfo" className="h-20 w-20 object-contain" />
-            <h1
-              className="text-3xl font-semibold tracking-wide text-gray-800 group-hover:text-blue-600 transition-colors"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              AcaInfo
-            </h1>
+          <Link to="/" className="inline-block">
+            <Logo size="lg" stacked />
           </Link>
         </div>
 
@@ -108,7 +103,7 @@ export function VerificationPendingPage() {
               to="/login"
               className="block w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
             >
-              Volver al inicio de sesion
+              Volver al inicio de sesión
             </Link>
           </div>
         </div>

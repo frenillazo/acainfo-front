@@ -119,6 +119,10 @@ export function AdminEnrollmentChangeCoursePage() {
             ) : (
               courses
                 .filter((course) => course.id !== enrollment.courseId)
+                // Cambiar de curso es mover al alumno DENTRO de su asignatura.
+                // Se listaban los cursos de TODAS (ni la UI ni el back lo
+                // impiden): un despiste lo pasaba a otra asignatura.
+                .filter((course) => course.subjectId === enrollment.subjectId)
                 .filter((course) =>
                   courseSearch
                     ? course.subjectName?.toLowerCase().includes(courseSearch.toLowerCase()) ||

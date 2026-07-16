@@ -6,16 +6,17 @@ import { z } from 'zod'
 import { authApi } from '../services/authApi'
 import { FormField } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
+import { Logo } from '@/shared/components/ui/Logo'
 
 const resetPasswordSchema = z
   .object({
     newPassword: z
       .string()
-      .min(6, 'La contrasena debe tener al menos 6 caracteres'),
-    confirmPassword: z.string().min(1, 'Confirma tu contrasena'),
+      .min(8, 'La contraseña debe tener al menos 8 caracteres'),
+    confirmPassword: z.string().min(1, 'Confirma tu contraseña'),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Las contrasenas no coinciden',
+    message: 'Las contraseñas no coinciden',
     path: ['confirmPassword'],
   })
 
@@ -54,7 +55,7 @@ export function ResetPasswordPage() {
       setTimeout(() => {
         navigate('/login', {
           state: {
-            message: 'Contrasena restablecida correctamente. Ya puedes iniciar sesion.',
+            message: 'Contraseña restablecida correctamente. Ya puedes iniciar sesión.',
           },
         })
       }, 3000)
@@ -64,10 +65,10 @@ export function ResetPasswordPage() {
         const axiosError = error as { response?: { data?: { message?: string } } }
         setErrorMessage(
           axiosError.response?.data?.message ||
-            'Token invalido o expirado'
+            'Token inválido o expirado'
         )
       } else {
-        setErrorMessage('Error al restablecer la contrasena')
+        setErrorMessage('Error al restablecer la contraseña')
       }
     }
   }
@@ -76,20 +77,14 @@ export function ResetPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <Link to="/" className="flex flex-col items-center gap-3 group">
-            <img src="/logo.png" alt="AcaInfo" className="h-20 w-20 object-contain" />
-            <h1
-              className="text-3xl font-semibold tracking-wide text-gray-800 group-hover:text-blue-600 transition-colors"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              AcaInfo
-            </h1>
+          <Link to="/" className="inline-block">
+            <Logo size="lg" stacked />
           </Link>
           <h2 className="mt-6 text-2xl font-semibold text-gray-900">
-            Restablecer contrasena
+            Restablecer contraseña
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Introduce tu nueva contrasena
+            Introduce tu nueva contraseña
           </p>
         </div>
 
@@ -112,19 +107,19 @@ export function ResetPasswordPage() {
                 </svg>
               </div>
               <h3 className="mt-4 text-lg font-semibold text-gray-900">
-                Contrasena restablecida
+                Contraseña restablecida
               </h3>
               <p className="mt-2 text-sm text-gray-600">
-                Tu contrasena ha sido actualizada correctamente.
+                Tu contraseña ha sido actualizada correctamente.
               </p>
               <p className="mt-4 text-sm text-gray-500">
-                Redirigiendo al inicio de sesion...
+                Redirigiendo al inicio de sesión...
               </p>
               <Link
                 to="/login"
                 className="mt-6 inline-block rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
               >
-                Ir a iniciar sesion
+                Ir a iniciar sesión
               </Link>
             </div>
           ) : status === 'error' && !token ? (
@@ -145,7 +140,7 @@ export function ResetPasswordPage() {
                 </svg>
               </div>
               <h3 className="mt-4 text-lg font-semibold text-gray-900">
-                Enlace invalido
+                Enlace inválido
               </h3>
               <p className="mt-2 text-sm text-red-600">{errorMessage}</p>
               <div className="mt-6 space-y-3">
@@ -159,7 +154,7 @@ export function ResetPasswordPage() {
                   to="/login"
                   className="block w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
                 >
-                  Volver al inicio de sesion
+                  Volver al inicio de sesión
                 </Link>
               </div>
             </div>
@@ -168,7 +163,7 @@ export function ResetPasswordPage() {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                   {...register('newPassword')}
-                  label="Nueva contrasena"
+                  label="Nueva contraseña"
                   type="password"
                   autoComplete="new-password"
                   placeholder="Minimo 6 caracteres"
@@ -177,10 +172,10 @@ export function ResetPasswordPage() {
 
                 <FormField
                   {...register('confirmPassword')}
-                  label="Confirmar contrasena"
+                  label="Confirmar contraseña"
                   type="password"
                   autoComplete="new-password"
-                  placeholder="Repite la contrasena"
+                  placeholder="Repite la contraseña"
                   error={errors.confirmPassword?.message}
                 />
 
@@ -194,7 +189,7 @@ export function ResetPasswordPage() {
                   loadingText="Restableciendo..."
                   fullWidth
                 >
-                  Restablecer contrasena
+                  Restablecer contraseña
                 </Button>
               </form>
 
@@ -203,7 +198,7 @@ export function ResetPasswordPage() {
                   to="/login"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
-                  Volver al inicio de sesion
+                  Volver al inicio de sesión
                 </Link>
               </div>
             </>

@@ -201,13 +201,13 @@ export function AdminSessionGeneratePage() {
 
       {/* How it works */}
       <div className="rounded-lg border border-gray-200 bg-blue-50 p-4 shadow-sm">
-        <h3 className="text-sm font-medium text-blue-800">Como funciona</h3>
+        <h3 className="text-sm font-medium text-blue-800">Cómo funciona</h3>
         <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-blue-700">
           <li>Selecciona un curso que tenga horarios configurados</li>
           <li>Indica el rango de fechas para el cual deseas generar sesiones</li>
-          <li>El sistema creara una sesion por cada dia que coincida con los horarios del curso</li>
-          <li>No se crearan sesiones duplicadas si ya existen para esa fecha y horario</li>
-          <li>Usa "Vista previa" para ver las sesiones que se crearan antes de confirmar</li>
+          <li>El sistema creará una sesión por cada dia que coincida con los horarios del curso</li>
+          <li>No se crearán sesiones duplicadas si ya existen para esa fecha y horario</li>
+          <li>Usa "Vista previa" para ver las sesiones que se crearán antes de confirmar</li>
         </ul>
       </div>
 
@@ -219,7 +219,7 @@ export function AdminSessionGeneratePage() {
               Vista previa ({previewSessions.length} sesiones)
             </h2>
             <p className="text-sm text-gray-500">
-              Estas son las sesiones que se crearan. Revisa y confirma para generarlas.
+              Estas son las sesiones que se crearán. Revisa y confirma para generarlas.
             </p>
           </div>
           <SessionTable sessions={previewSessions} />

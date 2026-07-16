@@ -4,6 +4,9 @@ import { formatFileSize } from '@/shared/utils/formatters'
 import { Upload, X, FileText } from 'lucide-react'
 import { IconButton } from '../ui/IconButton'
 
+/** El back acepta hasta 20MB (multipart), pero nginx y Cloudflare van justos. */
+export const DEFAULT_MAX_FILE_SIZE = 20 * 1024 * 1024
+
 interface FileUploadProps {
   label?: string
   value: File | null
@@ -21,20 +24,46 @@ export function FileUpload({
   onChange,
   error,
   accept,
-  maxSize,
+  maxSize = DEFAULT_MAX_FILE_SIZE,
   disabled = false,
-  helperText = 'Any file type up to 10MB',
+  helperText = `Cualquier tipo de archivo, hasta ${formatFileSize(DEFAULT_MAX_FILE_SIZE)}`,
 }: FileUploadProps) {
   const [dragActive, setDragActive] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  /** ¿Coincide con `accept` ("application/pdf,.png,image/*")? */
+  const matchesAccept = (file: File): boolean => {
+    if (!accept) return true
+    return accept.split(',').some((raw) => {
+      const rule = raw.trim().toLowerCase()
+      if (!rule) return false
+      if (rule.startsWith('.')) return file.name.toLowerCase().endsWith(rule)
+      if (rule.endsWith('/*')) return file.type.toLowerCase().startsWith(rule.slice(0, -1))
+      return file.type.toLowerCase() === rule
+    })
+  }
+
   const handleFileChange = (file: File | undefined) => {
-    if (file) {
-      if (maxSize && file.size > maxSize) {
-        return
-      }
-      onChange(file)
+    if (!file) return
+
+    // Antes se hacía `return` sin decir nada: el usuario soltaba el archivo,
+    // no pasaba nada y creía que lo había adjuntado. Y como nadie pasaba
+    // maxSize, un fichero enorme se enviaba y petaba en el servidor.
+    if (maxSize && file.size > maxSize) {
+      setLocalError(
+        `El archivo pesa ${formatFileSize(file.size)} y el máximo son ${formatFileSize(maxSize)}.`
+      )
+      return
     }
+    // El drop no miraba `accept`: por arrastre entraba cualquier tipo.
+    if (!matchesAccept(file)) {
+      setLocalError('Ese tipo de archivo no se admite aquí.')
+      return
+    }
+
+    setLocalError(null)
+    onChange(file)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +92,7 @@ export function FileUpload({
   }
 
   const handleClear = () => {
+    setLocalError(null)
     onChange(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
@@ -106,7 +136,7 @@ export function FileUpload({
                     disabled && 'cursor-not-allowed'
                   )}
                 >
-                  <span>Upload a file</span>
+                  <span>Elegir archivo</span>
                   <input
                     ref={fileInputRef}
                     id="file-upload"
@@ -118,7 +148,7 @@ export function FileUpload({
                     accept={accept}
                   />
                 </label>
-                <p className="pl-1">or drag and drop</p>
+                <p className="pl-1">o arrástralo aquí</p>
               </div>
               <p className="text-xs text-gray-500">{helperText}</p>
             </>
@@ -133,7 +163,7 @@ export function FileUpload({
               </div>
               <IconButton
                 icon={<X className="h-5 w-5" />}
-                label="Remove file"
+                label="Quitar archivo"
                 variant="ghost"
                 size="sm"
                 onClick={handleClear}
@@ -143,7 +173,11 @@ export function FileUpload({
           )}
         </div>
       </div>
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+      {(error ?? localError) && (
+        <p className="mt-1 text-sm text-red-600" role="alert">
+          {error ?? localError}
+        </p>
+      )}
     </div>
   )
 }

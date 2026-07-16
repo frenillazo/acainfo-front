@@ -26,8 +26,13 @@ export function MainLayout() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header onMenuClick={() => setSidebarOpen(true)} menuOpen={sidebarOpen} />
 
+        {/* Sin ancho máximo, en un monitor de 1920px los formularios se
+            estiraban a campos de ~900px y el texto muy por encima del rango
+            legible. Solo la landing y las páginas de auth lo acotaban. */}
         <main ref={mainRef} className="flex-1 overflow-y-auto p-4 sm:p-6">
-          <Outlet />
+          <div className="mx-auto max-w-7xl">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

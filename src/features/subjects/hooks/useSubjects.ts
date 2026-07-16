@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { subjectApi, courseApi } from '../services/subjectApi'
 import type { SubjectFilters, CourseFilters } from '../types/subject.types'
 
@@ -6,6 +6,9 @@ export const useSubjects = (filters: SubjectFilters = {}) => {
   return useQuery({
     queryKey: ['subjects', filters],
     queryFn: () => subjectApi.getAll(filters),
+    // Al cambiar un filtro, mantener la lista anterior mientras llega la nueva:
+    // sin esto la query key nueva vacía los datos y la página parpadea.
+    placeholderData: keepPreviousData,
   })
 }
 

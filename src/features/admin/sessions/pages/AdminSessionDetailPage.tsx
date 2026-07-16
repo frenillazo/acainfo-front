@@ -118,7 +118,7 @@ export function AdminSessionDetailPage() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-900">
-                Sesion #{session.id}
+                Sesión #{session.id}
               </h1>
               <ConfigBadge config={SESSION_TYPE_CONFIG} value={session.type} />
               <ConfigBadge config={SESSION_MODE_CONFIG} value={session.mode} />
@@ -179,7 +179,7 @@ export function AdminSessionDetailPage() {
         {/* Session Info */}
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
-            Informacion de la Sesion
+            Información de la Sesión
           </h2>
           <dl className="space-y-4">
             <div>

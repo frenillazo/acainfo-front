@@ -60,7 +60,7 @@ export function RecentMaterialsCard() {
         <CardContent>
           <p className="text-sm text-gray-500">
             {hasEnrollments
-              ? 'No hay materiales nuevos en los ultimos 3 dias'
+              ? 'No hay materiales nuevos en los últimos 3 dias'
               : 'Inscríbete en una asignatura para ver los materiales'}
           </p>
         </CardContent>

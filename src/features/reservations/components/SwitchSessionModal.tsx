@@ -54,11 +54,11 @@ export function SwitchSessionModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Cambiar Sesion" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title="Cambiar Sesión" size="lg">
       <div className="space-y-4">
         {/* Current session */}
         <div>
-          <p className="mb-2 text-sm font-medium text-gray-500">Sesion actual</p>
+          <p className="mb-2 text-sm font-medium text-gray-500">Sesión actual</p>
           <div className="rounded-lg bg-gray-50 p-3 text-sm">
             <p className="font-medium text-gray-900">{formatDate(currentSession.date)}</p>
             <p className="text-gray-600">

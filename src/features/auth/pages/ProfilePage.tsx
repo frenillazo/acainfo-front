@@ -158,7 +158,7 @@ export function ProfilePage() {
             <div>
               <h3 className="mb-4 text-lg font-medium text-gray-900">Cambiar contraseña</h3>
               <p className="mb-6 text-sm text-gray-500">
-                Introduce tu contraseña actual y elige una nueva de al menos 6 caracteres.
+                Introduce tu contraseña actual y elige una nueva de al menos 8 caracteres.
               </p>
               <ChangePasswordForm onSuccess={handlePasswordSuccess} />
             </div>

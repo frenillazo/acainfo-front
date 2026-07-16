@@ -137,7 +137,7 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
                 onClick={() => setShowSwitchModal(true)}
               >
                 <ArrowRightLeft className="mr-1 h-3.5 w-3.5" />
-                Cambiar sesion
+                Cambiar sesión
               </Button>
             )}
 
@@ -156,8 +156,8 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
         // Has reservation in another session of the same subject
         <div className="space-y-3">
           <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-700">
-            Ya tienes una reserva confirmada en otra sesion de esta asignatura.
-            Usa &quot;Cambiar sesion&quot; desde tu reserva actual si deseas asistir a esta sesion.
+            Ya tienes una reserva confirmada en otra sesión de esta asignatura.
+            Usa &quot;Cambiar sesión&quot; desde tu reserva actual si deseas asistir a esta sesión.
           </div>
         </div>
       ) : matchingEnrollment ? (
@@ -204,7 +204,7 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
           <ConfirmDialog
             isOpen={showCancelConfirm}
             title="Cancelar reserva"
-            message="¿Estas seguro de que quieres cancelar tu reserva para esta sesion? Esta accion no se puede deshacer."
+            message="¿Estas seguro de que quieres cancelar tu reserva para esta sesión? Esta accion no se puede deshacer."
             confirmLabel="Cancelar reserva"
             variant="danger"
             isLoading={cancelMutation.isPending}

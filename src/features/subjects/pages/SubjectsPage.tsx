@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useDebounce } from '@/shared/hooks/useDebounce'
 import { useSubjects } from '../hooks/useSubjects'
 import { SubjectCard } from '../components/SubjectCard'
 import { EnrolledSubjectCard } from '../components/EnrolledSubjectCard'
@@ -37,8 +38,13 @@ export function SubjectsPage() {
     isLoading: isLoadingEnrollments,
   } = useEnrolledSubjectIds(user?.id ?? 0)
 
+  // Sin debounce, cada tecla creaba una query key nueva -> isLoading -> el
+  // early-return de abajo sustituía la página ENTERA (con el propio buscador
+  // dentro) por un spinner: se perdía el foco en cada pulsación.
+  const debouncedSearch = useDebounce(searchTerm, 300)
+
   const filters: SubjectFilters = {
-    searchTerm: searchTerm || undefined,
+    searchTerm: debouncedSearch || undefined,
     degree: (studentDegree ?? selectedDegree) || undefined,
     year: selectedYear || undefined,
     status: 'ACTIVE',
@@ -47,7 +53,7 @@ export function SubjectsPage() {
     sortDirection: 'ASC',
   }
 
-  const { data, isLoading, error } = useSubjects(filters)
+  const { data, isLoading, error, isFetching } = useSubjects(filters)
 
   const { enrolledSubjects, availableSubjects } = useMemo(() => {
     const allSubjects = data?.content ?? []
@@ -57,7 +63,8 @@ export function SubjectsPage() {
     }
   }, [data?.content, enrolledSubjectIds])
 
-  if (isLoading || isLoadingEnrollments) {
+  // Solo en la primera carga: al filtrar, la lista se queda y se atenúa.
+  if ((isLoading && !data) || isLoadingEnrollments) {
     return <LoadingState />
   }
 
@@ -138,6 +145,10 @@ export function SubjectsPage() {
         </select>
       </div>
 
+      {/* Resultados: se atenúan mientras llega la búsqueda nueva, en vez de
+          desaparecer y llevarse el buscador por delante. */}
+      <div className={cn('space-y-6 transition-opacity', isFetching && 'opacity-60')}>
+
       {/* Enrolled subjects section */}
       {enrolledSubjects.length > 0 && (
         <div className="space-y-3">
@@ -191,6 +202,7 @@ export function SubjectsPage() {
             </p>
           </div>
         )}
+      </div>
       </div>
     </div>
   )

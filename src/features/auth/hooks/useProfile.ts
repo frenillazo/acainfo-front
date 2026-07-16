@@ -24,7 +24,7 @@ export const useProfile = () => {
       const updatedUser = await authApi.updateProfile(data)
       return updatedUser
     } catch (err) {
-      const errorMessage = getApiErrorMessage(err, 'Failed to update profile')
+      const errorMessage = getApiErrorMessage(err, 'No se ha podido guardar el perfil')
       setError(errorMessage)
       return null
     } finally {
@@ -45,7 +45,7 @@ export const useProfile = () => {
       await authApi.changePassword(data)
       return true
     } catch (err) {
-      const errorMessage = getApiErrorMessage(err, 'Failed to change password')
+      const errorMessage = getApiErrorMessage(err, 'No se ha podido cambiar la contraseña')
       setError(errorMessage)
       return false
     } finally {

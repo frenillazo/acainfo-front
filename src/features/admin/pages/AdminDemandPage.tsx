@@ -46,7 +46,7 @@ export function AdminDemandPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Demanda de Asignaturas</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Estudiantes que han marcado &quot;Me interesa&quot; en cada asignatura
+          Estudiantes que han pulsado &quot;Me renta&quot; en cada asignatura
         </p>
       </div>
 

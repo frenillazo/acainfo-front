@@ -23,7 +23,7 @@ export function AdminDashboardPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Panel de Administracion</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Panel de Administración</h1>
         <p className="mt-1 text-gray-500">
           Resumen general del sistema
         </p>
@@ -122,7 +122,7 @@ export function AdminDashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Acciones Rapidas</h2>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">Acciones Rápidas</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <QuickActionCard
             title="Gestionar Usuarios"

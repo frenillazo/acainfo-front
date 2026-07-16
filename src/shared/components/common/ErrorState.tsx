@@ -26,7 +26,7 @@ function getErrorInfo(error: unknown): ErrorInfo {
 
     if (message.includes('401') || message.includes('unauthorized')) {
       return {
-        message: 'Tu sesion ha expirado. Por favor, inicia sesion nuevamente.',
+        message: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
         icon: <Lock className={iconClass} />,
       }
     }
@@ -47,7 +47,7 @@ function getErrorInfo(error: unknown): ErrorInfo {
 
     if (message.includes('400') || message.includes('bad request')) {
       return {
-        message: 'Datos invalidos. Revisa la informacion ingresada.',
+        message: 'Datos inválidos. Revisa los datos introducidos.',
         icon: <AlertCircle className={iconClass} />,
       }
     }
@@ -68,7 +68,7 @@ function getErrorInfo(error: unknown): ErrorInfo {
   }
 
   return {
-    message: 'Ocurrio un error inesperado. Por favor, intenta de nuevo.',
+    message: 'Ocurrió un error inesperado. Por favor, intenta de nuevo.',
     icon: <AlertCircle className={iconClass} />,
   }
 }

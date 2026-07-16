@@ -25,11 +25,14 @@ export function StatCard({ title, value, icon, color = 'blue', subtitle }: StatC
         <div className={cn('rounded-lg p-3', colorClasses[color])}>
           {icon}
         </div>
+        {/* El valor pesaba lo mismo que el h1 de la página (24px/700): en una
+            pantalla cuyo trabajo es que los números salten a la vista, nada
+            destacaba porque todo destacaba igual. */}
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
+          <p className="text-sm text-gray-500">{title}</p>
+          <p className="text-3xl font-bold tabular-nums text-gray-900">{value}</p>
           {subtitle && (
-            <p className="text-xs text-gray-400">{subtitle}</p>
+            <p className="text-xs text-gray-500">{subtitle}</p>
           )}
         </div>
       </div>

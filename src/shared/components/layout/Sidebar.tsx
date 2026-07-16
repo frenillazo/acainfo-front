@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '@/features/auth'
 import { usePendingEnrollmentsCount } from '@/features/enrollments/hooks/usePendingEnrollmentsCount'
 import { cn } from '@/shared/utils/cn'
+import { Logo } from '@/shared/components/ui/Logo'
 import {
   Home,
   GraduationCap,
@@ -60,7 +61,7 @@ const studentNavigation: NavItem[] = [
     icon: <BookOpen className={ICON_CLASS} />,
   },
   {
-    name: 'Administracion',
+    name: 'Administración',
     href: '/admin',
     icon: <Settings className={ICON_CLASS} />,
     roles: ['ADMIN'],
@@ -193,20 +194,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         )}
       >
         <div className="flex h-20 items-center justify-between border-b border-gray-200 px-3">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="AcaInfo" className="h-14 w-14 object-contain" />
-            <span
-              className="text-2xl font-semibold tracking-wide text-gray-800"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              AcaInfo
-            </span>
-          </div>
+          <Logo size="md" />
           <button
             type="button"
             onClick={onClose}
             className="rounded-md p-2 text-gray-500 hover:bg-gray-100 lg:hidden"
-            aria-label="Cerrar menu de navegacion"
+            aria-label="Cerrar menú de navegación"
           >
             <X className="h-5 w-5" aria-hidden="true" />
           </button>

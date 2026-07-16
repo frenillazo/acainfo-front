@@ -8,7 +8,7 @@ import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 const createTeacherSchema = z.object({
   email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Mínimo 6 caracteres'),
+  password: z.string().min(8, 'Mínimo 8 caracteres'),
   firstName: z.string().min(1, 'El nombre es obligatorio').max(50, 'Máximo 50 caracteres'),
   lastName: z.string().min(1, 'Los apellidos son obligatorios').max(50, 'Máximo 50 caracteres'),
 })

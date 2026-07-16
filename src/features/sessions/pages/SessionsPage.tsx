@@ -6,6 +6,7 @@ import { SessionCard } from '../components/SessionCard'
 import { StudentWeeklyScheduleGrid } from '../components/StudentWeeklyScheduleGrid'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
 import { ChevronLeft, ChevronRight, Calendar, List, Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 import { getWeekStart, getWeekEnd, formatWeekRange } from '@/shared/components/schedule/weekGridUtils'
@@ -50,22 +51,24 @@ export function SessionsPage() {
     })
   }, [mySessions, currentWeekStart])
 
-  // Separate sessions for list view
-  const upcomingSessions = useMemo((): StudentSession[] => {
-    const now = new Date()
-    return mySessions.filter(
-      (s) => s.status === 'SCHEDULED' && new Date(s.date) >= now
-    )
-  }, [mySessions])
+  // Separate sessions for list view.
+  // `new Date(s.date)` parseaba 'YYYY-MM-DD' como medianoche UTC: desde las
+  // ~02:00 locales, la clase de HOY a las 18:00 ya contaba como pasada. El
+  // helper compara contra date+endTime, que sí se interpreta en hora local, y es
+  // además la convención declarada del repo (nunca `session.status` a pelo).
+  const upcomingSessions = useMemo(
+    (): StudentSession[] =>
+      mySessions.filter((s) => {
+        const visual = getVisualSessionStatus(s)
+        return visual === 'scheduled' || visual === 'in_progress'
+      }),
+    [mySessions]
+  )
 
-  const pastSessions = useMemo((): StudentSession[] => {
-    const now = new Date()
-    return mySessions.filter(
-      (s) =>
-        s.status === 'COMPLETED' ||
-        (s.status === 'SCHEDULED' && new Date(s.date) < now)
-    )
-  }, [mySessions])
+  const pastSessions = useMemo(
+    (): StudentSession[] => mySessions.filter((s) => getVisualSessionStatus(s) === 'completed'),
+    [mySessions]
+  )
 
   const cancelledSessions = useMemo((): StudentSession[] => {
     return mySessions.filter((s) => s.status === 'CANCELLED' || s.status === 'POSTPONED')
