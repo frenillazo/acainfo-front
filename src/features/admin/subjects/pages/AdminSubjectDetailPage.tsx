@@ -18,6 +18,7 @@ import {
 } from '@/features/materials/hooks/useMaterialMutations'
 import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
 import { useMaterialFoldersBySubject } from '@/features/materials/hooks/useMaterialFolders'
+import { useAiJob, useTranscribeAiMaterial } from '@/features/materials/hooks/useMaterialAi'
 import { MaterialCard } from '@/features/materials/components/MaterialCard'
 import { MaterialUploadForm } from '@/features/materials/components/MaterialUploadForm'
 import { MaterialsGroupedByFolder } from '@/features/materials/components/MaterialsGroupedByFolder'
@@ -30,7 +31,10 @@ import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
+import { toast } from '@/shared/hooks/useToast'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 import { formatDateTimeLong } from '@/shared/utils/formatters'
+import { Loader2, Clock } from 'lucide-react'
 import type {
   Material,
   UpdateMaterialRequest,
@@ -61,6 +65,17 @@ export function AdminSubjectDetailPage() {
   const updateMutation = useUpdateMaterial()
   const batchDownloadMutation = useBatchSetDownloadDisabled()
   const batchVisibilityMutation = useBatchSetVisibility()
+
+  // Transcripción con IA: un job cada vez (el back la ejecuta en un executor de
+  // 1 hilo); el polling, el toast y la invalidación de la lista viven en useAiJob
+  const [transcribing, setTranscribing] = useState<{ jobId: number; materialName: string } | null>(null)
+  const transcribeMutation = useTranscribeAiMaterial()
+  const { data: transcribeJob, timedOut: transcribeTimedOut } = useAiJob(transcribing?.jobId ?? null)
+  const transcribeInProgress =
+    transcribing !== null &&
+    !transcribeTimedOut &&
+    transcribeJob?.status !== 'COMPLETED' &&
+    transcribeJob?.status !== 'FAILED'
 
   const {
     isOpen: viewerOpen,
@@ -199,6 +214,25 @@ export function AdminSubjectDetailPage() {
 
   const handleEdit = (material: Material) => {
     setEditingMaterial(material)
+  }
+
+  const handleTranscribe = async (material: Material) => {
+    if (transcribeInProgress || transcribeMutation.isPending) {
+      toast.error('Ya hay una transcripción en marcha; espera a que termine')
+      return
+    }
+    const confirmed = await confirm({
+      title: 'Transcribir con IA',
+      message: `La IA transcribirá "${material.name}" a un PDF a limpio y lo publicará como material nuevo, visible para los estudiantes, en la misma carpeta. El original se conserva. ¿Continuar?`,
+      confirmLabel: 'Sí, transcribir',
+      variant: 'info',
+    })
+    if (!confirmed) return
+    transcribeMutation.mutate(material.id, {
+      onSuccess: (job) => setTranscribing({ jobId: job.id, materialName: material.name }),
+      onError: (err) =>
+        toast.error(getApiErrorMessage(err, 'No se pudo lanzar la transcripción')),
+    })
   }
 
   const handleSaveEdit = async (id: number, payload: UpdateMaterialRequest) => {
@@ -450,6 +484,27 @@ export function AdminSubjectDetailPage() {
           </div>
         </div>
 
+        {/* Transcripción con IA en curso (el resultado aparece solo al invalidarse la lista) */}
+        {transcribing && transcribeInProgress && (
+          <div className="mb-6 flex items-center gap-3 rounded-lg border border-violet-200 bg-violet-50 p-4 text-sm text-violet-800">
+            <Loader2 className="h-5 w-5 flex-shrink-0 animate-spin" />
+            <span>
+              Transcribiendo «{transcribing.materialName}» con IA... suele tardar menos de un
+              minuto; el material nuevo aparecerá solo en la lista.
+            </span>
+          </div>
+        )}
+        {transcribing && transcribeTimedOut && (
+          <div className="mb-6 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            <Clock className="h-5 w-5 flex-shrink-0" />
+            <span>
+              La transcripción está tardando más de lo normal y se ha dejado de consultar su
+              estado tras 10 minutos. Puede seguir en marcha: revisa la lista en un rato o
+              vuelve a lanzarla.
+            </span>
+          </div>
+        )}
+
         {/* Upload Form */}
         {showUploadForm && (
           <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
@@ -489,6 +544,7 @@ export function AdminSubjectDetailPage() {
               onToggleDownloadDisabled={handleToggleDownloadDisabled}
               onToggleVisibility={handleToggleVisibility}
               onEdit={handleEdit}
+              onTranscribe={handleTranscribe}
             />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -508,6 +564,7 @@ export function AdminSubjectDetailPage() {
                   onToggleDownloadDisabled={handleToggleDownloadDisabled}
                   onToggleVisibility={handleToggleVisibility}
                   onEdit={handleEdit}
+                  onTranscribe={handleTranscribe}
                 />
               ))}
             </div>

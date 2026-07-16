@@ -3,7 +3,7 @@ import type { Material } from '../types/material.types'
 import { getFileIcon } from '../types/material.types'
 import { cn } from '@/shared/utils/cn'
 import { Card } from '@/shared/components/ui'
-import { Eye, EyeOff, Pencil, Ban, Check, Folder } from 'lucide-react'
+import { Eye, EyeOff, Pencil, Ban, Check, Folder, Sparkles } from 'lucide-react'
 import { formatAcademicYear, formatDate } from '@/shared/utils/formatters'
 
 interface MaterialCardProps {
@@ -23,6 +23,8 @@ interface MaterialCardProps {
   onToggleDownloadDisabled?: (id: number, disabled: boolean) => void
   onToggleVisibility?: (id: number, visible: boolean) => void
   onEdit?: (material: Material) => void
+  // Transcribir a limpio con IA: solo tiene sentido sobre PDFs (el back rechaza el resto)
+  onTranscribe?: (material: Material) => void
 }
 
 export function MaterialCard({
@@ -39,6 +41,7 @@ export function MaterialCard({
   onToggleDownloadDisabled,
   onToggleVisibility,
   onEdit,
+  onTranscribe,
 }: MaterialCardProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
@@ -170,6 +173,15 @@ export function MaterialCard({
               >
                 <Pencil className="h-5 w-5" />
               </button>
+              {onTranscribe && material.fileExtension.toLowerCase() === 'pdf' && (
+                <button
+                  onClick={() => onTranscribe(material)}
+                  className="rounded-md p-2 text-violet-600 hover:bg-violet-50"
+                  title="Transcribir a limpio con IA"
+                >
+                  <Sparkles className="h-5 w-5" />
+                </button>
+              )}
               <button
                 onClick={() => onToggleVisibility?.(material.id, !material.visible)}
                 className={cn(

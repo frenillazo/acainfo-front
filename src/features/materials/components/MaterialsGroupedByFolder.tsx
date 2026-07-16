@@ -21,6 +21,7 @@ interface MaterialsGroupedByFolderProps {
   onToggleDownloadDisabled?: (id: number, disabled: boolean) => void
   onToggleVisibility?: (id: number, visible: boolean) => void
   onEdit?: (material: Material) => void
+  onTranscribe?: (material: Material) => void
 }
 
 interface FolderGroup {
@@ -45,6 +46,7 @@ export function MaterialsGroupedByFolder({
   onToggleDownloadDisabled,
   onToggleVisibility,
   onEdit,
+  onTranscribe,
 }: MaterialsGroupedByFolderProps) {
   // Carpetas en su orden + pseudo-grupo "Sin carpeta" al final (solo si tiene materiales)
   const groups = useMemo<FolderGroup[]>(() => {
@@ -122,6 +124,7 @@ export function MaterialsGroupedByFolder({
                   onToggleDownloadDisabled={onToggleDownloadDisabled}
                   onToggleVisibility={onToggleVisibility}
                   onEdit={onEdit}
+                  onTranscribe={onTranscribe}
                 />
               ))}
             </div>
