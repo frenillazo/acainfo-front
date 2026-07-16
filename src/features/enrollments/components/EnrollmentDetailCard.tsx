@@ -10,6 +10,13 @@ interface EnrollmentDetailCardProps {
   isWithdrawing?: boolean
 }
 
+/** El mismo botón cancela una solicitud, sale de la lista de espera o da de baja. */
+function withdrawLabel(enrollment: EnrollmentDetail): string {
+  if (enrollment.isPendingApproval) return 'Cancelar solicitud'
+  if (enrollment.isOnWaitingList) return 'Salir de la lista de espera'
+  return 'Darme de baja del curso'
+}
+
 export function EnrollmentDetailCard({
   enrollment,
   onWithdraw,
@@ -51,6 +58,38 @@ export function EnrollmentDetailCard({
           </div>
         </dl>
 
+        {/* El admin escribe el motivo al rechazar y el back lo guarda, pero hasta
+            ahora no lo pintaba nadie: el alumno veía "Rechazada" y punto. Sin
+            emails, ésta es la única vía de saber por qué. */}
+        {enrollment.rejectionReason && (
+          <div className="mt-6 rounded-md border border-red-200 bg-red-50 p-4">
+            <h2 className="text-sm font-medium text-red-800">
+              {enrollment.isExpired ? 'Motivo de la caducidad' : 'Motivo del rechazo'}
+            </h2>
+            <p className="mt-1 text-sm text-red-700">{enrollment.rejectionReason}</p>
+          </div>
+        )}
+
+        {enrollment.isPendingApproval && (
+          <div className="mt-6 rounded-md border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm text-amber-800">
+              La academia está revisando tu solicitud. Verás aquí la respuesta; mientras tanto
+              puedes cancelarla cuando quieras.
+            </p>
+          </div>
+        )}
+
+        {enrollment.isOnWaitingList && (
+          <div className="mt-6 rounded-md border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm text-amber-800">
+              {enrollment.waitingListPosition
+                ? `Estás en la lista de espera, en la posición ${enrollment.waitingListPosition}.`
+                : 'Estás en la lista de espera.'}{' '}
+              Pasarás a inscrito automáticamente si queda una plaza libre.
+            </p>
+          </div>
+        )}
+
         {enrollment.canBeWithdrawn && onWithdraw && (
           <div className="mt-6 border-t border-gray-200 pt-6">
             <button
@@ -61,7 +100,7 @@ export function EnrollmentDetailCard({
                 'hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50'
               )}
             >
-              {isWithdrawing ? 'Retirando...' : 'Retirarse del curso'}
+              {isWithdrawing ? 'Un momento...' : withdrawLabel(enrollment)}
             </button>
           </div>
         )}

@@ -23,6 +23,8 @@ export const useEnroll = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // SubjectDetailPage ya pinta el motivo real junto a los cursos.
+    meta: { silentError: true },
     mutationFn: (data: EnrollRequest) => enrollmentApi.enroll(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollments'] })

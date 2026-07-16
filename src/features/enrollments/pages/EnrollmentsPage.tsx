@@ -64,8 +64,11 @@ export function EnrollmentsPage() {
 
   const activeEnrollments = enrollments?.filter((e) => e.status === 'ACTIVE') ?? []
   const waitingEnrollments = enrollments?.filter((e) => e.status === 'WAITING_LIST') ?? []
+  // Una solicitud recién enviada NO es historial: caía en "Historial" con opacidad
+  // mientras arriba se leía "Inscripciones Activas (0)", y parecía no haberse enviado.
+  const pendingEnrollments = enrollments?.filter((e) => e.status === 'PENDING_APPROVAL') ?? []
   const otherEnrollments = enrollments?.filter(
-    (e) => e.status !== 'ACTIVE' && e.status !== 'WAITING_LIST'
+    (e) => e.status !== 'ACTIVE' && e.status !== 'WAITING_LIST' && e.status !== 'PENDING_APPROVAL'
   ) ?? []
 
   return (
@@ -82,6 +85,27 @@ export function EnrollmentsPage() {
           Ver asignaturas
         </Link>
       </div>
+
+      {/* Pending requests */}
+      {pendingEnrollments.length > 0 && (
+        <section>
+          <h2 className="mb-1 text-lg font-semibold text-gray-900">
+            Solicitudes Pendientes ({pendingEnrollments.length})
+          </h2>
+          <p className="mb-4 text-sm text-gray-600">
+            La academia está revisando estas solicitudes. Verás aquí la respuesta.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {pendingEnrollments.map((enrollment) => (
+              <EnrollmentCard
+                key={enrollment.id}
+                enrollment={enrollment}
+                className="border-amber-200 bg-amber-50"
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Active enrollments */}
       <section>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import type { Course, ScheduleSummary } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
 import { formatDateShort } from '@/shared/utils/formatters'
@@ -24,10 +25,11 @@ interface CourseCardProps {
   course: Course
   onEnroll?: (course: Course) => void
   isEnrolling?: boolean
-  hasPendingRequest?: boolean
+  /** Id de la solicitud pendiente del alumno PARA ESTE curso, si la hay. */
+  pendingEnrollmentId?: number
 }
 
-export function CourseCard({ course, onEnroll, isEnrolling, hasPendingRequest }: CourseCardProps) {
+export function CourseCard({ course, onEnroll, isEnrolling, pendingEnrollmentId }: CourseCardProps) {
   const isFull = course.availableSeats !== null && course.availableSeats <= 0
 
   return (
@@ -123,24 +125,41 @@ export function CourseCard({ course, onEnroll, isEnrolling, hasPendingRequest }:
         </div>
       </div>
 
-      {hasPendingRequest ? (
-        <div className="mt-4 flex items-center justify-center gap-2 rounded-md bg-amber-50 border border-amber-200 px-4 py-2 text-sm font-medium text-amber-700">
-          <Clock className="h-4 w-4" />
-          Esperando respuesta de administración
-        </div>
-      ) : onEnroll && course.canEnroll ? (
-        <button
-          onClick={() => onEnroll(course)}
-          disabled={isEnrolling || isFull}
-          className={cn(
-            'mt-4 w-full rounded-md px-4 py-2 text-sm font-medium transition-colors',
-            isFull
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50'
-          )}
+      {pendingEnrollmentId ? (
+        <Link
+          to={`/dashboard/enrollments/${pendingEnrollmentId}`}
+          className="mt-4 flex items-center justify-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-100"
         >
-          {isEnrolling ? 'Inscribiendo...' : isFull ? 'Sin plazas' : 'Inscribirse'}
-        </button>
+          <Clock className="h-4 w-4" aria-hidden="true" />
+          Solicitud enviada — ver estado
+        </Link>
+      ) : /* `canEnroll` del back significa "hay plaza libre ahora", no "puede
+           solicitar": usarlo aquí escondía el botón en los cursos llenos y dejaba
+           la lista de espera inalcanzable, aunque el back la soporta entera. */
+      onEnroll && course.isOpen ? (
+        <>
+          <button
+            onClick={() => onEnroll(course)}
+            disabled={isEnrolling}
+            className={cn(
+              'mt-4 w-full rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50',
+              isFull
+                ? 'border border-blue-600 text-blue-700 hover:bg-blue-50'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            )}
+          >
+            {isEnrolling
+              ? 'Enviando...'
+              : isFull
+                ? 'Unirme a la lista de espera'
+                : 'Solicitar inscripción'}
+          </button>
+          <p className="mt-2 text-center text-xs text-gray-500">
+            {isFull
+              ? 'El curso está completo: entrarás en lista de espera y pasarás a inscrito si queda una plaza libre.'
+              : 'Tu solicitud la revisa la academia; te avisaremos aquí cuando haya respuesta.'}
+          </p>
+        </>
       ) : !course.isOpen ? (
         <p className="mt-4 text-center text-sm text-gray-500">
           Inscripciones cerradas

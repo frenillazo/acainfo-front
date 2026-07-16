@@ -13,7 +13,10 @@ import { MaterialsGroupedByFolder } from '@/features/materials/components/Materi
 import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Alert } from '@/shared/components/ui/Alert'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
+import { toast } from '@/shared/hooks/useToast'
 import { useCheckInterest, useMarkInterest, useRemoveInterest } from '../hooks/useSubjectInterest'
 import { HandMetal, Lock } from 'lucide-react'
 
@@ -43,9 +46,9 @@ export function SubjectDetailPage() {
   const { hasActiveEnrollment, isLoading: isLoadingEnrollments } = useActiveEnrollmentSubjectIds(userId)
   const canAccessMaterials = hasActiveEnrollment(subjectId)
 
-  // Check pending enrollment requests (at subject level - any group)
-  const { hasPendingEnrollmentForSubject } = usePendingEnrollmentsByStudent(userId)
-  const subjectHasPendingRequest = hasPendingEnrollmentForSubject(subjectId)
+  // Solicitudes pendientes POR CURSO: marcar todos los cursos de la asignatura
+  // como "esperando respuesta" ocultaba en cuál habías solicitado plaza.
+  const { getPendingEnrollment } = usePendingEnrollmentsByStudent(userId)
 
   // Materials (TanStack Query: se cargan y refrescan solos)
   const { data: materials = [], isLoading: isLoadingMaterials } = useMaterialsBySubject(subjectId)
@@ -68,14 +71,20 @@ export function SubjectDetailPage() {
   const handleEnroll = async (course: Course) => {
     if (!user?.id) return
 
+    const isFull = course.availableSeats !== null && course.availableSeats <= 0
     try {
       await enrollMutation.mutateAsync({
         studentId: user.id,
         courseId: course.id,
       })
+      toast.success(
+        isFull
+          ? 'Te has apuntado a la lista de espera. La academia te responderá pronto.'
+          : 'Solicitud enviada. La academia la revisará y verás aquí la respuesta.'
+      )
       navigate('/dashboard/enrollments')
-    } catch (error) {
-      console.error('Error enrolling:', error)
+    } catch {
+      // El banner de la sección muestra el motivo real.
     }
   }
 
@@ -193,9 +202,14 @@ export function SubjectDetailPage() {
         </div>
 
         {enrollMutation.isError && (
-          <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-700">
-            Error al inscribirse. Por favor, intenta de nuevo.
-          </div>
+          <Alert
+            variant="error"
+            className="mb-4"
+            message={getApiErrorMessage(
+              enrollMutation.error,
+              'No se ha podido enviar la solicitud. Inténtalo de nuevo.'
+            )}
+          />
         )}
 
         {courses.length > 0 ? (
@@ -206,7 +220,7 @@ export function SubjectDetailPage() {
                 course={course}
                 onEnroll={handleEnroll}
                 isEnrolling={enrollMutation.isPending}
-                hasPendingRequest={subjectHasPendingRequest}
+                pendingEnrollmentId={getPendingEnrollment(course.id)?.id}
               />
             ))}
           </div>

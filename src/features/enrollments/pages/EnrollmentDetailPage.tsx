@@ -17,12 +17,37 @@ export function EnrollmentDetailPage() {
   const { mutate: withdraw, isPending: isWithdrawing } = useWithdraw()
   const { dialogProps, confirm } = useConfirmDialog()
 
+  // El texto se ajusta al estado: cancelar una solicitud que aún no ha respondido
+  // nadie no es lo mismo que darse de baja de un curso al que ya asistes.
+  const confirmCopy = (): { title: string; message: string; confirmLabel: string } => {
+    if (enrollment?.isPendingApproval) {
+      return {
+        title: 'Cancelar solicitud',
+        message:
+          '¿Cancelar tu solicitud de plaza? Puedes volver a solicitarla mientras el curso siga abierto.',
+        confirmLabel: 'Sí, cancelar',
+      }
+    }
+    if (enrollment?.isOnWaitingList) {
+      return {
+        title: 'Salir de la lista de espera',
+        message:
+          '¿Salir de la lista de espera? Perderás tu posición: si vuelves, entrarás por el final.',
+        confirmLabel: 'Sí, salir',
+      }
+    }
+    return {
+      title: 'Darse de baja',
+      message:
+        '¿Darte de baja de este curso? Perderás la plaza y el acceso a sus materiales; si quieres volver, tendrás que solicitar plaza de nuevo.',
+      confirmLabel: 'Sí, darme de baja',
+    }
+  }
+
   const handleWithdraw = async () => {
     const confirmed = await confirm({
-      title: 'Retirarse del grupo',
-      message: '¿Estás seguro de que quieres retirarte de este grupo? Esta acción no se puede deshacer.',
-      confirmLabel: 'Sí, retirarme',
-      cancelLabel: 'Cancelar',
+      ...confirmCopy(),
+      cancelLabel: 'Volver',
       variant: 'danger',
     })
 

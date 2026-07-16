@@ -1,4 +1,7 @@
+import { Link } from 'react-router-dom'
+import { UserCheck } from 'lucide-react'
 import { useAdminDashboardStats } from '../hooks/useAdminDashboard'
+import { usePendingEnrollmentsCount } from '@/features/enrollments/hooks/usePendingEnrollmentsCount'
 import { StatCard } from '../components/StatCard'
 import { QuickActionCard } from '../components/QuickActionCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
@@ -6,6 +9,7 @@ import { ErrorState } from '@/shared/components/common/ErrorState'
 
 export function AdminDashboardPage() {
   const { data: stats, isLoading, error } = useAdminDashboardStats()
+  const pendingCount = usePendingEnrollmentsCount()
 
   if (isLoading) {
     return <LoadingState />
@@ -24,6 +28,29 @@ export function AdminDashboardPage() {
           Resumen general del sistema
         </p>
       </div>
+
+      {/* Lo único que pide acción: sin emails ni caducidad automática, una
+          solicitud espera indefinidamente a que el admin pase por aquí. */}
+      {pendingCount > 0 && (
+        <Link
+          to="/admin/enrollments/pending"
+          className="flex items-center gap-4 rounded-lg border border-amber-200 bg-amber-50 p-4 transition-colors hover:bg-amber-100"
+        >
+          <span className="rounded-lg bg-amber-100 p-3 text-amber-700">
+            <UserCheck className="h-6 w-6" aria-hidden="true" />
+          </span>
+          <span className="flex-1">
+            <span className="block font-medium text-amber-900">
+              {pendingCount === 1
+                ? '1 solicitud de inscripción esperando respuesta'
+                : `${pendingCount} solicitudes de inscripción esperando respuesta`}
+            </span>
+            <span className="block text-sm text-amber-700">
+              Revísalas para decidir la carga de cada curso →
+            </span>
+          </span>
+        </Link>
+      )}
 
       {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

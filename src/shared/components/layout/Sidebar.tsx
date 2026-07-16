@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '@/features/auth'
+import { usePendingEnrollmentsCount } from '@/features/enrollments/hooks/usePendingEnrollmentsCount'
 import { cn } from '@/shared/utils/cn'
 import {
   Home,
@@ -28,6 +29,8 @@ interface NavItem {
   icon: React.ReactNode
   roles?: string[]
   end?: boolean // If true, only match exact path (for parent routes like Dashboard)
+  /** Clave de contador a pintar como badge (ver `badges` en el componente). */
+  badge?: 'pendingEnrollments'
 }
 
 const ICON_CLASS = 'h-5 w-5'
@@ -91,6 +94,7 @@ const adminNavigation: NavItem[] = [
     name: 'Solicitudes Pendientes',
     href: '/admin/enrollments/pending',
     icon: <UserCheck className={ICON_CLASS} />,
+    badge: 'pendingEnrollments',
   },
   {
     name: 'Asignaturas',
@@ -131,6 +135,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     if (!item.roles) return true
     return item.roles.some((role) => hasRole(role))
   })
+
+  const badges: Record<NonNullable<NavItem['badge']>, number> = {
+    pendingEnrollments: usePendingEnrollmentsCount(isAdminSection && hasRole('ADMIN')),
+  }
 
   return (
     <>
@@ -187,7 +195,19 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   }
                 >
                   {item.icon}
-                  {item.name}
+                  <span className="flex-1">{item.name}</span>
+                  {item.badge && badges[item.badge] > 0 && (
+                    <span
+                      className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800"
+                      aria-label={
+                        badges[item.badge] === 1
+                          ? '1 solicitud esperando respuesta'
+                          : `${badges[item.badge]} solicitudes esperando respuesta`
+                      }
+                    >
+                      {badges[item.badge]}
+                    </span>
+                  )}
                 </NavLink>
               </li>
             ))}

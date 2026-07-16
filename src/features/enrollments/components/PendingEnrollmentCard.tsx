@@ -3,15 +3,21 @@ import type { Enrollment } from '../types/enrollment.types'
 import { Card, Button } from '@/shared/components/ui'
 import { useApproveEnrollment, useRejectEnrollment } from '../hooks/useEnrollments'
 import { cn } from '@/shared/utils/cn'
-import { Clock, User, BookOpen, AlertCircle } from 'lucide-react'
+import { Clock, User, BookOpen, Users } from 'lucide-react'
 import { formatDateTimeShort } from '@/shared/utils/formatters'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
+import { toast } from '@/shared/hooks/useToast'
 
 interface PendingEnrollmentCardProps {
   enrollment: Enrollment
+  /** Solicitudes pendientes para el mismo curso, ésta incluida. */
+  pendingForSameCourse?: number
 }
 
-export function PendingEnrollmentCard({ enrollment }: PendingEnrollmentCardProps) {
+export function PendingEnrollmentCard({
+  enrollment,
+  pendingForSameCourse,
+}: PendingEnrollmentCardProps) {
   const [showRejectReason, setShowRejectReason] = useState(false)
   const [rejectReason, setRejectReason] = useState('')
 
@@ -20,8 +26,24 @@ export function PendingEnrollmentCard({ enrollment }: PendingEnrollmentCardProps
 
   const isLoading = approveMutation.isPending || rejectMutation.isPending
 
+  // Controlar la carga de cada curso es el motivo de existir de la app: sin la
+  // ocupación delante, el admin aprobaba a ciegas.
+  const isFull =
+    enrollment.courseCapacity !== null &&
+    enrollment.currentEnrollmentCount >= enrollment.courseCapacity
+
   const handleApprove = async () => {
-    await approveMutation.mutateAsync(enrollment.id)
+    // El back decide ACTIVE o WAITING_LIST según haya plaza al aprobar; sin mirar
+    // el resultado, la card desaparecía y el admin asumía "activado".
+    const updated = await approveMutation.mutateAsync(enrollment.id)
+    if (updated.status === 'WAITING_LIST') {
+      toast.warning(
+        `${enrollment.studentName}: aprobada, pero el curso estaba completo — queda en lista de espera` +
+          (updated.waitingListPosition ? ` (posición ${updated.waitingListPosition})` : '')
+      )
+    } else {
+      toast.success(`${enrollment.studentName}: inscripción activa en ${enrollment.courseName}`)
+    }
   }
 
   const handleReject = async () => {
@@ -33,6 +55,7 @@ export function PendingEnrollmentCard({ enrollment }: PendingEnrollmentCardProps
       id: enrollment.id,
       data: rejectReason ? { reason: rejectReason } : undefined,
     })
+    toast.success(`Solicitud de ${enrollment.studentName} rechazada`)
     setShowRejectReason(false)
     setRejectReason('')
   }
@@ -42,22 +65,8 @@ export function PendingEnrollmentCard({ enrollment }: PendingEnrollmentCardProps
     setRejectReason('')
   }
 
-  // Calculate time remaining before expiration (48 hours from enrolledAt)
-  const enrolledDate = new Date(enrollment.enrolledAt)
-  const expirationDate = new Date(enrolledDate.getTime() + 48 * 60 * 60 * 1000)
-  const now = new Date()
-  const hoursRemaining = Math.max(0, Math.floor((expirationDate.getTime() - now.getTime()) / (60 * 60 * 1000)))
-  const isUrgent = hoursRemaining < 12
-
   return (
-    <Card padding="md" className="relative">
-      {isUrgent && (
-        <div className="absolute -top-2 -right-2 flex items-center gap-1 rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
-          <AlertCircle className="h-3 w-3" />
-          {hoursRemaining}h restantes
-        </div>
-      )}
-
+    <Card padding="md">
       <div className="space-y-3">
         {/* Student info */}
         <div className="flex items-center gap-2">
@@ -79,9 +88,31 @@ export function PendingEnrollmentCard({ enrollment }: PendingEnrollmentCardProps
           </div>
         </div>
 
+        {/* Ocupación del curso: el dato de la decisión */}
+        <div className="flex items-start gap-2">
+          <Users className="mt-0.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+          <div className="text-sm">
+            <p className={cn('font-medium', isFull ? 'text-amber-700' : 'text-gray-900')}>
+              {enrollment.currentEnrollmentCount}
+              {enrollment.courseCapacity !== null
+                ? ` / ${enrollment.courseCapacity} inscritos`
+                : ' inscritos (sin límite)'}
+              {isFull && ' — completo'}
+            </p>
+            {isFull && (
+              <p className="text-amber-700">Si apruebas, entrará en lista de espera.</p>
+            )}
+            {pendingForSameCourse !== undefined && pendingForSameCourse > 1 && (
+              <p className="text-gray-500">
+                {pendingForSameCourse} solicitudes pendientes para este curso
+              </p>
+            )}
+          </div>
+        </div>
+
         {/* Request time */}
         <div className="flex items-center gap-2 text-sm text-gray-500">
-          <Clock className="h-4 w-4" />
+          <Clock className="h-4 w-4" aria-hidden="true" />
           <span>
             Solicitado el{' '}
             {formatDateTimeShort(enrollment.enrolledAt)}
