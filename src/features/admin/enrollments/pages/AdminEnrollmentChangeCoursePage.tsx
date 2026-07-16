@@ -9,6 +9,7 @@ import { adminApi } from '../../services/adminApi'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { cn } from '@/shared/utils/cn'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 export function AdminEnrollmentChangeCoursePage() {
   const { id } = useParams<{ id: string }>()
@@ -156,7 +157,7 @@ export function AdminEnrollmentChangeCoursePage() {
         {error && (
           <div className="rounded-md bg-red-50 p-3">
             <p className="text-sm text-red-700">
-              {error.message || 'Error al cambiar de curso'}
+              {getApiErrorMessage(error, 'Error al cambiar de curso')}
             </p>
           </div>
         )}

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
+import { Alert } from '@/shared/components/ui/Alert'
 import { cn } from '@/shared/utils/cn'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 import { formatDateWithWeekdayLong as formatDate, formatTime } from '@/shared/utils/formatters'
 import { useCreateReservation } from '../hooks/useReservationMutations'
 import { ReservationMode } from '../types/reservation.types'
@@ -101,6 +103,16 @@ export function CreateReservationModal({
             </button>
           </div>
         </div>
+
+        {createMutation.isError && (
+          <Alert
+            variant="error"
+            message={getApiErrorMessage(
+              createMutation.error,
+              'No se ha podido crear la reserva. Inténtalo de nuevo.'
+            )}
+          />
+        )}
       </div>
 
       <ModalFooter className="-mx-6 -mb-6 mt-6">

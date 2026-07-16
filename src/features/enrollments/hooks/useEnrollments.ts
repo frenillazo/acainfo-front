@@ -60,6 +60,8 @@ export const useApproveEnrollment = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: (id: number) => enrollmentApi.approve(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollments'] })
@@ -73,6 +75,8 @@ export const useRejectEnrollment = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: ({ id, data }: { id: number; data?: RejectEnrollmentRequest }) =>
       enrollmentApi.reject(id, data),
     onSuccess: () => {

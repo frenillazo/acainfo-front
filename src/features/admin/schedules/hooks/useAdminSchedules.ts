@@ -44,6 +44,8 @@ export function useCreateSchedule() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: (data: CreateScheduleRequest) => adminApi.createSchedule(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: scheduleKeys.lists() })
@@ -56,6 +58,8 @@ export function useUpdateSchedule() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: ({ id, data }: { id: number; data: UpdateScheduleRequest }) =>
       adminApi.updateSchedule(id, data),
     onSuccess: (_, { id }) => {
@@ -71,6 +75,8 @@ export function useDeleteSchedule() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: (id: number) => adminApi.deleteSchedule(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: scheduleKeys.all })

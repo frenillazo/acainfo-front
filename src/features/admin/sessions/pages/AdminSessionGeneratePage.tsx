@@ -7,6 +7,7 @@ import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { toast } from '@/shared/hooks/useToast'
 import type { GenerateSessionsRequest, Session } from '../../types/admin.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 export function AdminSessionGeneratePage() {
   const navigate = useNavigate()
@@ -187,13 +188,13 @@ export function AdminSessionGeneratePage() {
 
         {previewMutation.error && (
           <div className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-            Error al generar vista previa: {(previewMutation.error as Error).message}
+            Error al generar vista previa: {getApiErrorMessage(previewMutation.error, 'inténtalo de nuevo')}
           </div>
         )}
 
         {generateMutation.error && (
           <div className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-            Error al generar sesiones: {(generateMutation.error as Error).message}
+            Error al generar sesiones: {getApiErrorMessage(generateMutation.error, 'inténtalo de nuevo')}
           </div>
         )}
       </div>

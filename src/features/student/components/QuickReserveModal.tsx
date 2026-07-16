@@ -7,6 +7,7 @@ import { useCreateReservation } from '@/features/reservations/hooks/useReservati
 import { ReservationMode } from '@/features/reservations/types/reservation.types'
 import type { UpcomingSessionSummary } from '../types/student.types'
 import { MapPin } from 'lucide-react'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 interface QuickReserveModalProps {
   isOpen: boolean
@@ -86,7 +87,7 @@ export function QuickReserveModal({
         {/* Error display */}
         {createMutation.isError && (
           <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
-            {(createMutation.error as Error)?.message || 'Error al crear la reserva'}
+            {getApiErrorMessage(createMutation.error, 'Error al crear la reserva')}
           </div>
         )}
       </div>

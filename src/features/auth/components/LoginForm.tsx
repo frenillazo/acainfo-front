@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { useAuth } from '../hooks/useAuth'
 import { FormField } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -48,11 +49,7 @@ export function LoginForm() {
       {loginError && (
         <Alert
           variant="error"
-          message={
-            loginError instanceof Error
-              ? loginError.message
-              : 'Error al iniciar sesión'
-          }
+          message={getApiErrorMessage(loginError, 'Error al iniciar sesión')}
         />
       )}
 

@@ -1,7 +1,11 @@
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { Alert } from '@/shared/components/ui'
 import { LoginForm } from '../components/LoginForm'
 
 export function LoginPage() {
+  const [searchParams] = useSearchParams()
+  const sessionExpired = searchParams.get('expired') === '1'
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
@@ -24,6 +28,13 @@ export function LoginPage() {
         </div>
 
         <div className="rounded-lg bg-white p-8 shadow">
+          {sessionExpired && (
+            <Alert
+              variant="warning"
+              message="Tu sesión ha caducado. Vuelve a iniciar sesión para continuar donde estabas."
+              className="mb-4"
+            />
+          )}
           <LoginForm />
 
           <div className="mt-4 text-center">

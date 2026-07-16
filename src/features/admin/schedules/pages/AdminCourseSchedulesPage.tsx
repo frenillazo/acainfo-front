@@ -15,6 +15,7 @@ import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import type { CreateScheduleRequest, UpdateScheduleRequest } from '../../types/admin.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 export function AdminCourseSchedulesPage() {
   const { courseId } = useParams<{ courseId: string }>()
@@ -130,17 +131,17 @@ export function AdminCourseSchedulesPage() {
       {/* Error messages */}
       {createMutation.error && (
         <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-          Error al crear horario: {(createMutation.error as Error).message}
+          Error al crear horario: {getApiErrorMessage(createMutation.error, 'inténtalo de nuevo')}
         </div>
       )}
       {updateMutation.error && (
         <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-          Error al actualizar horario: {(updateMutation.error as Error).message}
+          Error al actualizar horario: {getApiErrorMessage(updateMutation.error, 'inténtalo de nuevo')}
         </div>
       )}
       {deleteMutation.error && (
         <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-          Error al eliminar horario: {(deleteMutation.error as Error).message}
+          Error al eliminar horario: {getApiErrorMessage(deleteMutation.error, 'inténtalo de nuevo')}
         </div>
       )}
 

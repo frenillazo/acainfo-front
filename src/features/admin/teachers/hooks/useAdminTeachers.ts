@@ -36,6 +36,8 @@ export function useCreateTeacher() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: (data: CreateTeacherRequest) => adminApi.createTeacher(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'teachers'] })
@@ -47,6 +49,8 @@ export function useUpdateTeacher() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: ({ id, data }: { id: number; data: UpdateTeacherRequest }) =>
       adminApi.updateTeacher(id, data),
     onSuccess: () => {

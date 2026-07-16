@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { FormField } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
 import type { Degree } from '../types/auth.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 const ALLOWED_DOMAINS = ['red.ujaen.es', 'gmail.com']
 
@@ -168,11 +169,7 @@ export function RegisterForm() {
       {registerError && (
         <Alert
           variant="error"
-          message={
-            registerError instanceof Error
-              ? registerError.message
-              : 'Error al registrarse'
-          }
+          message={getApiErrorMessage(registerError, 'Error al registrarse')}
         />
       )}
 

@@ -8,6 +8,8 @@ export const useCreateReservation = () => {
 
   return useMutation({
     mutationFn: (data: CreateReservationRequest) => reservationApi.create(data),
+    // Los modales de reserva pintan el error donde el usuario está mirando.
+    meta: { silentError: true },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: reservationKeys.all })
       queryClient.invalidateQueries({ queryKey: ['student', 'overview'] })
@@ -34,6 +36,8 @@ export const useSwitchSession = () => {
   return useMutation({
     mutationFn: ({ id, studentId, data }: { id: number; studentId: number; data: SwitchSessionRequest }) =>
       reservationApi.switchSession(id, studentId, data),
+    // SwitchSessionModal pinta el error en el propio modal.
+    meta: { silentError: true },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: reservationKeys.all })
       queryClient.invalidateQueries({ queryKey: ['sessions'] })

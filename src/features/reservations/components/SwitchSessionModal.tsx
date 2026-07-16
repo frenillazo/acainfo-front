@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui/Button'
+import { Alert } from '@/shared/components/ui/Alert'
 import { cn } from '@/shared/utils/cn'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 import { formatDateWithWeekday as formatDate, formatTime } from '@/shared/utils/formatters'
 import { useSessionsBySubject } from '@/features/sessions/hooks/useSessions'
 import { useSwitchSession } from '../hooks/useReservationMutations'
@@ -87,6 +89,16 @@ export function SwitchSessionModal({
             </p>
           )}
         </div>
+
+        {switchMutation.isError && (
+          <Alert
+            variant="error"
+            message={getApiErrorMessage(
+              switchMutation.error,
+              'No se ha podido cambiar la sesión. Sigues en la sesión actual.'
+            )}
+          />
+        )}
       </div>
 
       <ModalFooter className="-mx-6 -mb-6 mt-6">

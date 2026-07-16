@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { FormField, FormSelect } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
 import type { Subject, Degree, SubjectStatus } from '../../types/admin.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 const createSubjectSchema = z.object({
   code: z
@@ -153,7 +154,7 @@ export function SubjectForm({
         {error && (
           <Alert
             variant="error"
-            message={error.message || 'Error al guardar la asignatura'}
+            message={getApiErrorMessage(error, 'Error al guardar la asignatura')}
           />
         )}
 
@@ -210,7 +211,7 @@ export function SubjectForm({
       {error && (
         <Alert
           variant="error"
-          message={error.message || 'Error al crear la asignatura'}
+          message={getApiErrorMessage(error, 'Error al crear la asignatura')}
         />
       )}
 

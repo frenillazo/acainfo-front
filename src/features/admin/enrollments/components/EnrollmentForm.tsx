@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { adminApi } from '../../services/adminApi'
 import { SearchableList } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 const enrollmentSchema = z.object({
   studentId: z.number({ message: 'Selecciona un estudiante' }).min(1, 'Selecciona un estudiante'),
@@ -110,7 +111,7 @@ export function EnrollmentForm({
       {error && (
         <Alert
           variant="error"
-          message={error.message || 'Error al crear la inscripción'}
+          message={getApiErrorMessage(error, 'Error al crear la inscripción')}
         />
       )}
 

@@ -3,6 +3,7 @@ import { Modal, ModalFooter } from '@/shared/components/ui/Modal'
 import { Button } from '@/shared/components/ui'
 import { Alert } from '@/shared/components/ui'
 import { useTerms } from '../hooks/useTerms'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 /**
  * Modal that forces the user to accept the current terms and conditions.
@@ -57,11 +58,7 @@ export function TermsAcceptanceModal() {
         {acceptError && (
           <Alert
             variant="error"
-            message={
-              acceptError instanceof Error
-                ? acceptError.message
-                : 'Error al aceptar los términos'
-            }
+            message={getApiErrorMessage(acceptError, 'Error al aceptar los términos')}
           />
         )}
       </div>

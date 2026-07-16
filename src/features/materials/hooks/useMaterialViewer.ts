@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { materialApi } from '../services/materialApi'
 import type { Material, ViewerState, ViewerType } from '../types/material.types'
 import { getViewerType } from '../types/material.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 interface UseMaterialViewerReturn extends ViewerState {
   viewerType: ViewerType | null
@@ -44,10 +45,7 @@ export function useMaterialViewer(): UseMaterialViewerReturn {
         isLoading: false,
       }))
     } catch (error: unknown) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Error al cargar el archivo'
+      const message = getApiErrorMessage(error, 'Error al cargar el archivo')
       setState((prev) => ({
         ...prev,
         isLoading: false,

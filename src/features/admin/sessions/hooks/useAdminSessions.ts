@@ -89,6 +89,8 @@ export function useGenerateSessions() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: (data: GenerateSessionsRequest) => adminApi.generateSessions(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: sessionKeys.lists() })
@@ -99,6 +101,8 @@ export function useGenerateSessions() {
 
 export function usePreviewGenerateSessions() {
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: (data: GenerateSessionsRequest) => adminApi.previewGenerateSessions(data),
   })
 }

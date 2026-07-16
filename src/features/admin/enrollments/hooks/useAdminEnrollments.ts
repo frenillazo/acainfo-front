@@ -32,6 +32,8 @@ export function useCreateEnrollment() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: (data: EnrollRequest) => enrollmentApi.enroll(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'enrollments'] })
@@ -57,6 +59,8 @@ export function useChangeEnrollmentCourse() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: ({ id, data }: { id: number; data: ChangeCourseRequest }) =>
       enrollmentApi.changeCourse(id, data),
     onSuccess: () => {

@@ -33,6 +33,8 @@ export function useCreateSubject() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: (data: CreateSubjectRequest) => adminApi.createSubject(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: subjectKeys.lists() })
@@ -44,6 +46,8 @@ export function useUpdateSubject() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: ({ id, data }: { id: number; data: UpdateSubjectRequest }) =>
       adminApi.updateSubject(id, data),
     onSuccess: (_, { id }) => {

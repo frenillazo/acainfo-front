@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { FormField } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
 import type { Teacher } from '../../types/admin.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 const createTeacherSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -100,7 +101,7 @@ export function TeacherForm({
       {error && (
         <Alert
           variant="error"
-          message={error.message || 'Error al guardar el profesor'}
+          message={getApiErrorMessage(error, 'Error al guardar el profesor')}
         />
       )}
 

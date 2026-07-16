@@ -7,6 +7,7 @@ import { adminApi } from '../../services/adminApi'
 import { FormField, FormSelect, SearchableList } from '@/shared/components/form'
 import { Button, Alert } from '@/shared/components/ui'
 import type { Course } from '../../types/admin.types'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 // Helper: yyyy-MM-dd today + N months
 function todayPlusMonths(months: number): string {
@@ -182,7 +183,7 @@ export function CourseForm({
         {error && (
           <Alert
             variant="error"
-            message={error.message || 'Error al guardar el curso'}
+            message={getApiErrorMessage(error, 'Error al guardar el curso')}
           />
         )}
 
@@ -271,7 +272,7 @@ export function CourseForm({
       {error && (
         <Alert
           variant="error"
-          message={error.message || 'Error al crear el curso'}
+          message={getApiErrorMessage(error, 'Error al crear el curso')}
         />
       )}
 

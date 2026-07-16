@@ -5,6 +5,7 @@ import { useApproveEnrollment, useRejectEnrollment } from '../hooks/useEnrollmen
 import { cn } from '@/shared/utils/cn'
 import { Clock, User, BookOpen, AlertCircle } from 'lucide-react'
 import { formatDateTimeShort } from '@/shared/utils/formatters'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 interface PendingEnrollmentCardProps {
   enrollment: Enrollment
@@ -151,12 +152,12 @@ export function PendingEnrollmentCard({ enrollment }: PendingEnrollmentCardProps
         {/* Error messages */}
         {approveMutation.isError && (
           <p className="text-sm text-red-600">
-            Error al aprobar: {approveMutation.error?.message}
+            Error al aprobar: {getApiErrorMessage(approveMutation.error, 'inténtalo de nuevo')}
           </p>
         )}
         {rejectMutation.isError && (
           <p className="text-sm text-red-600">
-            Error al rechazar: {rejectMutation.error?.message}
+            Error al rechazar: {getApiErrorMessage(rejectMutation.error, 'inténtalo de nuevo')}
           </p>
         )}
       </div>

@@ -8,10 +8,49 @@ export interface Toast {
   message: string
 }
 
+/**
+ * Un error suele traer más texto y más consecuencias que un "guardado": darle
+ * los mismos 4s que a un success lo deja ilegible justo cuando más importa.
+ */
+const DURATIONS: Record<ToastType, number> = {
+  success: 4000,
+  info: 4000,
+  warning: 6000,
+  error: 10000,
+}
+
 interface ToastState {
   toasts: Toast[]
   addToast: (type: ToastType, message: string) => void
   removeToast: (id: string) => void
+  /** Congela el auto-cierre mientras el usuario tiene el toast bajo el ratón o el foco. */
+  pauseToast: (id: string) => void
+  resumeToast: (id: string) => void
+}
+
+// Temporizadores vivos y su vencimiento, para poder pausar y reanudar sin
+// reiniciar la cuenta desde cero.
+const timers = new Map<string, { timeoutId: ReturnType<typeof setTimeout>; expiresAt: number }>()
+const pausedRemaining = new Map<string, number>()
+
+function clearTimer(id: string) {
+  const timer = timers.get(id)
+  if (timer) {
+    clearTimeout(timer.timeoutId)
+    timers.delete(id)
+  }
+}
+
+function scheduleRemoval(id: string, ms: number) {
+  clearTimer(id)
+  timers.set(id, {
+    timeoutId: setTimeout(() => {
+      timers.delete(id)
+      pausedRemaining.delete(id)
+      useToastStore.getState().removeToast(id)
+    }, ms),
+    expiresAt: Date.now() + ms,
+  })
 }
 
 const useToastStore = create<ToastState>((set) => ({
@@ -21,17 +60,26 @@ const useToastStore = create<ToastState>((set) => ({
     set((state) => ({
       toasts: [...state.toasts, { id, type, message }],
     }))
-    // Auto-remove after 4 seconds
-    setTimeout(() => {
-      set((state) => ({
-        toasts: state.toasts.filter((t) => t.id !== id),
-      }))
-    }, 4000)
+    scheduleRemoval(id, DURATIONS[type])
   },
   removeToast: (id) => {
+    clearTimer(id)
+    pausedRemaining.delete(id)
     set((state) => ({
       toasts: state.toasts.filter((t) => t.id !== id),
     }))
+  },
+  pauseToast: (id) => {
+    const timer = timers.get(id)
+    if (!timer) return
+    clearTimer(id)
+    pausedRemaining.set(id, Math.max(0, timer.expiresAt - Date.now()))
+  },
+  resumeToast: (id) => {
+    const remaining = pausedRemaining.get(id)
+    if (remaining === undefined) return
+    pausedRemaining.delete(id)
+    scheduleRemoval(id, remaining)
   },
 }))
 
@@ -45,5 +93,7 @@ export const toast = {
 export function useToast() {
   const toasts = useToastStore((state) => state.toasts)
   const removeToast = useToastStore((state) => state.removeToast)
-  return { toasts, removeToast }
+  const pauseToast = useToastStore((state) => state.pauseToast)
+  const resumeToast = useToastStore((state) => state.resumeToast)
+  return { toasts, removeToast, pauseToast, resumeToast }
 }

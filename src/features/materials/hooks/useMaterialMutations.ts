@@ -10,6 +10,8 @@ import { materialKeys } from './useMaterials'
 export function useUploadMaterial() {
   const queryClient = useQueryClient()
   return useMutation({
+    // El componente ya pinta este error en contexto (formulario/modal).
+    meta: { silentError: true },
     mutationFn: ({ metadata, file }: { metadata: UploadMaterialRequest; file: File }) =>
       materialApi.upload(metadata, file),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: materialKeys.all }),

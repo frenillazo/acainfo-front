@@ -20,6 +20,18 @@ apiClient.interceptors.request.use((requestConfig) => {
   return requestConfig
 })
 
+// Un 401 en estas rutas es la respuesta legítima del back (credenciales
+// incorrectas, refresh caducado), NO un access token expirado: intentar
+// refrescar aquí acabaría expulsando al usuario a /login sin enseñarle nunca
+// el error de su formulario.
+const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh']
+
+function isAuthPath(url: string | undefined): boolean {
+  if (!url) return false
+  const path = url.startsWith(config.apiUrl) ? url.slice(config.apiUrl.length) : url
+  return AUTH_PATHS.some((authPath) => path.startsWith(authPath))
+}
+
 // --- Refresh single-flight ---------------------------------------------------
 // Un solo POST /auth/refresh en vuelo; los 401 concurrentes esperan la misma
 // promesa. Evita rotaciones en paralelo que revocarían el token recién emitido
@@ -56,7 +68,8 @@ apiClient.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       originalRequest &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !isAuthPath(originalRequest.url)
     ) {
       originalRequest._retry = true
 
@@ -65,10 +78,17 @@ apiClient.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return apiClient(originalRequest)
       } catch {
-        // Refresh fallido: limpia el estado y manda a login.
+        // Refresh fallido: la sesión ha caducado de verdad. Limpia el estado y
+        // manda a login avisando de por qué, recordando dónde estaba el usuario
+        // para devolverlo ahí tras volver a entrar.
         useAuthStore.getState().clearAuth()
         localStorage.removeItem('auth-storage')
-        window.location.href = '/login'
+        const params = new URLSearchParams({ expired: '1' })
+        const next = `${window.location.pathname}${window.location.search}`
+        if (next !== '/' && !next.startsWith('/login')) {
+          params.set('next', next)
+        }
+        window.location.href = `/login?${params.toString()}`
         // Promesa que nunca resuelve para cortar la propagación del error.
         return new Promise(() => {})
       }

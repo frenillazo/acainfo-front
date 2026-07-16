@@ -5,7 +5,7 @@ import {
   useArchiveSubject,
   useDeleteSubject,
 } from '../hooks/useAdminSubjects'
-import { ConfigBadge } from '@/shared/components/ui'
+import { Alert, ConfigBadge } from '@/shared/components/ui'
 import { SUBJECT_STATUS_CONFIG, DEGREE_CONFIG } from '@/shared/config/badgeConfig'
 import { useMaterialsBySubject } from '@/features/materials/hooks/useMaterials'
 import {
@@ -511,6 +511,16 @@ export function AdminSubjectDetailPage() {
             <h3 className="mb-4 text-base font-semibold text-gray-900">
               Subir Nuevo Material
             </h3>
+            {uploadMutation.isError && (
+              <Alert
+                variant="error"
+                className="mb-4"
+                message={getApiErrorMessage(
+                  uploadMutation.error,
+                  'No se ha podido subir el material. Revisa el archivo e inténtalo de nuevo.'
+                )}
+              />
+            )}
             <MaterialUploadForm
               key={subjectId}
               subjectId={subjectId}
