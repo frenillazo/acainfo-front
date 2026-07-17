@@ -25,9 +25,30 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 - Hooks: `useXxx` (queries) / `useXxxMutations` / `useEnrichedXxx` (agregación). `sessions`, `reservations` y `materials` usan key factories exportadas (`sessionKeys`, `reservationKeys`, `materialKeys`); el resto, arrays inline.
 - Estado visual de sesiones: SIEMPRE `getVisualSessionStatus()` (`shared/utils/sessionStatus.ts`), nunca `session.status` directo (el back no transiciona estados automáticamente).
 - Formularios: RHF + zodResolver. Badges: `ConfigBadge` + `badgeConfig.ts`.
-- **Usa el kit, no lo redibujes**: `rounded-lg border border-gray-200 bg-white p-6 shadow-sm` (= lo que hace `<Card>`) sigue copiado a mano en **29 ficheros**, y el `<h1 className="text-2xl font-bold text-gray-900">` en ~30 páginas. La consistencia de hoy es por copy-paste, no por sistema: cualquier retoque visual es inaplicable. **Migración POR OPORTUNIDAD** (decidido 16-jul-2026): al tocar un fichero por otra razón, cambia su Card por `<Card>` y su cabecera por `<PageHeader>`. Nada de barrido big-bang — no le aporta nada al usuario y toca todo el codebase.
-  - `<PageHeader title subtitle actions>` (17-jul-2026) es la cabecera de página: pinta el `h1` + el `<p className="mt-1 text-sm text-gray-500">` y, si le pasas `actions`, el `flex items-center justify-between` con los botones a la derecha. Sin `actions` no monta el flex (una cabecera suelta no debe cambiar de layout). Referencias vivas del patrón: las 4 páginas de alta (`AdminCourse/Subject/Teacher/EnrollmentCreatePage`, con `<Card className="max-w-2xl">`) y `AdminTeachersPage` (`actions` + `<Card padding="sm">` en los filtros).
-  - Equivalencias al migrar: `p-6` → `<Card>` (por defecto), `p-4` → `<Card padding="sm">`, `p-8` → `padding="lg"`, sin padding → `padding="none"`. El resto de clases del div (`max-w-2xl`, `mt-4`…) van en `className`: `twMerge` las fusiona sin pelearse con las del `cva`.
+- **Usa el kit, no lo redibujes**: `<Card>` (47 ficheros) y `<PageHeader>` (22) son el sistema. La
+  **migración está COMPLETA** (17-jul-2026, 5 tandas por área, cada una verificada entera contra la
+  versión anterior en el navegador). Ya no hay Cards a mano salvo **5 excepciones, todas comentadas EN
+  el código** con su porqué — si te topas con una, léelo antes de "arreglarla":
+  - `SessionContextMenu`: es un desplegable (`shadow-lg`), no una tarjeta.
+  - El `<form>` de `AdminMaterialGeneratePage`: el form ES la tarjeta y `Card` solo puede ser
+    `div`/`article`/`section`.
+  - Los *segmented control* `p-1` de `AdminSessionsPage` y `SessionsPage`: comparten prefijo de clases
+    por casualidad.
+  - `EnrollmentListItem`: **código muerto** (solo lo referencia el barrel; la lista la pinta un
+    `EnrollmentCard` local en `EnrollmentsPage`). Pendiente de borrar.
+  - Cabeceras que NO van a `PageHeader`: las de **detalle** (avatar a la izquierda, `items-start`,
+    subtítulo sin `mt-1 text-sm`, 2-3 acciones) y las **responsive** de `AdminSessionsPage` y
+    `SessionsPage` (`flex-col` + `sm:flex-row`: apilan las acciones en móvil y `PageHeader` siempre las
+    pone en fila — migrarlas rompe el móvil sin que tests ni typecheck lo vean). Y la de
+    `AdminDashboardPage`, cuyo subtítulo va a 16px (sin `text-sm`): migrarla lo encogería.
+- **Al añadir una página nueva**: `<PageHeader title subtitle actions>` + `<Card>`. Equivalencias de
+  padding: `p-6` → `<Card>` (por defecto), `p-4` → `padding="sm"`, `p-8` → `"lg"`, sin padding →
+  `"none"`. El resto de clases van en `className` (`twMerge` las fusiona con las del `cva`). Sin
+  `actions`, `PageHeader` NO monta el flex, a propósito (una cabecera suelta no debe cambiar de
+  layout). `PageHeader` pinta el `h1` + un `<p className="mt-1 text-sm text-gray-500">`; `subtitle` y
+  `actions` son `ReactNode`, así que admiten JSX (`AdminEnrollmentsPage` mete un botón en el subtítulo).
+  Si tus acciones no usan `gap-3`, pasa tu propio wrapper como hijo único (lo hace `AdminUsersPage`,
+  que va con `gap-2`).
 - **Diálogos** (16-jul-2026): `Modal`, `ConfirmDialog` y `PromptDialog` comparten `useFocusTrap` (foco dentro al abrir, Tab reciclado, foco de vuelta al disparador al cerrar) y cierran con Escape. Un diálogo nuevo debe usar el `Modal` base, no montar el suyo a mano.
 - **Estado que depende del viewport**: resolverlo con clases (`invisible lg:visible` saca del orden de tabulación sin JS), NO con `matchMedia`. El sidebar lo hacía con un hook y un evento `change` perdido dejaba el menú inservible en escritorio. `useMediaQuery` (useSyncExternalStore) queda solo para lo que las clases no pueden: parar el carrusel con `prefers-reduced-motion`.
 - **Errores de mutación** (16-jul-2026): el `MutationCache` de `QueryProvider` tiene un `onError` global que saca un toast con `getApiErrorMessage` — red de seguridad para que ninguna mutación falle en silencio. Si el componente YA pinta el error en contexto (banner del formulario o del modal), marcar la mutación con `meta: { silentError: true }` para no decir lo mismo dos veces. El interceptor de `apiClient` NO refresca en 401 de `/auth/login|register|refresh`: ahí el 401 es la respuesta legítima del back y debe llegar al formulario.
