@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { User, RoleType, UserStatus } from '../types/auth.types'
 import { adminApi } from '../services/adminApi'
+import { Card } from '@/shared/components/ui'
 import { cn } from '@/shared/utils/cn'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 
@@ -136,7 +137,7 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
       )}
 
       {/* Role Management */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
+      <Card>
         <h3 className="mb-4 text-lg font-semibold text-gray-900">Role Management</h3>
 
         <div className="space-y-4">
@@ -222,10 +223,10 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
             </p>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Status Management */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
+      <Card>
         <h3 className="mb-4 text-lg font-semibold text-gray-900">Account Status</h3>
 
         <div className="space-y-3">
@@ -291,7 +292,7 @@ export function RoleManagementPanel({ user, onUserUpdated }: RoleManagementPanel
             </button>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   )
 }
