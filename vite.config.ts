@@ -14,5 +14,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Por encima del asyncUtilTimeout de setup.ts (5 s): si un findBy* agota su
+    // espera, debe ganar el error de testing-library (dice qué no encontró y
+    // vuelca el DOM) y no el "test timed out" de vitest, que no dice nada.
+    testTimeout: 15000,
   },
 })
