@@ -1,7 +1,7 @@
 import { useInterestSummary } from '@/features/subjects/hooks/useSubjectInterest'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-import { DataTable, TextCell, type Column } from '@/shared/components/ui'
+import { DataTable, PageHeader, TextCell, type Column } from '@/shared/components/ui'
 import type { SubjectInterestSummary } from '@/features/subjects/types/subject.types'
 
 export function AdminDemandPage() {
@@ -42,13 +42,10 @@ export function AdminDemandPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Demanda de Asignaturas</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Estudiantes que han pulsado &quot;Me renta&quot; en cada asignatura
-        </p>
-      </div>
+      <PageHeader
+        title="Demanda de Asignaturas"
+        subtitle={'Estudiantes que han pulsado "Me renta" en cada asignatura'}
+      />
 
       <DataTable
         data={summary}

@@ -21,7 +21,9 @@ export function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* A mano, no <PageHeader>: este subtítulo va sin `text-sm` (16px) y PageHeader
+          lo pinta a 14px como el resto de la app. Migrarlo encogería la letra: es un
+          cambio visual, no una migración, y está pendiente de decisión del dueño. */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Panel de Administración</h1>
         <p className="mt-1 text-gray-500">
