@@ -27,15 +27,13 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 - Formularios: RHF + zodResolver. Badges: `ConfigBadge` + `badgeConfig.ts`.
 - **Usa el kit, no lo redibujes**: `<Card>` (47 ficheros) y `<PageHeader>` (22) son el sistema. La
   **migración está COMPLETA** (17-jul-2026, 5 tandas por área, cada una verificada entera contra la
-  versión anterior en el navegador). Ya no hay Cards a mano salvo **5 excepciones, todas comentadas EN
+  versión anterior en el navegador). Ya no hay Cards a mano salvo **4 excepciones, todas comentadas EN
   el código** con su porqué — si te topas con una, léelo antes de "arreglarla":
   - `SessionContextMenu`: es un desplegable (`shadow-lg`), no una tarjeta.
   - El `<form>` de `AdminMaterialGeneratePage`: el form ES la tarjeta y `Card` solo puede ser
     `div`/`article`/`section`.
   - Los *segmented control* `p-1` de `AdminSessionsPage` y `SessionsPage`: comparten prefijo de clases
     por casualidad.
-  - `EnrollmentListItem`: **código muerto** (solo lo referencia el barrel; la lista la pinta un
-    `EnrollmentCard` local en `EnrollmentsPage`). Pendiente de borrar.
   - Cabeceras que NO van a `PageHeader`: las de **detalle** (avatar a la izquierda, `items-start`,
     subtítulo sin `mt-1 text-sm`, 2-3 acciones) y las **responsive** de `AdminSessionsPage` y
     `SessionsPage` (`flex-col` + `sm:flex-row`: apilan las acciones en móvil y `PageHeader` siempre las
@@ -60,6 +58,14 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
 
 ## Trampas
 
+- **Lo que exporta un barrel de feature SE ENVÍA, lo use alguien o no.** El router hace
+  `lazyPage(() => import('@/features/enrollments'), 'EnrollmentsPage')`: importa el **módulo entero** y
+  saca el componente por nombre, así que Rollup no puede demostrar qué exports sobran y se los traga
+  todos al chunk. Comprobado el 17-jul-2026: `EnrollmentListItem` llevaba muerto (nadie lo importaba,
+  solo el barrel lo re-exportaba) y aun así viajaba a los usuarios; borrarlo quitó **554 bytes** del
+  chunk de `/dashboard/enrollments` (11904 → 11350). O sea: un `export` de más en `features/*/index.ts`
+  no es solo desorden, son bytes que bajan los 121 usuarios. Ojo también al buscar código muerto:
+  `grep "from '@/features/x'"` **no ve** los `import()` dinámicos del router.
 - **Tipos espejo del back copiados a mano**: la referencia fiable son los DTOs Java (`back/.../infrastructure/adapter/in/rest/dto/`). Al tocar un DTO en el back, actualizar su copia TS.
 - Migración curso unificado APLICADA (11-jul-2026): admin de "Cursos" (capacity vacío = ilimitado/virtual, precio/mes), "me interesa" vía `useSubjectInterest` (`/subjects/{id}/interest`), página admin Demanda. Ya NO existen payments, group-requests, intensives, asistencia ni online-requests — no reintroducirlos.
 - `.env` → `http://localhost:8080/api`; `.env.production` → `/api` relativo (proxy nginx en el servidor).

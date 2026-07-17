@@ -1,6 +1,5 @@
 // Components
 export { EnrollmentStatusBadge } from './components/EnrollmentStatusBadge'
-export { EnrollmentListItem } from './components/EnrollmentListItem'
 export { EnrollmentDetailCard } from './components/EnrollmentDetailCard'
 export { PendingEnrollmentCard } from './components/PendingEnrollmentCard'
 
