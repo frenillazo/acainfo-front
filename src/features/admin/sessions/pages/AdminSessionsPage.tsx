@@ -12,7 +12,7 @@ import { useAdminSubjects } from '../../subjects/hooks/useAdminSubjects'
 import { SessionTable } from '../components/SessionTable'
 import { AdminWeeklyScheduleGrid } from '../components/AdminWeeklyScheduleGrid'
 import { PostponeModal } from '../components/PostponeModal'
-import { Pagination } from '@/shared/components/ui/Pagination'
+import { Card, Pagination } from '@/shared/components/ui'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -265,32 +265,32 @@ export function AdminSessionsPage() {
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <Card padding="sm">
           <p className="text-sm font-medium text-gray-500">Total Sesiones</p>
           <p className="mt-1 text-2xl font-bold text-gray-900">{totalElements}</p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        </Card>
+        <Card padding="sm">
           <p className="text-sm font-medium text-gray-500">Programadas</p>
           <p className="mt-1 text-2xl font-bold text-blue-600">
             {sessions.filter(s => s.status === 'SCHEDULED').length}
           </p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        </Card>
+        <Card padding="sm">
           <p className="text-sm font-medium text-gray-500">En Curso</p>
           <p className="mt-1 text-2xl font-bold text-yellow-600">
             {sessions.filter(s => s.status === 'IN_PROGRESS').length}
           </p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        </Card>
+        <Card padding="sm">
           <p className="text-sm font-medium text-gray-500">Completadas</p>
           <p className="mt-1 text-2xl font-bold text-green-600">
             {sessions.filter(s => s.status === 'COMPLETED').length}
           </p>
-        </div>
+        </Card>
       </div>
 
       {/* Filters */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <Card padding="sm">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label htmlFor="status" className="block text-sm font-medium text-gray-700">
@@ -428,11 +428,11 @@ export function AdminSessionsPage() {
             </button>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Content */}
       {isGridMode ? (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           {/* Week navigation */}
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Horario Semanal</h2>
@@ -486,10 +486,10 @@ export function AdminSessionsPage() {
               No hay sesiones para esta semana.
             </div>
           )}
-        </div>
+        </Card>
       ) : (
         <>
-          <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <Card padding="none">
             {error ? (
               <div className="p-4 text-red-600">
                 Error al cargar las sesiones. Por favor, intenta de nuevo.
@@ -497,7 +497,7 @@ export function AdminSessionsPage() {
             ) : (
               <SessionTable sessions={sessions} isLoading={isLoading} />
             )}
-          </div>
+          </Card>
 
           <Pagination
             currentPage={page}

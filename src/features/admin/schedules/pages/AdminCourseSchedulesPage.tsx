@@ -8,7 +8,7 @@ import {
 } from '../hooks/useAdminSchedules'
 import { WeeklyScheduleGrid } from '../components/WeeklyScheduleGrid'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
-import { ConfigBadge } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
 import { COURSE_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
@@ -80,7 +80,7 @@ export function AdminCourseSchedulesPage() {
       />
 
       {/* Header */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3">
@@ -100,10 +100,10 @@ export function AdminCourseSchedulesPage() {
             Ver curso
           </Link>
         </div>
-      </div>
+      </Card>
 
       {/* Schedule Grid */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Horario semanal</h2>
 
         {isLoadingSchedules ? (
@@ -126,7 +126,7 @@ export function AdminCourseSchedulesPage() {
             Este curso está cancelado. No se pueden modificar los horarios.
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Error messages */}
       {createMutation.error && (

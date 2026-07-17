@@ -7,7 +7,7 @@ import {
   useCancelSession,
   useDeleteSession,
 } from '../hooks/useAdminSessions'
-import { ConfigBadge } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
 import { formatDateFull as formatDate } from '@/shared/utils/formatters'
 import { SESSION_STATUS_CONFIG, SESSION_TYPE_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { ClassroomBadge } from '../../schedules/components/ClassroomBadge'
@@ -113,7 +113,7 @@ export function AdminSessionDetailPage() {
       />
 
       {/* Header */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3">
@@ -172,12 +172,12 @@ export function AdminSessionDetailPage() {
             )}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Details */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Session Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Información de la Sesión
           </h2>
@@ -213,10 +213,10 @@ export function AdminSessionDetailPage() {
               </div>
             )}
           </dl>
-        </div>
+        </Card>
 
         {/* Subject & Course Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Asignatura y Curso
           </h2>
@@ -252,10 +252,10 @@ export function AdminSessionDetailPage() {
               </div>
             )}
           </dl>
-        </div>
+        </Card>
 
         {/* Metadata */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Metadatos</h2>
           <dl className="space-y-4">
             <div>
@@ -287,7 +287,7 @@ export function AdminSessionDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
       </div>
 
       <ConfirmDialog {...dialogProps} />

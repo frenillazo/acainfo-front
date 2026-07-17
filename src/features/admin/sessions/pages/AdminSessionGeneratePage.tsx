@@ -4,6 +4,7 @@ import { useAdminCourses } from '../../courses/hooks/useAdminCourses'
 import { useGenerateSessions, usePreviewGenerateSessions } from '../hooks/useAdminSessions'
 import { SessionTable } from '../components/SessionTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { Card, PageHeader } from '@/shared/components/ui'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { toast } from '@/shared/hooks/useToast'
 import type { GenerateSessionsRequest, Session } from '../../types/admin.types'
@@ -85,16 +86,13 @@ export function AdminSessionGeneratePage() {
         ← Volver a sesiones
       </Link>
 
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Generar Sesiones</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Genera sesiones automaticamente basandose en los horarios del curso.
-        </p>
-      </div>
+      <PageHeader
+        title="Generar Sesiones"
+        subtitle="Genera sesiones automaticamente basandose en los horarios del curso."
+      />
 
       {/* Form */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="grid gap-6 md:grid-cols-3">
           <div>
             <label htmlFor="course" className="block text-sm font-medium text-gray-700">
@@ -197,7 +195,7 @@ export function AdminSessionGeneratePage() {
             Error al generar sesiones: {getApiErrorMessage(generateMutation.error, 'inténtalo de nuevo')}
           </div>
         )}
-      </div>
+      </Card>
 
       {/* How it works */}
       <div className="rounded-lg border border-gray-200 bg-blue-50 p-4 shadow-sm">
@@ -213,7 +211,7 @@ export function AdminSessionGeneratePage() {
 
       {/* Preview Results */}
       {previewSessions.length > 0 && (
-        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+        <Card padding="none">
           <div className="border-b border-gray-200 px-4 py-3">
             <h2 className="text-lg font-semibold text-gray-900">
               Vista previa ({previewSessions.length} sesiones)
@@ -223,7 +221,7 @@ export function AdminSessionGeneratePage() {
             </p>
           </div>
           <SessionTable sessions={previewSessions} />
-        </div>
+        </Card>
       )}
 
       {previewMutation.isSuccess && previewSessions.length === 0 && (

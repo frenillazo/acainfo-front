@@ -3,6 +3,7 @@ import { useEnrichedSchedules } from '../hooks/useAdminSchedules'
 import { GlobalScheduleGrid } from '../components/GlobalScheduleGrid'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Card, PageHeader } from '@/shared/components/ui'
 import type { Classroom, DayOfWeek } from '../../types/admin.types'
 
 const CLASSROOMS: { key: Classroom | ''; label: string }[] = [
@@ -47,32 +48,27 @@ export function AdminSchedulesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Horarios Globales</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Vista general de todos los horarios por aula
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Horarios Globales"
+        subtitle="Vista general de todos los horarios por aula"
+      />
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <Card padding="sm">
           <p className="text-sm font-medium text-gray-500">Total Horarios</p>
           <p className="mt-1 text-2xl font-bold text-gray-900">{totalSchedules}</p>
-        </div>
+        </Card>
         {schedulesPerClassroom.map((c) => (
-          <div key={c.key} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <Card key={c.key} padding="sm">
             <p className="text-sm font-medium text-gray-500">{c.label}</p>
             <p className="mt-1 text-2xl font-bold text-gray-900">{c.count}</p>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* Filters */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <Card padding="sm">
         <div className="flex flex-wrap items-center gap-4">
           <div>
             <label htmlFor="classroom" className="block text-sm font-medium text-gray-700">
@@ -118,10 +114,10 @@ export function AdminSchedulesPage() {
             </label>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Schedule Grid */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Horario semanal</h2>
 
         {isLoading ? (
@@ -138,7 +134,7 @@ export function AdminSchedulesPage() {
             selectedClassroom={selectedClassroom || null}
           />
         )}
-      </div>
+      </Card>
     </div>
   )
 }
