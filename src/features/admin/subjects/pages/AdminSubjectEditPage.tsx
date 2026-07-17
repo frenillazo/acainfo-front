@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import { Card, PageHeader } from '@/shared/components/ui'
 import { SubjectForm, type UpdateSubjectFormData } from '../components/SubjectForm'
 import { useAdminSubject, useUpdateSubject } from '../hooks/useAdminSubjects'
 import type { UpdateSubjectRequest } from '../../types/admin.types'
@@ -56,14 +57,12 @@ export function AdminSubjectEditPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Editar Asignatura</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Modifica el nombre o estado de {subject.code} - {subject.name}
-        </p>
-      </div>
+      <PageHeader
+        title="Editar Asignatura"
+        subtitle={`Modifica el nombre o estado de ${subject.code} - ${subject.name}`}
+      />
 
-      <div className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card className="max-w-2xl">
         <SubjectForm
           subject={subject}
           onSubmit={handleSubmit}
@@ -71,7 +70,7 @@ export function AdminSubjectEditPage() {
           error={updateError}
           onCancel={handleCancel}
         />
-      </div>
+      </Card>
     </div>
   )
 }

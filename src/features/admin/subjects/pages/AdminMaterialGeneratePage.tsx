@@ -8,6 +8,7 @@ import { MultiFileUpload } from '@/shared/components/form'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
+import { Card } from '@/shared/components/ui'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 /**
@@ -133,7 +134,7 @@ export function AdminMaterialGeneratePage() {
 
       {/* Job progress */}
       {jobId !== null && (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           {jobInProgress && (
             <div className="flex items-center gap-3 text-gray-700">
               <Loader2 className="h-5 w-5 animate-spin text-violet-600" />
@@ -196,7 +197,7 @@ export function AdminMaterialGeneratePage() {
               </div>
             </div>
           )}
-        </div>
+        </Card>
       )}
 
       <ConfirmDialog {...dialogProps} isLoading={generateMutation.isPending} />

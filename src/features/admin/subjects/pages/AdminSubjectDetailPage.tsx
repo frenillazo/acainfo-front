@@ -5,7 +5,7 @@ import {
   useArchiveSubject,
   useDeleteSubject,
 } from '../hooks/useAdminSubjects'
-import { Alert, ConfigBadge } from '@/shared/components/ui'
+import { Alert, Card, ConfigBadge } from '@/shared/components/ui'
 import { SUBJECT_STATUS_CONFIG, DEGREE_CONFIG } from '@/shared/config/badgeConfig'
 import { useMaterialsBySubject } from '@/features/materials/hooks/useMaterials'
 import {
@@ -274,7 +274,7 @@ export function AdminSubjectDetailPage() {
       />
 
       {/* Header */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3">
@@ -312,12 +312,12 @@ export function AdminSubjectDetailPage() {
             )}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Details */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Subject Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Información de la Asignatura
           </h2>
@@ -345,10 +345,10 @@ export function AdminSubjectDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
 
         {/* Degree & Status */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Grado y Estado
           </h2>
@@ -378,10 +378,10 @@ export function AdminSubjectDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
 
         {/* Courses Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Cursos</h2>
           <dl className="space-y-4">
             <div>
@@ -403,10 +403,10 @@ export function AdminSubjectDetailPage() {
               </div>
             )}
           </dl>
-        </div>
+        </Card>
 
         {/* Dates */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Fechas</h2>
           <dl className="space-y-4">
             <div>
@@ -426,7 +426,7 @@ export function AdminSubjectDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
       </div>
 
       {/* Materials Management Section */}
@@ -507,7 +507,7 @@ export function AdminSubjectDetailPage() {
 
         {/* Upload Form */}
         {showUploadForm && (
-          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          <Card className="mb-6">
             <h3 className="mb-4 text-base font-semibold text-gray-900">
               Subir Nuevo Material
             </h3>
@@ -528,7 +528,7 @@ export function AdminSubjectDetailPage() {
               onCancel={() => setShowUploadForm(false)}
               isLoading={uploadMutation.isPending}
             />
-          </div>
+          </Card>
         )}
 
         {/* Gestión de carpetas (crear/renombrar/reordenar/borrar) */}
