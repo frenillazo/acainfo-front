@@ -1,4 +1,3 @@
-import { FolderOpen } from 'lucide-react'
 import { useMaterialsBySubject } from '@/features/materials/hooks/useMaterials'
 import { useMaterialFoldersBySubject } from '@/features/materials/hooks/useMaterialFolders'
 import { useDownloadMaterial } from '@/features/materials/hooks/useMaterialMutations'
@@ -6,14 +5,26 @@ import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
 import { MaterialsGroupedByFolder } from '@/features/materials/components/MaterialsGroupedByFolder'
 import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
 import { Spinner } from '@/shared/components/ui/Spinner'
+import { NoMaterialsYet } from '@/features/materials/components/NoMaterialsYet'
+import { MaterialsLocked } from '@/features/materials/components/MaterialsLocked'
 
 interface EnrollmentMaterialsSectionProps {
   subjectId: number
   subjectName: string
+  /** Solo la inscripción ACTIVA da acceso: el back devuelve 403 a las demás. */
+  canAccess: boolean
+  /** Qué contarle al alumno cuando no puede acceder todavía. */
+  lockedMessage: string
 }
 
-export function EnrollmentMaterialsSection({ subjectId, subjectName }: EnrollmentMaterialsSectionProps) {
-  const { data: materials, isLoading, error } = useMaterialsBySubject(subjectId)
+export function EnrollmentMaterialsSection({
+  subjectId,
+  subjectName,
+  canAccess,
+  lockedMessage,
+}: EnrollmentMaterialsSectionProps) {
+  // Sin acceso no se pide: el listado no se va a mostrar.
+  const { data: materials, isLoading, error } = useMaterialsBySubject(subjectId, canAccess)
   const { data: folders = [] } = useMaterialFoldersBySubject(subjectId)
   const downloadMutation = useDownloadMaterial()
 
@@ -35,6 +46,24 @@ export function EnrollmentMaterialsSection({ subjectId, subjectName }: Enrollmen
         filename: viewerMaterial.originalFilename,
       })
     }
+  }
+
+  // Se listaba el material para CUALQUIER estado de inscripción (pendiente, en
+  // lista de espera, rechazada) con los botones Ver/Descargar activos, que el
+  // back rechaza con 403. Mejor decirlo antes de que lo pulse.
+  if (!canAccess) {
+    return (
+      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="border-b border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-gray-900">
+            Materiales de {subjectName}
+          </h2>
+        </div>
+        <div className="p-6">
+          <MaterialsLocked message={lockedMessage} />
+        </div>
+      </div>
+    )
   }
 
   if (isLoading) {
@@ -75,10 +104,7 @@ export function EnrollmentMaterialsSection({ subjectId, subjectName }: Enrollmen
             Materiales de {subjectName}
           </h2>
         </div>
-        <div className="flex flex-col items-center justify-center p-8 text-gray-500">
-          <FolderOpen className="mb-2 h-12 w-12 text-gray-300" />
-          <p>No hay materiales disponibles para esta asignatura</p>
-        </div>
+        <NoMaterialsYet />
       </div>
     )
   }

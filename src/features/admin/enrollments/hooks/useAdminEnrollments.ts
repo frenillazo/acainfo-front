@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { enrollmentApi } from '@/features/enrollments/services/enrollmentApi'
 import type { EnrollRequest, ChangeCourseRequest, EnrollmentStatus } from '@/features/enrollments/types/enrollment.types'
 
@@ -17,6 +17,9 @@ export function useAdminEnrollments(filters: AdminEnrollmentFilters = {}) {
   return useQuery({
     queryKey: ['admin', 'enrollments', filters],
     queryFn: () => enrollmentApi.getAll(filters),
+    // Al cambiar de página o de filtro, mantener la tabla anterior mientras
+    // llega la nueva: la query key nueva vacía los datos y la lista parpadea.
+    placeholderData: keepPreviousData,
   })
 }
 

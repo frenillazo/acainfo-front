@@ -53,19 +53,6 @@ export interface Material {
   folderName: string | null
 }
 
-// Filters for listing materials
-export interface MaterialFilters {
-  subjectId?: number
-  uploadedById?: number
-  fileExtension?: string
-  searchTerm?: string
-  academicYear?: number
-  page?: number
-  size?: number
-  sortBy?: string
-  sortDirection?: 'ASC' | 'DESC'
-}
-
 // Request DTOs
 export interface UploadMaterialRequest {
   subjectId: number

@@ -44,6 +44,17 @@ export function EnrollmentDetailPage() {
     }
   }
 
+  /** Solo la inscripción ACTIVA abre el material; el motivo depende del estado. */
+  const materialsLockedMessage = (): string => {
+    if (enrollment?.isPendingApproval) {
+      return 'En cuanto la academia apruebe tu solicitud, el material de la asignatura aparecerá aquí.'
+    }
+    if (enrollment?.isOnWaitingList) {
+      return 'Estás en la lista de espera: tendrás el material en cuanto entres en el curso.'
+    }
+    return 'Solo se puede ver el material de los cursos en los que estás inscrito.'
+  }
+
   const handleWithdraw = async () => {
     const confirmed = await confirm({
       ...confirmCopy(),
@@ -95,6 +106,8 @@ export function EnrollmentDetailPage() {
       <EnrollmentMaterialsSection
         subjectId={enrollment.subjectId}
         subjectName={enrollment.subjectName}
+        canAccess={enrollment.isActive}
+        lockedMessage={materialsLockedMessage()}
       />
 
       <ConfirmDialog {...dialogProps} isLoading={isWithdrawing} />

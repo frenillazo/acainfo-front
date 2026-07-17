@@ -20,6 +20,7 @@ import { cn } from '@/shared/utils/cn'
 import { formatISODate } from '@/shared/utils/formatters'
 import { getWeekStart, getWeekEnd, formatWeekRange } from '@/shared/components/schedule/weekGridUtils'
 import type { SessionStatus, SessionType, SessionMode, SessionFilters } from '../../types/admin.types'
+import { useUrlFilters } from '@/shared/hooks/useUrlFilters'
 
 const SESSION_STATUSES: { key: SessionStatus | ''; label: string }[] = [
   { key: '', label: 'Todos los estados' },
@@ -43,16 +44,50 @@ const SESSION_MODES: { key: SessionMode | ''; label: string }[] = [
   { key: 'DUAL', label: 'Dual' },
 ]
 
+interface SessionsUrlState {
+  view: 'table' | 'grid'
+  page: number
+  status: SessionStatus | ''
+  type: SessionType | ''
+  mode: SessionMode | ''
+  courseId: number | ''
+  subjectId: number | ''
+  dateFrom: string
+  dateTo: string
+}
+
 export function AdminSessionsPage() {
-  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
-  const [page, setPage] = useState(0)
-  const [selectedStatus, setSelectedStatus] = useState<SessionStatus | ''>('')
-  const [selectedType, setSelectedType] = useState<SessionType | ''>('')
-  const [selectedMode, setSelectedMode] = useState<SessionMode | ''>('')
-  const [selectedCourseId, setSelectedCourseId] = useState<number | ''>('')
-  const [selectedSubjectId, setSelectedSubjectId] = useState<number | ''>('')
-  const [dateFrom, setDateFrom] = useState('')
-  const [dateTo, setDateTo] = useState('')
+  // Los filtros viven en la URL: son 7 + vista + página y es el flujo diario del
+  // admin; con useState, entrar a un detalle y volver (o un F5) los borraba todos.
+  const [urlState, setUrlState] = useUrlFilters<SessionsUrlState>({
+    view: 'table',
+    page: 0,
+    status: '',
+    type: '',
+    mode: '',
+    courseId: '',
+    subjectId: '',
+    dateFrom: '',
+    dateTo: '',
+  })
+  const {
+    view: viewMode,
+    page,
+    status: selectedStatus,
+    type: selectedType,
+    mode: selectedMode,
+    courseId: selectedCourseId,
+    subjectId: selectedSubjectId,
+    dateFrom,
+    dateTo,
+  } = urlState
+
+  /** Cambia un filtro y, salvo que sea la propia página, vuelve a la primera. */
+  const setFilter = <K extends keyof SessionsUrlState>(key: K, value: SessionsUrlState[K]) => {
+    setUrlState((prev) => ({ ...prev, [key]: value, ...(key === 'page' ? {} : { page: 0 }) }))
+  }
+
+  // La semana es un Date y el modal es estado efímero: no van a la URL.
   const [weekStart, setWeekStart] = useState(() => getWeekStart(new Date()))
   const [postponeSessionId, setPostponeSessionId] = useState<number | null>(null)
 
@@ -104,14 +139,17 @@ export function AdminSessionsPage() {
   const subjects = subjectsData?.content ?? []
 
   const handleClearFilters = () => {
-    setSelectedStatus('')
-    setSelectedType('')
-    setSelectedMode('')
-    setSelectedCourseId('')
-    setSelectedSubjectId('')
-    setDateFrom('')
-    setDateTo('')
-    setPage(0)
+    setUrlState((prev) => ({
+      ...prev,
+      status: '',
+      type: '',
+      mode: '',
+      courseId: '',
+      subjectId: '',
+      dateFrom: '',
+      dateTo: '',
+      page: 0,
+    }))
     if (isGridMode) setWeekStart(getWeekStart(new Date()))
   }
 
@@ -189,7 +227,7 @@ export function AdminSessionsPage() {
           {/* View toggle */}
           <div className="flex items-center rounded-lg border border-gray-200 bg-white p-1">
             <button
-              onClick={() => { setViewMode('table'); setPage(0) }}
+              onClick={() => setFilter('view', 'table')}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
                 viewMode === 'table'
@@ -201,7 +239,7 @@ export function AdminSessionsPage() {
               Tabla
             </button>
             <button
-              onClick={() => setViewMode('grid')}
+              onClick={() => setFilter('view', 'grid')}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
                 viewMode === 'grid'
@@ -262,8 +300,7 @@ export function AdminSessionsPage() {
               id="status"
               value={selectedStatus}
               onChange={(e) => {
-                setSelectedStatus(e.target.value as SessionStatus | '')
-                setPage(0)
+                setFilter('status', e.target.value as SessionStatus | '')
               }}
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
@@ -281,8 +318,7 @@ export function AdminSessionsPage() {
               id="type"
               value={selectedType}
               onChange={(e) => {
-                setSelectedType(e.target.value as SessionType | '')
-                setPage(0)
+                setFilter('type', e.target.value as SessionType | '')
               }}
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
@@ -300,8 +336,7 @@ export function AdminSessionsPage() {
               id="mode"
               value={selectedMode}
               onChange={(e) => {
-                setSelectedMode(e.target.value as SessionMode | '')
-                setPage(0)
+                setFilter('mode', e.target.value as SessionMode | '')
               }}
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
@@ -319,8 +354,7 @@ export function AdminSessionsPage() {
               id="subject"
               value={selectedSubjectId}
               onChange={(e) => {
-                setSelectedSubjectId(e.target.value ? Number(e.target.value) : '')
-                setPage(0)
+                setFilter('subjectId', e.target.value ? Number(e.target.value) : '')
               }}
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
@@ -339,8 +373,7 @@ export function AdminSessionsPage() {
               id="course"
               value={selectedCourseId}
               onChange={(e) => {
-                setSelectedCourseId(e.target.value ? Number(e.target.value) : '')
-                setPage(0)
+                setFilter('courseId', e.target.value ? Number(e.target.value) : '')
               }}
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
@@ -363,8 +396,7 @@ export function AdminSessionsPage() {
                   id="dateFrom"
                   value={dateFrom}
                   onChange={(e) => {
-                    setDateFrom(e.target.value)
-                    setPage(0)
+                    setFilter('dateFrom', e.target.value)
                   }}
                   className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
@@ -379,8 +411,7 @@ export function AdminSessionsPage() {
                   id="dateTo"
                   value={dateTo}
                   onChange={(e) => {
-                    setDateTo(e.target.value)
-                    setPage(0)
+                    setFilter('dateTo', e.target.value)
                   }}
                   className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
@@ -471,7 +502,7 @@ export function AdminSessionsPage() {
           <Pagination
             currentPage={page}
             totalPages={totalPages}
-            onPageChange={setPage}
+            onPageChange={(next) => setFilter('page', next)}
             isFirst={page === 0}
             isLast={page >= totalPages - 1}
           />

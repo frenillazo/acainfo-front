@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { adminApi } from '../../services/adminApi'
 import type {
   TeacherFilters,
@@ -10,6 +10,9 @@ export function useAdminTeachers(filters: TeacherFilters = {}) {
   return useQuery({
     queryKey: ['admin', 'teachers', filters],
     queryFn: () => adminApi.getTeachers(filters),
+    // Al cambiar de página o de filtro, mantener la tabla anterior mientras
+    // llega la nueva: la query key nueva vacía los datos y la lista parpadea.
+    placeholderData: keepPreviousData,
   })
 }
 

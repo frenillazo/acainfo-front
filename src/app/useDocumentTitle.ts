@@ -16,7 +16,6 @@ const TITLES: Array<[RegExp, string]> = [
   [/^\/dashboard$/, 'Mi panel'],
   [/^\/dashboard\/enrollments/, 'Mis inscripciones'],
   [/^\/dashboard\/sessions/, 'Mis sesiones'],
-  [/^\/dashboard\/materials/, 'Materiales'],
   [/^\/dashboard\/subjects/, 'Asignaturas'],
   [/^\/dashboard\/profile/, 'Mi perfil'],
 

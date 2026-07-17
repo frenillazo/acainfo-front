@@ -10,6 +10,8 @@ import { useMaterialFoldersBySubject } from '@/features/materials/hooks/useMater
 import { useDownloadMaterial } from '@/features/materials/hooks/useMaterialMutations'
 import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
 import { MaterialsGroupedByFolder } from '@/features/materials/components/MaterialsGroupedByFolder'
+import { NoMaterialsYet } from '@/features/materials/components/NoMaterialsYet'
+import { MaterialsLocked } from '@/features/materials/components/MaterialsLocked'
 import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
@@ -18,7 +20,7 @@ import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 import { toast } from '@/shared/hooks/useToast'
 import { useCheckInterest, useMarkInterest, useRemoveInterest } from '../hooks/useSubjectInterest'
-import { HandMetal, Lock } from 'lucide-react'
+import { HandMetal } from 'lucide-react'
 
 const degreeLabels: Record<string, string> = {
   INGENIERIA_INFORMATICA: 'Ingeniería Informática',
@@ -244,15 +246,7 @@ export function SubjectDetailPage() {
         </div>
 
         {!canAccessMaterials ? (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-8 text-center">
-            <Lock className="mx-auto mb-3 h-10 w-10 text-amber-500" />
-            <p className="font-medium text-amber-700">
-              Para acceder al material debes estar inscrito
-            </p>
-            <p className="mt-2 text-sm text-amber-600">
-              Inscríbete en uno de los grupos disponibles para desbloquear los materiales de esta asignatura.
-            </p>
-          </div>
+          <MaterialsLocked message="Solicita plaza en uno de los cursos de arriba: cuando la academia te apruebe, el material aparecerá aquí." />
         ) : materials.length > 0 ? (
           <MaterialsGroupedByFolder
             materials={materials}
@@ -262,11 +256,7 @@ export function SubjectDetailPage() {
             isDownloading={downloadMutation.isPending}
           />
         ) : (
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-            <p className="text-gray-500">
-              No hay materiales disponibles para esta asignatura.
-            </p>
-          </div>
+          <NoMaterialsYet />
         )}
       </section>
 

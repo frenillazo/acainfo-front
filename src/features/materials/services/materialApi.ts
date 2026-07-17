@@ -1,8 +1,6 @@
 import { apiClient } from '@/shared/services/apiClient'
-import type { PageResponse } from '@/shared/types/api.types'
 import type {
   Material,
-  MaterialFilters,
   UploadMaterialRequest,
   UpdateMaterialRequest,
   BatchUpdateResponse,
@@ -71,14 +69,6 @@ export const materialApi = {
   // DELETE /materials/{id} - Delete a material
   delete: async (id: number): Promise<void> => {
     await apiClient.delete(`/materials/${id}`)
-  },
-
-  // GET /materials - List materials with filters
-  getAll: async (filters: MaterialFilters = {}): Promise<PageResponse<Material>> => {
-    const response = await apiClient.get<PageResponse<Material>>('/materials', {
-      params: filters,
-    })
-    return response.data
   },
 
   // GET /materials/subject/{subjectId} - Get materials by subject
