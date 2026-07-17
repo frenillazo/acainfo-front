@@ -117,6 +117,7 @@ export function SessionContextMenu({
   return (
     <div
       ref={menuRef}
+      // A mano, no <Card>: es un desplegable (shadow-lg, no shadow-sm), no una tarjeta.
       className="fixed z-50 min-w-[180px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
       style={{ top: anchorPosition.y, left: anchorPosition.x }}
     >

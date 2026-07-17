@@ -5,6 +5,7 @@ import { SubjectCard } from '../components/SubjectCard'
 import { EnrolledSubjectCard } from '../components/EnrolledSubjectCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { PageHeader } from '@/shared/components/ui'
 import type { Degree, SubjectFilters } from '../types/subject.types'
 import { cn } from '@/shared/utils/cn'
 import { useEnrolledSubjectIds } from '@/features/enrollments/hooks/useEnrollments'
@@ -76,9 +77,7 @@ export function SubjectsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Asignaturas</h1>
-      </div>
+      <PageHeader title="Asignaturas" />
 
       {/* Filters */}
       <div className="flex flex-col gap-4 sm:flex-row">

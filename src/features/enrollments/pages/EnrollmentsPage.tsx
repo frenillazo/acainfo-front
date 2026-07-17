@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { cn } from '@/shared/utils/cn'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { PageHeader } from '@/shared/components/ui'
 import { User, Users, Clock } from 'lucide-react'
 import type { Enrollment } from '../types/enrollment.types'
 
@@ -73,18 +74,20 @@ export function EnrollmentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Mis Inscripciones</h1>
-        <Link
-          to="/dashboard/subjects"
-          className={cn(
-            'rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white',
-            'hover:bg-blue-700'
-          )}
-        >
-          Ver asignaturas
-        </Link>
-      </div>
+      <PageHeader
+        title="Mis Inscripciones"
+        actions={
+          <Link
+            to="/dashboard/subjects"
+            className={cn(
+              'rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white',
+              'hover:bg-blue-700'
+            )}
+          >
+            Ver asignaturas
+          </Link>
+        }
+      />
 
       {/* Pending requests */}
       {pendingEnrollments.length > 0 && (

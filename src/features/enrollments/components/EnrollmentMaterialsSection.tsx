@@ -4,6 +4,7 @@ import { useDownloadMaterial } from '@/features/materials/hooks/useMaterialMutat
 import { useMaterialViewer } from '@/features/materials/hooks/useMaterialViewer'
 import { MaterialsGroupedByFolder } from '@/features/materials/components/MaterialsGroupedByFolder'
 import { MaterialViewerModal } from '@/features/materials/components/MaterialViewer'
+import { Card } from '@/shared/components/ui'
 import { Spinner } from '@/shared/components/ui/Spinner'
 import { NoMaterialsYet } from '@/features/materials/components/NoMaterialsYet'
 import { MaterialsLocked } from '@/features/materials/components/MaterialsLocked'
@@ -53,7 +54,7 @@ export function EnrollmentMaterialsSection({
   // back rechaza con 403. Mejor decirlo antes de que lo pulse.
   if (!canAccess) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <Card padding="none">
         <div className="border-b border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900">
             Materiales de {subjectName}
@@ -62,13 +63,13 @@ export function EnrollmentMaterialsSection({
         <div className="p-6">
           <MaterialsLocked message={lockedMessage} />
         </div>
-      </div>
+      </Card>
     )
   }
 
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <Card padding="none">
         <div className="border-b border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900">
             Materiales de {subjectName}
@@ -77,13 +78,13 @@ export function EnrollmentMaterialsSection({
         <div className="flex justify-center p-8">
           <Spinner />
         </div>
-      </div>
+      </Card>
     )
   }
 
   if (error) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <Card padding="none">
         <div className="border-b border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900">
             Materiales de {subjectName}
@@ -92,25 +93,25 @@ export function EnrollmentMaterialsSection({
         <div className="p-6 text-center text-red-600">
           Error al cargar los materiales
         </div>
-      </div>
+      </Card>
     )
   }
 
   if (!materials || materials.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <Card padding="none">
         <div className="border-b border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900">
             Materiales de {subjectName}
           </h2>
         </div>
         <NoMaterialsYet />
-      </div>
+      </Card>
     )
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+    <Card padding="none">
       <div className="border-b border-gray-200 p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">
@@ -142,6 +143,6 @@ export function EnrollmentMaterialsSection({
         onClose={closeViewer}
         onDownload={handleViewerDownload}
       />
-    </div>
+    </Card>
   )
 }

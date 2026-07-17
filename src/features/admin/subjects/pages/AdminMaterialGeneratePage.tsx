@@ -83,7 +83,8 @@ export function AdminMaterialGeneratePage() {
         </p>
       </div>
 
-      {/* Form */}
+      {/* A mano, no <Card>: el <form> ES la tarjeta, y Card solo puede ser
+          div/article/section. */}
       <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <MultiFileUpload
           label="Capturas de la clase"

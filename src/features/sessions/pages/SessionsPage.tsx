@@ -6,6 +6,7 @@ import { SessionCard } from '../components/SessionCard'
 import { StudentWeeklyScheduleGrid } from '../components/StudentWeeklyScheduleGrid'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { Card, PageHeader } from '@/shared/components/ui'
 import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
 import { ChevronLeft, ChevronRight, Calendar, List, Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
@@ -110,12 +111,10 @@ export function SessionsPage() {
   if (!activeEnrollments.length) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mis Sesiones</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Consulta tus próximas clases y sesiones completadas
-          </p>
-        </div>
+        <PageHeader
+          title="Mis Sesiones"
+          subtitle="Consulta tus próximas clases y sesiones completadas"
+        />
 
         <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center text-gray-500">
           <p>No tienes inscripciones activas.</p>
@@ -127,6 +126,8 @@ export function SessionsPage() {
 
   return (
     <div className="space-y-6">
+      {/* A mano, no <PageHeader>: esta cabecera apila las acciones bajo el título en
+          móvil (flex-col + sm:flex-row) y PageHeader siempre las pone en fila. */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Mis Sesiones</h1>
@@ -187,7 +188,7 @@ export function SessionsPage() {
 
       {/* Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <Card padding="sm">
           <div className="text-sm font-medium text-gray-500">Próximas sesiones</div>
           <div className="mt-1 text-2xl font-semibold text-blue-600">
             {upcomingSessions.filter(s => s.isOwnSession).length}
@@ -197,24 +198,24 @@ export function SessionsPage() {
               </span>
             )}
           </div>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        </Card>
+        <Card padding="sm">
           <div className="text-sm font-medium text-gray-500">Completadas</div>
           <div className="mt-1 text-2xl font-semibold text-green-600">
             {pastSessions.filter(s => s.isOwnSession).length}
           </div>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        </Card>
+        <Card padding="sm">
           <div className="text-sm font-medium text-gray-500">Canceladas/Pospuestas</div>
           <div className="mt-1 text-2xl font-semibold text-yellow-600">
             {cancelledSessions.filter(s => s.isOwnSession).length}
           </div>
-        </div>
+        </Card>
       </div>
 
       {viewMode === 'calendar' ? (
         /* Calendar View */
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           {/* Week navigation */}
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -276,7 +277,7 @@ export function SessionsPage() {
               No hay sesiones programadas para esta semana.
             </div>
           )}
-        </div>
+        </Card>
       ) : (
         /* List View */
         <>

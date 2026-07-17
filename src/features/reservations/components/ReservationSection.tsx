@@ -9,7 +9,7 @@ import { SwitchSessionModal } from './SwitchSessionModal'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { Badge } from '@/shared/components/ui/Badge'
 import { Button } from '@/shared/components/ui/Button'
-import { ConfigBadge } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
 import { RESERVATION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { CalendarCheck, Users, ArrowRightLeft } from 'lucide-react'
 import { getVisualSessionStatus } from '@/shared/utils/sessionStatus'
@@ -73,25 +73,25 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
 
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="animate-pulse space-y-3">
           <div className="h-5 w-32 rounded bg-gray-200" />
           <div className="h-10 w-full rounded bg-gray-200" />
         </div>
-      </div>
+      </Card>
     )
   }
 
   // Past session: show the reservation the student had
   if (isPast && myReservation) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Reserva</h2>
         <div className="flex items-center gap-3">
           <ConfigBadge config={RESERVATION_MODE_CONFIG} value={myReservation.mode} />
           <Badge variant="success">Confirmada</Badge>
         </div>
-      </div>
+      </Card>
     )
   }
 
@@ -109,7 +109,7 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
   if (!isUpcoming) return null
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <Card>
       <div className="mb-4 flex items-center gap-2">
         <CalendarCheck className="h-5 w-5 text-gray-400" />
         <h2 className="text-lg font-semibold text-gray-900">Reserva</h2>
@@ -218,6 +218,6 @@ export function ReservationSection({ session, studentId, enrollments }: Reservat
           />
         </>
       )}
-    </div>
+    </Card>
   )
 }

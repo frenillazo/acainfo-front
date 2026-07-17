@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Folder, Pencil, Trash2, ArrowUp, ArrowDown, Check, X } from 'lucide-react'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
+import { Card } from '@/shared/components/ui'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 import {
@@ -97,7 +98,7 @@ export function MaterialFolderManager({ subjectId }: MaterialFolderManagerProps)
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Card padding="sm">
       <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
         Carpetas de la asignatura
       </h3>
@@ -202,6 +203,6 @@ export function MaterialFolderManager({ subjectId }: MaterialFolderManagerProps)
       </form>
 
       <ConfirmDialog {...dialogProps} isLoading={deleteMutation.isPending} />
-    </div>
+    </Card>
   )
 }

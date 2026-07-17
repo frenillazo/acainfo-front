@@ -16,6 +16,7 @@ import { MaterialViewerModal } from '@/features/materials/components/MaterialVie
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
 import { Alert } from '@/shared/components/ui/Alert'
+import { Card } from '@/shared/components/ui'
 import { Breadcrumbs } from '@/shared/components/ui/Breadcrumbs'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 import { toast } from '@/shared/hooks/useToast'
@@ -125,7 +126,7 @@ export function SubjectDetailPage() {
         ]}
       />
 
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{subject.name}</h1>
@@ -194,7 +195,7 @@ export function SubjectDetailPage() {
             <span>{subject.currentGroupCount} curso{subject.currentGroupCount !== 1 ? 's' : ''}</span>
           </div>
         </div>
-      </div>
+      </Card>
 
       <section>
         <div className="mb-4 flex items-center justify-between">

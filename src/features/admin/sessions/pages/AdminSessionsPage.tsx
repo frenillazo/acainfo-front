@@ -215,7 +215,8 @@ export function AdminSessionsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* A mano, no <PageHeader>: esta cabecera apila las acciones bajo el título en
+          móvil (flex-col + sm:flex-row) y PageHeader siempre las pone en fila. */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Sesiones</h1>

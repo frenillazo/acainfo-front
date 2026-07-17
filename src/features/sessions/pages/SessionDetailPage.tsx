@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { useSession } from '../hooks/useSessions'
-import { ConfigBadge } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
 import { formatDateFull as formatDate, formatTime } from '@/shared/utils/formatters'
 import { SESSION_STATUS_CONFIG, SESSION_MODE_CONFIG } from '@/shared/config/badgeConfig'
 import { LoadingState } from '@/shared/components/common/LoadingState'
@@ -63,7 +63,7 @@ export function SessionDetailPage() {
       />
 
       {/* Header */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3">
@@ -119,12 +119,12 @@ export function SessionDetailPage() {
             </p>
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Details */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Session Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Detalles de la sesión
           </h2>
@@ -155,10 +155,10 @@ export function SessionDetailPage() {
               </div>
             </div>
           </dl>
-        </div>
+        </Card>
 
         {/* Subject & Teacher Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Asignatura y profesor
           </h2>
@@ -192,7 +192,7 @@ export function SessionDetailPage() {
               </div>
             )}
           </dl>
-        </div>
+        </Card>
       </div>
 
       {/* Reservation Section (students only) */}
