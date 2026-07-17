@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { User } from '../../types/admin.types'
 import { RoleBadge } from './RoleBadge'
-import { ConfigBadge } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
 import { USER_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 import { formatDate } from '@/shared/utils/formatters'
 
@@ -81,7 +81,7 @@ export function UserTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+    <Card padding="none" className="overflow-hidden">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
@@ -178,6 +178,6 @@ export function UserTable({
           })}
         </tbody>
       </table>
-    </div>
+    </Card>
   )
 }

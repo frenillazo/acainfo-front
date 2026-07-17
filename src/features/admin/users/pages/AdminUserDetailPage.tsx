@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAdminUser } from '../hooks/useAdminUsers'
 import { RoleBadge } from '../components/RoleBadge'
-import { ConfigBadge } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
 import { USER_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 import { RoleManagementPanel } from '@/features/auth/components/RoleManagementPanel'
 import { LoadingState } from '@/shared/components/common/LoadingState'
@@ -58,7 +58,7 @@ export function AdminUserDetailPage() {
       />
 
       {/* Header */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-xl font-medium text-gray-600">
@@ -84,12 +84,12 @@ export function AdminUserDetailPage() {
             <ConfigBadge config={USER_STATUS_CONFIG} value={user.status} fallback="PENDING_ACTIVATION" />
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Details */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* User Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Información del Usuario
           </h2>
@@ -123,20 +123,20 @@ export function AdminUserDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
 
         {/* Roles & Dates */}
         <div className="space-y-6">
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          <Card>
             <h2 className="mb-4 text-lg font-semibold text-gray-900">Roles</h2>
             <div className="flex flex-wrap gap-2">
               {user.roles.map((role) => (
                 <RoleBadge key={role} role={role} />
               ))}
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          <Card>
             <h2 className="mb-4 text-lg font-semibold text-gray-900">Fechas</h2>
             <dl className="space-y-4">
               <div>
@@ -156,7 +156,7 @@ export function AdminUserDetailPage() {
                 </dd>
               </div>
             </dl>
-          </div>
+          </Card>
         </div>
       </div>
 

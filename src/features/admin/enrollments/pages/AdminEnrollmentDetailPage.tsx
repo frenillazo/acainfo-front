@@ -4,6 +4,7 @@ import {
   useWithdrawEnrollment,
 } from '../hooks/useAdminEnrollments'
 import { EnrollmentStatusBadge } from '@/features/enrollments/components/EnrollmentStatusBadge'
+import { Card } from '@/shared/components/ui'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
@@ -66,7 +67,7 @@ export function AdminEnrollmentDetailPage() {
       />
 
       {/* Header */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
@@ -98,12 +99,12 @@ export function AdminEnrollmentDetailPage() {
             )}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Details */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Enrollment Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Información de la Inscripción
           </h2>
@@ -140,10 +141,10 @@ export function AdminEnrollmentDetailPage() {
               </div>
             )}
           </dl>
-        </div>
+        </Card>
 
         {/* Student Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Información del Estudiante
           </h2>
@@ -165,10 +166,10 @@ export function AdminEnrollmentDetailPage() {
               </Link>
             </div>
           </dl>
-        </div>
+        </Card>
 
         {/* Subject & Course Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Asignatura y Curso
           </h2>
@@ -192,10 +193,10 @@ export function AdminEnrollmentDetailPage() {
               <dd className="mt-1 text-sm text-gray-900">{enrollment.teacherName ?? 'Sin asignar'}</dd>
             </div>
           </dl>
-        </div>
+        </Card>
 
         {/* Dates */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Fechas</h2>
           <dl className="space-y-4">
             <div>
@@ -241,7 +242,7 @@ export function AdminEnrollmentDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
       </div>
 
       <ConfirmDialog {...dialogProps} isLoading={withdrawMutation.isPending} />

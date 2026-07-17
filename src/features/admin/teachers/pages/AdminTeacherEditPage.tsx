@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import { Card, PageHeader } from '@/shared/components/ui'
 import { TeacherForm } from '../components/TeacherForm'
 import { useAdminTeacher, useUpdateTeacher } from '../hooks/useAdminTeachers'
 import type { UpdateTeacherRequest } from '../../types/admin.types'
@@ -50,14 +51,12 @@ export function AdminTeacherEditPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Editar Profesor</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Modifica los datos del profesor {teacher.fullName}
-        </p>
-      </div>
+      <PageHeader
+        title="Editar Profesor"
+        subtitle={`Modifica los datos del profesor ${teacher.fullName}`}
+      />
 
-      <div className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card className="max-w-2xl">
         <TeacherForm
           teacher={teacher}
           onSubmit={handleSubmit}
@@ -65,7 +64,7 @@ export function AdminTeacherEditPage() {
           error={updateError}
           onCancel={handleCancel}
         />
-      </div>
+      </Card>
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { enrollmentApi } from '@/features/enrollments/services/enrollmentApi'
 import { PendingEnrollmentCard } from '@/features/enrollments/components/PendingEnrollmentCard'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { PageHeader } from '@/shared/components/ui'
 import { Loader2, Inbox } from 'lucide-react'
 
 export function AdminPendingEnrollmentsPage() {
@@ -22,16 +23,10 @@ export function AdminPendingEnrollmentsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Solicitudes de Inscripción Pendientes
-        </h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Aprueba o rechaza las solicitudes de inscripción de estudiantes. Esperan aquí hasta que
-          respondas: no caducan solas.
-        </p>
-      </div>
+      <PageHeader
+        title="Solicitudes de Inscripción Pendientes"
+        subtitle="Aprueba o rechaza las solicitudes de inscripción de estudiantes. Esperan aquí hasta que respondas: no caducan solas."
+      />
 
       {isLoading && (
         <div className="flex items-center justify-center py-12">

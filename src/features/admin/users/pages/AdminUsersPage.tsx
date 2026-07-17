@@ -5,7 +5,7 @@ import { useAdminUsers } from '../hooks/useAdminUsers'
 import { UserTable } from '../components/UserTable'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-import { Pagination } from '@/shared/components/ui/Pagination'
+import { Card, PageHeader, Pagination } from '@/shared/components/ui'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import { adminApi, type DeactivationResult, type ActivationResult } from '@/features/auth/services/adminApi'
 import { UserMinus, UserPlus, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
@@ -161,17 +161,12 @@ export function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Gestión de Estudiantes
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Administra los estudiantes del sistema
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PageHeader
+        title="Gestión de Estudiantes"
+        subtitle="Administra los estudiantes del sistema"
+        actions={
+          // Su propio wrapper: usa gap-2, no el gap-3 que emite PageHeader
+          <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => toggleBatchMode('activate')}
@@ -196,8 +191,9 @@ export function AdminUsersPage() {
             <UserMinus className="h-4 w-4" />
             {batchMode === 'deactivate' ? 'Cancelar' : 'Desactivar por lotes'}
           </button>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {/* Batch mode info - Deactivate */}
       {batchMode === 'deactivate' && (
@@ -263,7 +259,7 @@ export function AdminUsersPage() {
 
       {/* Batch result */}
       {batchResult && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+        <Card padding="sm">
           <h3 className="font-medium text-gray-900 mb-3">
             Resultado de la {batchResult.type === 'activate' ? 'activación' : 'desactivación'}
           </h3>
@@ -313,11 +309,11 @@ export function AdminUsersPage() {
           >
             Cerrar
           </button>
-        </div>
+        </Card>
       )}
 
       {/* Filters */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <Card padding="sm">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {/* Search */}
           <div>
@@ -397,7 +393,7 @@ export function AdminUsersPage() {
             </p>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Table */}
       {isLoading ? (

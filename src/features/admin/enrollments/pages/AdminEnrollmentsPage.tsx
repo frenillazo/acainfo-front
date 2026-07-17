@@ -10,7 +10,7 @@ import { EnrollmentTable } from '../components/EnrollmentTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-import { Pagination } from '@/shared/components/ui/Pagination'
+import { Card, PageHeader, Pagination } from '@/shared/components/ui'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import type { EnrollmentStatus } from '@/features/enrollments/types/enrollment.types'
@@ -71,15 +71,14 @@ export function AdminEnrollmentsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {filters.courseId
-              ? `Inscripciones del Curso #${filters.courseId}`
-              : 'Gestión de Inscripciones'}
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
+      <PageHeader
+        title={
+          filters.courseId
+            ? `Inscripciones del Curso #${filters.courseId}`
+            : 'Gestión de Inscripciones'
+        }
+        subtitle={
+          <>
             {filters.courseId ? (
               <span className="flex items-center gap-2">
                 Filtrando por curso
@@ -93,20 +92,20 @@ export function AdminEnrollmentsPage() {
             ) : (
               'Administra las inscripciones del sistema'
             )}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
+          </>
+        }
+        actions={
           <Link
             to="/admin/enrollments/new"
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Nueva inscripción
           </Link>
-        </div>
-      </div>
+        }
+      />
 
       {/* Filters */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <Card padding="sm">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* Student Email filter */}
           <div>
@@ -164,7 +163,7 @@ export function AdminEnrollmentsPage() {
             </p>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Table */}
       {isLoading ? (

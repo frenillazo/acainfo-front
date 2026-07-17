@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAdminTeacher, useDeleteTeacher } from '../hooks/useAdminTeachers'
-import { ConfigBadge } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
 import { USER_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
@@ -64,7 +64,7 @@ export function AdminTeacherDetailPage() {
       />
 
       {/* Header */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-xl font-medium text-blue-600">
@@ -95,12 +95,12 @@ export function AdminTeacherDetailPage() {
             </button>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Details */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Teacher Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Información del Profesor
           </h2>
@@ -128,10 +128,10 @@ export function AdminTeacherDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
 
         {/* Dates */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Fechas</h2>
           <dl className="space-y-4">
             <div>
@@ -151,7 +151,7 @@ export function AdminTeacherDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
       </div>
 
       <ConfirmDialog {...dialogProps} isLoading={deleteMutation.isPending} />
