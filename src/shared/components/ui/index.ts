@@ -31,6 +31,7 @@ export {
   type IconButtonSize,
 } from './IconButton'
 export { Modal, ModalFooter, type ModalSize } from './Modal'
+export { PageHeader } from './PageHeader'
 export { Pagination } from './Pagination'
 export { Spinner } from './Spinner'
 export { ToastContainer } from './ToastContainer'

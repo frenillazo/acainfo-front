@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { Card, PageHeader } from '@/shared/components/ui'
 import { EnrollmentForm } from '../components/EnrollmentForm'
 import { useCreateEnrollment } from '../hooks/useAdminEnrollments'
 import type { EnrollRequest } from '@/features/enrollments/types/enrollment.types'
@@ -21,21 +22,19 @@ export function AdminEnrollmentCreatePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Nueva Inscripción</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Selecciona un estudiante y un grupo para crear una nueva inscripción
-        </p>
-      </div>
+      <PageHeader
+        title="Nueva Inscripción"
+        subtitle="Selecciona un estudiante y un grupo para crear una nueva inscripción"
+      />
 
-      <div className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card className="max-w-2xl">
         <EnrollmentForm
           onSubmit={handleSubmit}
           isSubmitting={isPending}
           error={error}
           onCancel={handleCancel}
         />
-      </div>
+      </Card>
     </div>
   )
 }

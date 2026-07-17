@@ -6,7 +6,7 @@ import { TeacherTable } from '../components/TeacherTable'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-import { Pagination } from '@/shared/components/ui/Pagination'
+import { Card, PageHeader, Pagination } from '@/shared/components/ui'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import type { TeacherFilters, UserStatus } from '../../types/admin.types'
@@ -63,26 +63,21 @@ export function AdminTeachersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Gestión de Profesores
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Administra los profesores del sistema
-          </p>
-        </div>
-        <Link
-          to="/admin/teachers/new"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Crear profesor
-        </Link>
-      </div>
+      <PageHeader
+        title="Gestión de Profesores"
+        subtitle="Administra los profesores del sistema"
+        actions={
+          <Link
+            to="/admin/teachers/new"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Crear profesor
+          </Link>
+        }
+      />
 
       {/* Filters */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <Card padding="sm">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* Search */}
           <div>
@@ -140,7 +135,7 @@ export function AdminTeachersPage() {
             </p>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Table */}
       {isLoading ? (

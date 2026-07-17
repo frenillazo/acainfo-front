@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { Card, PageHeader } from '@/shared/components/ui'
 import { SubjectForm } from '../components/SubjectForm'
 import { useCreateSubject } from '../hooks/useAdminSubjects'
 import type { CreateSubjectRequest } from '../../types/admin.types'
@@ -21,21 +22,19 @@ export function AdminSubjectCreatePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Crear Asignatura</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Introduce el código, nombre y grado de la nueva asignatura
-        </p>
-      </div>
+      <PageHeader
+        title="Crear Asignatura"
+        subtitle="Introduce el código, nombre y grado de la nueva asignatura"
+      />
 
-      <div className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card className="max-w-2xl">
         <SubjectForm
           onSubmit={handleSubmit}
           isSubmitting={isPending}
           error={error}
           onCancel={handleCancel}
         />
-      </div>
+      </Card>
     </div>
   )
 }
