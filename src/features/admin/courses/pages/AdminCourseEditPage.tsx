@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import { Card, PageHeader } from '@/shared/components/ui'
 import { CourseForm } from '../components/CourseForm'
 import { useAdminCourse, useUpdateCourse } from '../hooks/useAdminCourses'
 import type { UpdateCourseRequest } from '../../types/admin.types'
@@ -50,14 +51,12 @@ export function AdminCourseEditPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Editar Curso</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Modifica el estado, capacidad o fechas del curso {course.subjectName}
-        </p>
-      </div>
+      <PageHeader
+        title="Editar Curso"
+        subtitle={`Modifica el estado, capacidad o fechas del curso ${course.subjectName}`}
+      />
 
-      <div className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card className="max-w-2xl">
         <CourseForm
           course={course}
           onSubmit={handleSubmit}
@@ -65,7 +64,7 @@ export function AdminCourseEditPage() {
           error={updateError}
           onCancel={handleCancel}
         />
-      </div>
+      </Card>
     </div>
   )
 }

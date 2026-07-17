@@ -11,7 +11,7 @@ import { AdminCourseCards } from '../components/AdminCourseCard'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
-import { Pagination } from '@/shared/components/ui/Pagination'
+import { Card, PageHeader, Pagination } from '@/shared/components/ui'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import { LayoutGrid, List } from 'lucide-react'
@@ -82,18 +82,12 @@ export function AdminCoursesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Gestión de Cursos
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Administra los cursos del sistema
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex rounded-md border border-gray-300 bg-white">
+      <PageHeader
+        title="Gestión de Cursos"
+        subtitle="Administra los cursos del sistema"
+        actions={
+          <>
+            <div className="flex rounded-md border border-gray-300 bg-white">
             <button
               onClick={() => setViewMode('cards')}
               className={cn(
@@ -118,18 +112,19 @@ export function AdminCoursesPage() {
             >
               <List className="h-4 w-4" />
             </button>
-          </div>
-          <Link
-            to="/admin/courses/new"
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Crear curso
-          </Link>
-        </div>
-      </div>
+            </div>
+            <Link
+              to="/admin/courses/new"
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Crear curso
+            </Link>
+          </>
+        }
+      />
 
       {/* Filters */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <Card padding="sm">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* Status filter */}
           <div>
@@ -185,7 +180,7 @@ export function AdminCoursesPage() {
             </p>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Content */}
       {isLoading ? (

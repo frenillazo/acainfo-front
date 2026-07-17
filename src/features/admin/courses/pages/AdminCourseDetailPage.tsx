@@ -5,7 +5,7 @@ import {
   useDeleteCourse,
 } from '../hooks/useAdminCourses'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
-import { ConfigBadge } from '@/shared/components/ui'
+import { Card, ConfigBadge } from '@/shared/components/ui'
 import { COURSE_STATUS_CONFIG } from '@/shared/config/badgeConfig'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
@@ -81,7 +81,7 @@ export function AdminCourseDetailPage() {
       />
 
       {/* Header */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <Card>
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3">
@@ -131,12 +131,12 @@ export function AdminCourseDetailPage() {
             )}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Details */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Course Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Información del Curso
           </h2>
@@ -170,10 +170,10 @@ export function AdminCourseDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
 
         {/* Subject & Teacher Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">
             Asignatura y Profesor
           </h2>
@@ -205,10 +205,10 @@ export function AdminCourseDetailPage() {
               </div>
             )}
           </dl>
-        </div>
+        </Card>
 
         {/* Capacity Info */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Capacidad</h2>
           <dl className="space-y-4">
             <div>
@@ -248,10 +248,10 @@ export function AdminCourseDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
 
         {/* Dates */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Fechas</h2>
           <dl className="space-y-4">
             <div>
@@ -271,7 +271,7 @@ export function AdminCourseDetailPage() {
               </dd>
             </div>
           </dl>
-        </div>
+        </Card>
       </div>
 
       <ConfirmDialog {...dialogProps} isLoading={cancelMutation.isPending || deleteMutation.isPending} />
