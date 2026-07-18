@@ -12,7 +12,7 @@ import { useAdminSubjects } from '../../subjects/hooks/useAdminSubjects'
 import { SessionTable } from '../components/SessionTable'
 import { AdminWeeklyScheduleGrid } from '../components/AdminWeeklyScheduleGrid'
 import { PostponeModal } from '../components/PostponeModal'
-import { Card, Pagination } from '@/shared/components/ui'
+import { Card, PageHeader, Pagination } from '@/shared/components/ui'
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog'
 import { useConfirmDialog } from '@/shared/hooks/useConfirmDialog'
 import { LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -215,16 +215,11 @@ export function AdminSessionsPage() {
 
   return (
     <div className="space-y-6">
-      {/* A mano, no <PageHeader>: esta cabecera apila las acciones bajo el título en
-          móvil (flex-col + sm:flex-row) y PageHeader siempre las pone en fila. */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sesiones</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Gestiona las sesiones de clase
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
+      <PageHeader
+        title="Sesiones"
+        subtitle="Gestiona las sesiones de clase"
+        actions={
+          <>
           {/* View toggle */}
           <div className="flex items-center rounded-lg border border-gray-200 bg-white p-1">
             <button
@@ -261,8 +256,9 @@ export function AdminSessionsPage() {
           >
             Generar sesiones
           </Link>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-4">

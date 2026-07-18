@@ -6,6 +6,7 @@ import { StatCard } from '../components/StatCard'
 import { QuickActionCard } from '../components/QuickActionCard'
 import { LoadingState } from '@/shared/components/common/LoadingState'
 import { ErrorState } from '@/shared/components/common/ErrorState'
+import { PageHeader } from '@/shared/components/ui'
 
 export function AdminDashboardPage() {
   const { data: stats, isLoading, error } = useAdminDashboardStats()
@@ -21,15 +22,10 @@ export function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* A mano, no <PageHeader>: este subtítulo va sin `text-sm` (16px) y PageHeader
-          lo pinta a 14px como el resto de la app. Migrarlo encogería la letra: es un
-          cambio visual, no una migración, y está pendiente de decisión del dueño. */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Panel de Administración</h1>
-        <p className="mt-1 text-gray-500">
-          Resumen general del sistema
-        </p>
-      </div>
+      <PageHeader
+        title="Panel de Administración"
+        subtitle="Resumen general del sistema"
+      />
 
       {/* Lo único que pide acción: sin emails ni caducidad automática, una
           solicitud espera indefinidamente a que el admin pase por aquí. */}

@@ -126,18 +126,12 @@ export function SessionsPage() {
 
   return (
     <div className="space-y-6">
-      {/* A mano, no <PageHeader>: esta cabecera apila las acciones bajo el título en
-          móvil (flex-col + sm:flex-row) y PageHeader siempre las pone en fila. */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mis Sesiones</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Consulta tus próximas clases y sesiones completadas
-          </p>
-        </div>
-
-        {/* View toggle */}
-        <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-1">
+      <PageHeader
+        title="Mis Sesiones"
+        subtitle="Consulta tus próximas clases y sesiones completadas"
+        actions={
+          /* View toggle */
+          <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-1">
           <button
             onClick={() => setViewMode('calendar')}
             className={cn(
@@ -162,8 +156,9 @@ export function SessionsPage() {
             <List className="h-4 w-4" />
             Lista
           </button>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {/* Alternatives info banner */}
       {showAlternatives && alternativeSessionsCount > 0 && (
