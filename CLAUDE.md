@@ -34,11 +34,13 @@ React 19 + TypeScript + Vite 6 · TanStack Query 5 · Zustand 5 · React Router 
     `div`/`article`/`section`.
   - Los *segmented control* `p-1` de `AdminSessionsPage` y `SessionsPage`: comparten prefijo de clases
     por casualidad.
-  - Cabeceras que NO van a `PageHeader`: las de **detalle** (avatar a la izquierda, `items-start`,
-    subtítulo sin `mt-1 text-sm`, 2-3 acciones) y las **responsive** de `AdminSessionsPage` y
-    `SessionsPage` (`flex-col` + `sm:flex-row`: apilan las acciones en móvil y `PageHeader` siempre las
-    pone en fila — migrarlas rompe el móvil sin que tests ni typecheck lo vean). Y la de
-    `AdminDashboardPage`, cuyo subtítulo va a 16px (sin `text-sm`): migrarla lo encogería.
+  - Cabeceras que NO van a `PageHeader`: solo las de **detalle** (avatar a la izquierda, `items-start`,
+    subtítulo sin `mt-1 text-sm`, 2-3 acciones). El resto usa `PageHeader`.
+- **`PageHeader` es RESPONSIVE** (18-jul-2026): en móvil apila título y acciones (`flex-col`), en `sm+`
+  vuelve a la fila (`sm:flex-row sm:items-center sm:justify-between`), que resuelve exactamente a lo de
+  antes — el escritorio no cambió en ninguna de las páginas ya migradas. Las acciones llevan
+  `flex-wrap` para que un grupo ancho no desborde al apilarse. Por eso ya NO hay cabeceras responsive
+  a mano.
 - **Al añadir una página nueva**: `<PageHeader title subtitle actions>` + `<Card>`. Equivalencias de
   padding: `p-6` → `<Card>` (por defecto), `p-4` → `padding="sm"`, `p-8` → `"lg"`, sin padding →
   `"none"`. El resto de clases van en `className` (`twMerge` las fusiona con las del `cva`). Sin
